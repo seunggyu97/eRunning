@@ -8,14 +8,17 @@
         android:label="@string/app_name"
         android:roundIcon="@drawable/erunning_icon"
         android:supportsRtl="true"
+
         android:theme="@style/Theme.MyApplication">
-        <activity android:name=".MainActivity">
+        //android:theme="@style/Theme.Design.NoActionBar"> 상단바 없애기
+        <activity android:name=".Loading">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".MainActivity" />
+
     </application>
 
 </manifest>
