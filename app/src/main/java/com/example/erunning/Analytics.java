@@ -1,4 +1,4 @@
-package com.example.myapplication;
+package com.example.erunning;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -9,13 +9,13 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-public class Record extends Fragment {
+public class Analytics extends Fragment {
    private View view;
 
    @Nullable
    @Override
    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-      view = inflater.inflate(R.layout.record, container, false);
+      view = inflater.inflate(R.layout.analytics, container, false);
 
       return view;
    }

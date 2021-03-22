@@ -1,4 +1,4 @@
-package com.example.myapplication;
+package com.example.erunning;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -19,11 +19,13 @@ public class Loading extends AppCompatActivity {
         runnable = new Runnable() {
 
             @Override
+            /*----로딩화면 종료시 실행할 액티비티*/
             public void run() {
-                startActivity(new Intent(Loading.this, MainActivity.class));
+                startActivity(new Intent(Loading.this, Login.class));
                 finish();
             }
         };
+
         //3sec
         handler.postDelayed(runnable, 3000);
 

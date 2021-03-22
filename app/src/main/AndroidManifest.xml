@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.myapplication">
+    package="com.example.erunning">
 
     <application
         android:allowBackup="true"
@@ -10,14 +10,17 @@
         android:supportsRtl="true"
 
         android:theme="@style/Theme.MyApplication">
-        //android:theme="@style/Theme.Design.NoActionBar"> 상단바 없애기
-        <activity android:name=".Loading">
+        //android:theme="@style/Theme.Design.NoActionBar"> //상단바 없애기
+
+        <activity android:name="com.example.erunning.Loading">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".MainActivity" />
+
+        <activity android:name="com.example.erunning.Login"/>
+        <activity android:name="com.example.erunning.MainActivity" />
 
     </application>
 
