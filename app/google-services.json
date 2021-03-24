@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "886269392129",
+    "project_id": "e-running-735bb",
+    "storage_bucket": "e-running-735bb.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:886269392129:android:45607fa559257e626d1700",
+        "android_client_info": {
+          "package_name": "com.example.erunning"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "886269392129-e3v3ltun281hl53pq107lam1jgbgvqjr.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBhB07qolH0HoJWBWG3yaQvyxm55FnA4Vs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "886269392129-e3v3ltun281hl53pq107lam1jgbgvqjr.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -21,25 +21,25 @@
         android:padding="10dp">
 
         <EditText
-            android:id="@+id/idEditText"
+            android:id="@+id/CreateemailEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="5dp"
             android:ems="10"
-            android:hint="아이디"
+            android:hint="이메일"
             android:inputType="textEmailAddress" />
 
         <EditText
-            android:id="@+id/passwordEditText"
+            android:id="@+id/CreatePassWordEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="5dp"
             android:ems="10"
-            android:hint="비밀번호"
+            android:hint="비밀번호 (6자 이상)"
             android:inputType="textPassword" />
 
         <EditText
-            android:id="@+id/passwordcheckEditText"
+            android:id="@+id/CreatePassWordCheckEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="5dp"
@@ -48,7 +48,7 @@
             android:inputType="textPassword" />
 
         <Button
-            android:id="@+id/login_btn"
+            android:id="@+id/signup_btn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="회원가입" />

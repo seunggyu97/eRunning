@@ -1,5 +1,6 @@
 package com.example.erunning;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -25,7 +26,7 @@ public class Login extends AppCompatActivity {
                     Log.e("클릭","클릭");
                     break;
                 case R.id.LoginPageSignUp_btn:
-                    Log.e("회원가입 클릭","회원가입 클릭");
+                    startActivity(new Intent(Login.this, SignUp.class));
                     break;
             }
         }
