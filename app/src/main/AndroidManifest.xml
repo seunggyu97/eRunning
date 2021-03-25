@@ -16,15 +16,14 @@
         //android:theme="@style/Theme.Design.NoActionBar"> //상단바 없애기
 
         <activity android:name="com.example.erunning.Loading">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+        <intent-filter>
+            <action android:name="android.intent.action.MAIN" />
+            <category android:name="android.intent.category.LAUNCHER" />
+        </intent-filter>
         </activity>
-
         <activity android:name="com.example.erunning.Login"/>
         <activity android:name="com.example.erunning.SignUp" />
-        <activity android:name="com.example.erunning.MainActivity" />
+        <activity android:name="com.example.erunning.MainActivity"/>
 
     </application>
 

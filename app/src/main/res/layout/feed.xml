@@ -1,12 +1,141 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#81CEF3"
     android:orientation="vertical">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="운동 경로 공유 페이지입니다."
-        android:textSize="40sp"/>
+    <LinearLayout
+        android:id="@+id/FeedTopBar"
+        android:layout_width="match_parent"
+        android:layout_height="61dp"
+        android:layout_marginBottom="2dp"
+        android:background="#FFFFFF"
+        android:orientation="vertical"
+        android:outlineAmbientShadowColor="#FFFFFF">
+
+        <ImageView
+            android:id="@+id/imageView2"
+            android:layout_width="124dp"
+            android:layout_height="match_parent"
+            app:srcCompat="@drawable/erunning_only_logo" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="555dp"
+        android:layout_marginTop="0dp"
+        android:layout_marginBottom="5dp"
+        android:layout_weight="0"
+        android:background="#FFFFFF"
+        android:orientation="vertical"
+        android:paddingTop="60dp">
+
+        <Button
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginStart="15dp"
+            android:layout_marginLeft="15dp"
+
+
+            android:layout_marginTop="15dp"
+            android:layout_marginEnd="0dp"
+            android:layout_marginRight="0dp"
+            android:layout_marginBottom="15dp"
+            android:layout_weight="0"
+            android:background="@drawable/round_profile_pic" />
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="261dp"
+            android:layout_weight="0"
+            tools:srcCompat="@tools:sample/avatars" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="168dp"
+            android:layout_weight="0" />
+
+        <!--<Button
+                android:id="@+id/button3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="0dp"
+                android:layout_marginLeft="0dp"
+                android:layout_marginTop="15dp"
+                android:layout_marginEnd="0dp"
+                android:layout_marginRight="0dp"
+                android:layout_marginBottom="15dp"
+                android:layout_weight="0"
+                android:background="none"
+                android:gravity="left"
+                android:text="User1"
+                android:textAllCaps="false"
+                android:textColor="#000000"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                app:backgroundTint="#FFFFFF" />-->
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:layout_marginTop="0dp"
+        android:layout_marginBottom="5dp"
+        android:background="#FFFFFF"
+        android:orientation="vertical">
+
+        <Button
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginStart="15dp"
+            android:layout_marginLeft="15dp"
+
+
+            android:layout_marginTop="15dp"
+            android:layout_marginEnd="0dp"
+            android:layout_marginRight="0dp"
+            android:layout_marginBottom="15dp"
+            android:layout_weight="0"
+            android:background="@drawable/round_profile_pic" />
+
+        <ImageView
+            android:id="@+id/imageView3"
+            android:layout_width="match_parent"
+            android:layout_height="356dp"
+            android:layout_weight="0"
+            tools:srcCompat="@tools:sample/avatars" />
+
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="match_parent"
+            android:layout_height="123dp"
+            android:layout_weight="0" />
+
+        <!--<Button
+                android:id="@+id/button3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="0dp"
+                android:layout_marginLeft="0dp"
+                android:layout_marginTop="15dp"
+                android:layout_marginEnd="0dp"
+                android:layout_marginRight="0dp"
+                android:layout_marginBottom="15dp"
+                android:layout_weight="0"
+                android:background="none"
+                android:gravity="left"
+                android:text="User1"
+                android:textAllCaps="false"
+                android:textColor="#000000"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                app:backgroundTint="#FFFFFF" />-->
+
+    </LinearLayout>
+
 </LinearLayout>
