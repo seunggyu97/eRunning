@@ -35,10 +35,10 @@ public class MainActivity extends AppCompatActivity {
                     case R.id.action_record:
                         setFrag(0);
                         break;
-                    case R.id.action_feed:
+                    case R.id.action_flag:
                         setFrag(1);
                         break;
-                    case R.id.action_flag:
+                    case R.id.action_feed:
                         setFrag(2);
                         break;
                     case R.id.action_analytics:
@@ -57,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
         feed = new Feed();
         flag = new Flag();
         record = new Record();
-        setFrag(0); // 첫 프래그먼트 화면을 선택 0:기록 1:공유 2:참여자모집 3:순위 4:프로필
+        setFrag(0); // 첫 프래그먼트 화면을 선택 0:기록 1:참여자모집 2:피드 3:순위 4:프로필
 
     }
 
@@ -71,11 +71,11 @@ public class MainActivity extends AppCompatActivity {
                 ft.commit();
                 break;
             case 1:
-                ft.replace(R.id.main_frame, feed);
+                ft.replace(R.id.main_frame, flag);
                 ft.commit();
                 break;
             case 2:
-                ft.replace(R.id.main_frame, flag);
+                ft.replace(R.id.main_frame, feed);
                 ft.commit();
                 break;
             case 3:
