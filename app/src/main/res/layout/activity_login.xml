@@ -89,6 +89,7 @@
             android:orientation="vertical">
 
             <com.google.android.gms.common.SignInButton
+                android:id="@+id/btn_googleLogin"
                 android:layout_width="205dp"
                 android:layout_height="36dp" />
         </LinearLayout>

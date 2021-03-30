@@ -1,14 +1,21 @@
 package com.example.erunning;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+
+import org.w3c.dom.Text;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -20,12 +27,23 @@ public class MainActivity extends AppCompatActivity {
     private Feed feed;
     private Flag flag;
     private Record record;
+    private TextView user_name; // 이름 Text
+    private ImageView route_profile; // 이미지 뷰
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        Intent intent = getIntent();
+        String user_name = intent.getStringExtra("nickName");
+        String route_profile = intent.getStringExtra("photoUrl");
+        Bundle bundle = new Bundle();
+        String sendUserName = user_name;
+        String sendUserProfile = route_profile;
+        bundle.putString("이름", sendUserName);
+        bundle.putString("프로필사진", sendUserProfile);
+        Fragment fragment = new Fragment();
+        fragment.setArguments(bundle);
 
         bottomNavigationView = findViewById(R.id.bottomNavi);
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
