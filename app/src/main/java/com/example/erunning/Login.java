@@ -40,6 +40,7 @@ public class Login extends AppCompatActivity implements GoogleApiClient.OnConnec
         setContentView(R.layout.activity_login);
         findViewById(R.id.login_btn).setOnClickListener(onClickListener);
         findViewById(R.id.LoginPageSignUp_btn).setOnClickListener(onClickListener);
+        findViewById(R.id.LoginResetPW_btn).setOnClickListener(onClickListener);
         mAuth = FirebaseAuth.getInstance();
 
         GoogleSignInOptions googleSignInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -109,6 +110,9 @@ public class Login extends AppCompatActivity implements GoogleApiClient.OnConnec
                     break;
                 case R.id.LoginPageSignUp_btn:
                     startActivity(new Intent(Login.this, SignUp.class));
+                    break;
+                case R.id.LoginResetPW_btn:
+                    startActivity(new Intent(Login.this, PasswordReset.class));
                     break;
             }
         }
