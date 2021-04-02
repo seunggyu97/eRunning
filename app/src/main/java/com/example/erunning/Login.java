@@ -4,7 +4,10 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -94,6 +97,7 @@ public class Login extends AppCompatActivity implements GoogleApiClient.OnConnec
                             intent.putExtra("nickName", account.getDisplayName());
                             intent.putExtra("photoURL", String.valueOf(account.getPhotoUrl()));
                             startActivity(new Intent(Login.this, MainActivity.class));
+                            finish();
                         } else { // 로그인 실패시
                             Toast.makeText(Login.this, "로그인 실패", Toast.LENGTH_SHORT).show();
                         }
@@ -130,12 +134,21 @@ public class Login extends AppCompatActivity implements GoogleApiClient.OnConnec
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if (task.isSuccessful()) {
-                                startActivity(new Intent(Login.this, MainActivity.class));
-                                Log.e("클릭","클릭");
-                                Toast.makeText(Login.this, "로그인이 정상적으로 되었습니다.",
-                                        Toast.LENGTH_SHORT).show();
-                                FirebaseUser user = mAuth.getCurrentUser();
-                                finish();
+                                if(mAuth.getCurrentUser()!=null){
+                                    boolean isEmailverified = mAuth.getCurrentUser().isEmailVerified();
+                                    if(isEmailverified){
+                                        startActivity(new Intent(Login.this, MainActivity.class));
+                                        Toast.makeText(Login.this, "로그인이 정상적으로 되었습니다.",
+                                                Toast.LENGTH_SHORT).show();
+                                        finish();
+                                    }
+                                    else{
+
+                                        Toast.makeText(Login.this, "로그인 실패 : 인증되지 않은 이메일",
+                                                Toast.LENGTH_SHORT).show();
+
+                                    }
+                                }
                             } else {
                                 // If sign in fails, display a message to the user.
                                 Log.w(TAG, "signInWithEmail:failure", task.getException());

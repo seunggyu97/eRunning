@@ -40,11 +40,12 @@ public class SignUp extends AppCompatActivity {
         // Check if user is signed in (non-null) and update UI accordingly.
         FirebaseUser currentUser = mAuth.getCurrentUser();
     }
-    private void createSuccess(){
-        Log.d(TAG, "이메일 생성 성공");
+    private void createSuccess(String email, String password){
         FirebaseUser user = mAuth.getCurrentUser();
-        Toast.makeText(SignUp.this, "회원가입을 완료했습니다.",
-                Toast.LENGTH_SHORT).show();
+        Intent intent = new Intent(this,AuthCheck.class);
+        intent.putExtra("Authemail",email);
+        intent.putExtra("Authpassword",password);
+        startActivity(intent);
         finish();
     }
     private void createAccount() {
@@ -63,8 +64,15 @@ public class SignUp extends AppCompatActivity {
                                         @Override
                                         public void onComplete(@NonNull Task<AuthResult> task) {
                                             if (task.isSuccessful()) {
-                                                createSuccess();// 생성 성공 메소드 호출
-
+                                                mAuth.getCurrentUser().sendEmailVerification()
+                                                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                            @Override
+                                                            public void onComplete(@NonNull Task<Void> task) {
+                                                                if(task.isSuccessful()){
+                                                                    createSuccess(Email,Password);// 인증 화면 호출
+                                                                }
+                                                            }
+                                                        });
                                             } else {
                                                 // 실패시
                                                 String Errormsg = task.getException().toString();
