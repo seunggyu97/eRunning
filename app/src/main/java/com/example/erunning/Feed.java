@@ -14,6 +14,11 @@ import com.example.erunning.R;
 public class Feed extends Fragment {
  private View view;
 
+   public static Feed newinstance(){
+      Feed feed = new Feed();
+      return feed;
+   }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {

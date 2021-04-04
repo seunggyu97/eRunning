@@ -3,25 +3,38 @@ package com.example.erunning;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.viewpager.widget.ViewPager;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toolbar;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.tabs.TabLayout;
 
 import org.w3c.dom.Text;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
     private BottomNavigationView bottomNavigationView; // 바텀 네비게이션 뷰
     private FragmentManager fm;
     private FragmentTransaction ft;
+    private FragmentPagerAdapter fragmentPagerAdapter;
+    private TabLayout tabLayout;
+    private ViewPager viewPager;
+
     private Account account;
     private Analytics analytics;
     private Feed feed;
@@ -34,6 +47,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         Intent intent = getIntent();
         String user_name = intent.getStringExtra("nickName");
         String route_profile = intent.getStringExtra("photoUrl");
@@ -42,8 +56,18 @@ public class MainActivity extends AppCompatActivity {
         bundle.putString("profile", route_profile);
 
 
-        bottomNavigationView = findViewById(R.id.bottomNavi);
-        bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+
+        ViewPager viewPager = findViewById(R.id.viewPager);
+        fragmentPagerAdapter = new ViewPageAdapter(getSupportFragmentManager());
+
+        TabLayout tabLayout = findViewById(R.id.bottomNavi);
+        tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.ic_run));
+        viewPager.setAdapter(fragmentPagerAdapter);
+        tabLayout.setupWithViewPager(viewPager);
+
+
+
+        /*bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch (item.getItemId()){
@@ -73,12 +97,11 @@ public class MainActivity extends AppCompatActivity {
         feed = new Feed();
         flag = new Flag();
         record = new Record();
-        setFrag(0); // 첫 프래그먼트 화면을 선택 0:기록 1:참여자모집 2:피드 3:순위 4:프로필
+        setFrag(0); // 첫 프래그먼트 화면을 선택 0:기록 1:참여자모집 2:피드 3:순위 4:프로필*/
 
     }
-
     // 프래그먼트 교체가 일어나는 실행문
-    private void setFrag(int n) {
+    /*private void setFrag(int n) {
         fm = getSupportFragmentManager();
         ft = fm.beginTransaction();
         switch (n) {
@@ -103,5 +126,5 @@ public class MainActivity extends AppCompatActivity {
                 ft.commit();
                 break;
         }
-    }
+    }*/
 }

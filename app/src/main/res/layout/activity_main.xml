@@ -7,7 +7,7 @@
     tools:context=".MainActivity">
 
 
-    <com.google.android.material.bottomnavigation.BottomNavigationView
+    <!--<com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavi"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -16,19 +16,75 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_editor_absoluteX="8dp"
         app:layout_editor_absoluteY="383dp"
-        app:menu="@menu/bottom_menu" />
+        app:menu="@menu/bottom_menu" />-->
 
-    <FrameLayout
-        android:id="@+id/main_frame"
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/bottomNavi"
         android:layout_width="match_parent"
-        android:layout_height="659dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/const_vp">
+
+        <com.google.android.material.tabs.TabItem
+            android:id="@+id/action_record"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:enabled="true"
+            android:icon="@drawable/ic_run"
+            android:title="e-Running" />
+
+        <com.google.android.material.tabs.TabItem
+            android:id="@+id/action_flag"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:enabled="true"
+            android:icon="@drawable/ic_flag"
+            android:title="참여자 모집" />
+
+        <com.google.android.material.tabs.TabItem
+            android:id="@+id/action_feed"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:enabled="true"
+            android:icon="@drawable/ic_feed"
+            android:title="피드" />
+
+        <com.google.android.material.tabs.TabItem
+            android:id="@+id/action_analytics"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:enabled="true"
+            android:icon="@drawable/ic_analytics"
+            android:title="주간 순위" />
+
+        <com.google.android.material.tabs.TabItem
+            android:id="@+id/action_account"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:enabled="true"
+            android:icon="@drawable/ic_account"
+            android:title="내 프로필" />
+    </com.google.android.material.tabs.TabLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/const_vp"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
         app:layout_constraintBottom_toTopOf="@+id/bottomNavi"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0">
+        app:layout_constraintTop_toTopOf="parent">
 
-    </FrameLayout>
+        <androidx.viewpager.widget.ViewPager
+            android:id="@+id/viewPager"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -20,6 +20,11 @@ public class Account extends Fragment {
  private ImageView iv_userProfile; // 프로필 이미지뷰
  private String user_name;
  private String route_file;
+
+    public static Account newinstance(){
+        Account account = new Account();
+        return account;
+    }
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
