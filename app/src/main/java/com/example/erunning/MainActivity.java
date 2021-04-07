@@ -56,7 +56,6 @@ public class MainActivity extends AppCompatActivity {
         bundle.putString("profile", route_profile);
 
 
-
         ViewPager viewPager = findViewById(R.id.viewPager);
         fragmentPagerAdapter = new ViewPageAdapter(getSupportFragmentManager());
 
@@ -98,9 +97,7 @@ public class MainActivity extends AppCompatActivity {
         flag = new Flag();
         record = new Record();
         setFrag(0); // 첫 프래그먼트 화면을 선택 0:기록 1:참여자모집 2:피드 3:순위 4:프로필*/
-
-    }
-    // 프래그먼트 교체가 일어나는 실행문
+        // 프래그먼트 교체가 일어나는 실행문
     /*private void setFrag(int n) {
         fm = getSupportFragmentManager();
         ft = fm.beginTransaction();
@@ -127,4 +124,6 @@ public class MainActivity extends AppCompatActivity {
                 break;
         }
     }*/
+
+    }
 }

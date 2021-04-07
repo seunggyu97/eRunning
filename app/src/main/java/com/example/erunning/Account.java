@@ -1,18 +1,30 @@
 package com.example.erunning;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 import com.bumptech.glide.Glide;
+import com.firebase.ui.auth.AuthUI;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+
+import static com.firebase.ui.auth.AuthUI.getApplicationContext;
 
 public class Account extends Fragment {
  private View view;
@@ -20,6 +32,8 @@ public class Account extends Fragment {
  private ImageView iv_userProfile; // 프로필 이미지뷰
  private String user_name;
  private String route_file;
+ private Button btn_logout;
+ private Button btn_accountDelete;
 
     public static Account newinstance(){
         Account account = new Account();
@@ -31,8 +45,11 @@ public class Account extends Fragment {
        super.onCreate(savedInstanceState);
        view = inflater.inflate(R.layout.account, container, false);
        Bundle extra = getArguments();
-       tv_userName = view.findViewById(R.id.tv_userName);
+
+       tv_userName = view.findViewById(R.id.tv_userEmail);
        iv_userProfile = view.findViewById(R.id.iv_userProfile);
+       btn_logout= view.findViewById(R.id.logout_btn);
+       btn_accountDelete = view.findViewById(R.id.delete_btn);
 
        if (getArguments() != null) {
           //String user_name = extra.getString("이름");
@@ -46,7 +63,75 @@ public class Account extends Fragment {
             Log.e("getArguments()","값이 없음 ㅜㅜㅜㅜㅜㅜㅜㅜㅜㅜㅜㅜㅜ왜??????????????");
        }
 
+        btn_logout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                switch (v.getId()){
+                    case R.id.logout_btn:
+                        //user_logout();
+                        AuthUI.getInstance()
+                                .signOut(getActivity())
+                                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    public void onComplete(@NonNull Task<Void> task) {
+                                        getActivity().finish();
+                                        startActivity(new Intent(getActivity(), Login.class));
+                                        Toast.makeText(getActivity(), "정상적으로 로그아웃 되었습니다.",
+                                                Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                        Log.e("로그아웃","버튼입력");
+                        break;
+                }
+            }
+        });
 
+        btn_accountDelete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                switch (v.getId()){
+                    case R.id.delete_btn:
+                        //user_delete();
+                        AuthUI.getInstance()
+                                .delete(getActivity())
+                                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+                                        Toast.makeText(getActivity(), "회원탈퇴가 정상적으로 처리되었습니다.", Toast.LENGTH_LONG).show();
+                                        getActivity().finish();
+                                        startActivity(new Intent(getActivity(), Login.class));
+                                    }
+                                });
+                        Log.e("회원탈퇴","버튼입력");
+                        break;
+                }
+            }
+        });
        return view;
     }
+    /*private void user_logout(){
+        FirebaseAuth.getInstance().signOut();
+        getActivity().finish();
+        startActivity(new Intent(getActivity(), Login.class));
+        Toast.makeText(getActivity(), "정상적으로 로그아웃 되었습니다.",
+                Toast.LENGTH_SHORT).show();
+    }
+
+
+
+    private void user_delete(){
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        user.delete()
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        Toast.makeText(getActivity(), "회원탈퇴가 정상적으로 처리되었습니다.", Toast.LENGTH_LONG).show();
+                        getActivity().finish();
+                        startActivity(new Intent(getActivity(), Login.class));
+                    }
+                });
+
+    }*/
+
+
+
 }

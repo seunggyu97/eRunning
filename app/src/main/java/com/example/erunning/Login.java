@@ -45,7 +45,18 @@ public class Login extends AppCompatActivity implements GoogleApiClient.OnConnec
         findViewById(R.id.LoginPageSignUp_btn).setOnClickListener(onClickListener);
         findViewById(R.id.LoginResetPW_btn).setOnClickListener(onClickListener);
         mAuth = FirebaseAuth.getInstance();
+        if(mAuth.getCurrentUser() != null)
+        {
+            boolean isEmailverified = mAuth.getCurrentUser().isEmailVerified();
+            if(isEmailverified) {
+                startActivity(new Intent(Login.this, MainActivity.class));
+                finish();
+            }
+            else{
+                Log.e("인증되지않은","이메일");
+            }
 
+        }
         GoogleSignInOptions googleSignInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
                 .requestEmail()

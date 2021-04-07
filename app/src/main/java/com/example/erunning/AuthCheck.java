@@ -1,7 +1,9 @@
 package com.example.erunning;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Vibrator;
 import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
@@ -67,14 +69,26 @@ public class AuthCheck extends SignUp {
                 startActivity(new Intent(AuthCheck.this, Login.class));
                 Toast.makeText(AuthCheck.this, "회원가입을 완료했습니다. 로그인 페이지로 이동합니다.",
                         Toast.LENGTH_SHORT).show();
+
+                FirebaseAuth.getInstance().signOut();
                 finish();
+
             }
             else{
                 Animation error = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.shake);
                 TextView errormsg = findViewById(R.id.errorEditText);
                 errormsg.setText("인증 실패 : 이메일에 첨부된 링크를 확인해 주세요.");
-
                 errormsg.startAnimation(error);
+                
+                Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+                long[] pattern = {10, 50, 10, 50}; // miliSecond
+                //                 대기,진동,대기,진동,....
+                // 짝수 인덱스 : 대기시간
+                // 홀수 인덱스 : 진동시간
+                vibrator.vibrate(pattern, -1);
+                // 0 : 무한반복, -1: 반복없음,
+                // 양의정수 : 진동패턴배열의 해당 인덱스부터 진동 무한반복
+
             }
         }
     }
