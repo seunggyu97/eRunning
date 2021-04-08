@@ -23,6 +23,7 @@ import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
@@ -44,6 +45,10 @@ public class Login extends AppCompatActivity implements GoogleApiClient.OnConnec
         findViewById(R.id.login_btn).setOnClickListener(onClickListener);
         findViewById(R.id.LoginPageSignUp_btn).setOnClickListener(onClickListener);
         findViewById(R.id.LoginResetPW_btn).setOnClickListener(onClickListener);
+
+        String Email = ((TextInputEditText)findViewById(R.id.emailEditText)).getText().toString();
+        String Password = ((TextInputEditText)findViewById(R.id.passwordEditText)).getText().toString();
+
         mAuth = FirebaseAuth.getInstance();
         if(mAuth.getCurrentUser() != null)
         {
