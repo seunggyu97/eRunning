@@ -34,9 +34,9 @@ public class SignUp extends AppCompatActivity {
     private static final String TAG = "SignUpActivity";
     private DatePickerDialog datePickerDialog;
     private Button dateButton;
-    private int birthyear;
-    private int birthmonth;
-    private int birthday;
+    private int birthyear = 0;
+    private int birthmonth = 0;
+    private int birthday = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -157,7 +157,7 @@ public class SignUp extends AppCompatActivity {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         String name = ((EditText) findViewById(R.id.nameEditText)).getText().toString();
 
-        UserInfo userinfo = new UserInfo(name, birthyear,birthmonth,birthday);
+        UserInfo userinfo = new UserInfo(name, birthyear, birthmonth, birthday);
         db.collection("users").document(user.getUid()).set(userinfo)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
@@ -187,35 +187,40 @@ public class SignUp extends AppCompatActivity {
             if (Password.length() > 5 && CheckPassWord.length() > 5) {
                 if (Password.equals(CheckPassWord)) {
                     if (UserName.length() > 1) {
-                        mAuth.createUserWithEmailAndPassword(Email, Password)
-                                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                                            @Override
-                                            public void onComplete(@NonNull Task<AuthResult> task) {
-                                                if (task.isSuccessful()) {
-                                                    mAuth.getCurrentUser().sendEmailVerification()
-                                                            .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                                                @Override
-                                                                public void onComplete(@NonNull Task<Void> task) {
-                                                                    if (task.isSuccessful()) {
-                                                                        createSuccess(Email, Password);// 인증 화면 호출
+                        if (birthday != 0 && birthmonth != 0 && birthyear != 0) {
+                            mAuth.createUserWithEmailAndPassword(Email, Password)
+                                    .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                                                @Override
+                                                public void onComplete(@NonNull Task<AuthResult> task) {
+                                                    if (task.isSuccessful()) {
+                                                        mAuth.getCurrentUser().sendEmailVerification()
+                                                                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                                    @Override
+                                                                    public void onComplete(@NonNull Task<Void> task) {
+                                                                        if (task.isSuccessful()) {
+                                                                            createSuccess(Email, Password);// 인증 화면 호출
+                                                                        }
                                                                     }
-                                                                }
-                                                            });
-                                                } else {
-                                                    // 실패시
-                                                    String Errormsg = task.getException().toString();
-                                                    Log.w(TAG, "이메일 생성 실패", task.getException());
-                                                    if (Errormsg.equals(ErrorEmailAlreadyUse)) {
-                                                        Toast.makeText(SignUp.this, "이미 가입된 이메일입니다.",
-                                                                Toast.LENGTH_SHORT).show();
-                                                    } else if (Errormsg.equals(ErrorEmailNot)) {
-                                                        Toast.makeText(SignUp.this, "올바르지 않은 이메일 형식입니다.",
-                                                                Toast.LENGTH_SHORT).show();
+                                                                });
+                                                    } else {
+                                                        // 실패시
+                                                        String Errormsg = task.getException().toString();
+                                                        Log.w(TAG, "이메일 생성 실패", task.getException());
+                                                        if (Errormsg.equals(ErrorEmailAlreadyUse)) {
+                                                            Toast.makeText(SignUp.this, "이미 가입된 이메일입니다.",
+                                                                    Toast.LENGTH_SHORT).show();
+                                                        } else if (Errormsg.equals(ErrorEmailNot)) {
+                                                            Toast.makeText(SignUp.this, "올바르지 않은 이메일 형식입니다.",
+                                                                    Toast.LENGTH_SHORT).show();
+                                                        }
                                                     }
                                                 }
                                             }
-                                        }
-                                );
+                                    );
+                        } else {
+                            Toast.makeText(SignUp.this, "생년월일을 입력해주세요.",
+                                    Toast.LENGTH_SHORT).show();
+                        }
                     } else {
                         Toast.makeText(SignUp.this, "이름을 2자이상 입력해주세요.",
                                 Toast.LENGTH_SHORT).show();
