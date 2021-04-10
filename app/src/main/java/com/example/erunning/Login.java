@@ -159,10 +159,8 @@ public class Login extends AppCompatActivity implements GoogleApiClient.OnConnec
                                         finish();
                                     }
                                     else{
-
                                         Toast.makeText(Login.this, "로그인 실패 : 인증되지 않은 이메일",
                                                 Toast.LENGTH_SHORT).show();
-
                                     }
                                 }
                             } else {
@@ -170,9 +168,7 @@ public class Login extends AppCompatActivity implements GoogleApiClient.OnConnec
                                 Log.w(TAG, "signInWithEmail:failure", task.getException());
                                 Toast.makeText(Login.this, "이메일과 비밀번호를 확인해주세요.",
                                         Toast.LENGTH_SHORT).show();
-                                // ...
                             }
-
                             // ...
                         }
                     });

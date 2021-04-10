@@ -20,6 +20,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
+        android:outlineSpotShadowColor="#00FFFFFF"
         android:padding="10dp">
 
         <LinearLayout
@@ -145,11 +146,14 @@
 
                     android:ems="10"
                     android:onClick="openDatePicker"
+                    android:outlineAmbientShadowColor="#FFFFFF"
+                    android:outlineSpotShadowColor="#FFFFFF"
                     android:text="생년월일"
                     android:textColor="#3F51B5"
                     android:textSize="18sp"
                     android:textStyle="bold"
-                    app:backgroundTint="#FFFFFF" />
+                    app:backgroundTint="#FFFFFF"
+                    app:strokeColor="#FFFFFF" />
 
 
             </LinearLayout>
