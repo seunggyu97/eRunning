@@ -234,7 +234,6 @@ public class SignUp extends AppCompatActivity {
                 Toast.makeText(SignUp.this, "비밀번호는 최소 6자 이상 입력해주세요.",
                         Toast.LENGTH_SHORT).show();
             }
-
         } else {
             Toast.makeText(SignUp.this, "정보를 모두 입력해주세요.",
                     Toast.LENGTH_SHORT).show();
