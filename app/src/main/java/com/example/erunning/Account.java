@@ -13,18 +13,16 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 
 import com.bumptech.glide.Glide;
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-
-import static com.firebase.ui.auth.AuthUI.getApplicationContext;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 public class Account extends Fragment {
  private View view;
@@ -46,11 +44,22 @@ public class Account extends Fragment {
        view = inflater.inflate(R.layout.account, container, false);
        Bundle extra = getArguments();
 
-       tv_userName = view.findViewById(R.id.tv_userEmail);
+       tv_userName = view.findViewById(R.id.tv_userName);
        iv_userProfile = view.findViewById(R.id.iv_userProfile);
        btn_logout= view.findViewById(R.id.logout_btn);
        btn_accountDelete = view.findViewById(R.id.delete_btn);
 
+       DocumentReference documentReference = FirebaseFirestore.getInstance().collection("users").document(FirebaseAuth.getInstance().getCurrentUser().getUid());
+       documentReference.get().addOnCompleteListener((task -> {
+           if(task.isSuccessful()){
+               DocumentSnapshot document = task.getResult();
+               if(document != null){
+                   if(document.exists()){
+                       tv_userName.setText(document.getData().get("name").toString());
+                   }
+               }
+           }
+       }));
        if (getArguments() != null) {
           //String user_name = extra.getString("이름");
           //String route_profile = extra.getString("프로필사진");

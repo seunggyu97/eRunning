@@ -20,6 +20,8 @@ import android.widget.Toolbar;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.tabs.TabLayout;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import org.w3c.dom.Text;
 
@@ -46,7 +48,14 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if(user == null){
+            startActivity(new Intent(MainActivity.this, Login.class));
+        }
+
         setContentView(R.layout.activity_main);
+
 
         Intent intent = getIntent();
         String user_name = intent.getStringExtra("nickName");
