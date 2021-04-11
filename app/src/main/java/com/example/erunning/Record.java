@@ -25,3 +25,4 @@ public class Record extends Fragment {
       return view;
    }
 }
+
