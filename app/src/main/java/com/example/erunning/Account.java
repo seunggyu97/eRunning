@@ -33,6 +33,7 @@ public class Account extends Fragment {
  private Button btn_logout;
  private Button btn_accountDelete;
 
+
     public static Account newinstance(){
         Account account = new Account();
         return account;

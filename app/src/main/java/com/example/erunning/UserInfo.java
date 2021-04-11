@@ -5,6 +5,7 @@ public class UserInfo {
     private int birthyear;
     private int birthmonth;
     private int birthday;
+
     public UserInfo(String name, int birthyear, int birthmonth, int birthday){
         this.name = name;
         this.birthyear = birthyear;
