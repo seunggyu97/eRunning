@@ -29,12 +29,14 @@
             android:textStyle="bold"
             android:layout_toRightOf="@id/iv_userProfile"
             android:layout_alignParentBottom="true"/>
+
         <LinearLayout
             android:gravity="center"
             android:layout_toRightOf="@id/iv_userProfile"
             android:layout_above="@id/account_btn_follow_signout"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
+            <!-- 게시글 -->
             <LinearLayout
                 android:layout_weight="1"
                 android:gravity="center"
@@ -52,6 +54,7 @@
                     android:layout_height="wrap_content"/>
 
             </LinearLayout> <!-- text에 @string/count_0 으로해야하는데 아직 잘 모르겠습나ㅣ다 퓨ㅠ -->
+            <!-- 팔로워 -->
             <LinearLayout
                 android:layout_weight="1"
                 android:gravity="center"
@@ -67,8 +70,8 @@
                     android:id="@+id/account_tv_follower_count"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
-
             </LinearLayout>
+            <!-- 팔로잉 -->
             <LinearLayout
                 android:layout_weight="1"
                 android:gravity="center"
@@ -84,38 +87,39 @@
                     android:id="@+id/account_tv_following_count"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
-
             </LinearLayout>
         </LinearLayout>
 
     </RelativeLayout>
 
+    <!-- 이름 -->
     <LinearLayout
-
         android:layout_width="match_parent"
         android:layout_height="30dp" >
-
         <TextView
             android:layout_marginLeft="15dp"
             android:id="@+id/tv_userName"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_marginTop="5dp"
             android:gravity="left"
-            android:text="name"
+            android:text="이름"
             android:textColor="#000000"
             android:textSize="18sp"
             android:textStyle="bold" />
     </LinearLayout>
-
+    <!-- 소개 및 프로필 편집 -->
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="100dp" >
+        android:layout_height="80dp">
+
         <TextView
             android:id="@+id/tv_userInfo"
             android:layout_width="match_parent"
-            android:layout_height="45dp"
+            android:layout_height="25dp"
             android:layout_marginLeft="15dp"
             android:layout_marginRight="15dp"
+            android:maxLines="1"
             android:text="안녕하세요. 매일 운동하는 대학생입니다."
             android:textColor="#000000"
             android:textSize="13sp" />
@@ -124,55 +128,96 @@
             android:id="@+id/user_profile_edit_btn"
             android:layout_width="match_parent"
             android:layout_height="45dp"
+            android:layout_below="@+id/tv_userInfo"
+            android:layout_alignParentBottom="true"
             android:layout_marginLeft="10dp"
-            android:layout_marginTop="44dp"
+            android:layout_marginTop="7dp"
             android:layout_marginRight="10dp"
+
             android:text="프로필 편집"
-            android:textStyle="bold"
-            android:layout_alignParentBottom="true"/>
+            android:textStyle="bold" />
     </RelativeLayout>
 
+    사진 창
+    <!--    <androidx.recyclerview.widget.RecyclerView-->
+    <!--        android:id="@+id/account_reyclerview"-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="match_parent">-->
+
+    <!--    </androidx.recyclerview.widget.RecyclerView>-->
 
 
-<!--    <androidx.recyclerview.widget.RecyclerView-->
-<!--        android:id="@+id/account_reyclerview"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="match_parent">-->
-
-<!--    </androidx.recyclerview.widget.RecyclerView>-->
-
-
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-        <Button
-            android:id="@+id/delete_btn"
-            android:layout_width="wrap_content"
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/tabLayout"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="회원 탈퇴(임시버튼)"
-            android:textStyle="bold"
-            app:backgroundTint="@color/error"
+            app:layout_constraintBottom_toTopOf="@+id/const_vp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.59"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/logout_btn" />
+            app:layout_constraintTop_toTopOf="parent">
 
-        <Button
-            android:id="@+id/logout_btn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="로그아웃(임시버튼)"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.578"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.589" />
+            <com.google.android.material.tabs.TabItem
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="게시글" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            <com.google.android.material.tabs.TabItem
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="북마크" />
+
+        </com.google.android.material.tabs.TabLayout>
+
+        <androidx.viewpager2.widget.ViewPager2
+            android:id="@+id/viewPager2_container"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:orientation="horizontal"
+            />
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+            <Button
+                android:id="@+id/delete_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="회원 탈퇴(임시버튼)"
+                android:textStyle="bold"
+                app:backgroundTint="@color/purple_700"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.955"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/logout_btn"
+                android:visibility="gone"
+                />
+<!--            visibility 로 숨겨놓았습니당-->
+
+            <Button
+                android:id="@+id/logout_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="로그아웃(임시버튼)"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.937"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.716"
+                android:visibility="gone"/>
+
+
+        </LinearLayout>
+    </LinearLayout>
 
 
 

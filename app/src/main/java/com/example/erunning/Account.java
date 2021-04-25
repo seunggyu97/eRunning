@@ -25,13 +25,13 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 public class Account extends Fragment {
- private View view;
- private TextView tv_userName; // 닉네임 text
- private ImageView iv_userProfile; // 프로필 이미지뷰
- private String user_name;
- private String route_file;
- private Button btn_logout;
- private Button btn_accountDelete;
+    private View view;
+    private TextView tv_userName; // 닉네임 text
+    private ImageView iv_userProfile; // 프로필 이미지뷰
+    private String user_name;
+    private String route_file;
+    private Button btn_logout;
+    private Button btn_accountDelete;
 
 
     public static Account newinstance(){
@@ -41,37 +41,37 @@ public class Account extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-       super.onCreate(savedInstanceState);
-       view = inflater.inflate(R.layout.account, container, false);
-       Bundle extra = getArguments();
+        super.onCreate(savedInstanceState);
+        view = inflater.inflate(R.layout.account, container, false);
+        Bundle extra = getArguments();
 
-       tv_userName = view.findViewById(R.id.tv_userName);
-       iv_userProfile = view.findViewById(R.id.iv_userProfile);
-       btn_logout= view.findViewById(R.id.logout_btn);
-       btn_accountDelete = view.findViewById(R.id.delete_btn);
+        tv_userName = view.findViewById(R.id.tv_userName);
+        iv_userProfile = view.findViewById(R.id.iv_userProfile);
+        btn_logout= view.findViewById(R.id.logout_btn);
+        btn_accountDelete = view.findViewById(R.id.delete_btn);
 
-       DocumentReference documentReference = FirebaseFirestore.getInstance().collection("users").document(FirebaseAuth.getInstance().getCurrentUser().getUid());
-       documentReference.get().addOnCompleteListener((task -> {
-           if(task.isSuccessful()){
-               DocumentSnapshot document = task.getResult();
-               if(document != null){
-                   if(document.exists()){
-                       tv_userName.setText(document.getData().get("name").toString());
-                   }
-               }
-           }
-       }));
-       if (getArguments() != null) {
-          //String user_name = extra.getString("이름");
-          //String route_profile = extra.getString("프로필사진");
-          user_name = getArguments().getString("name");
-          tv_userName.setText(user_name);//닉네임 text를 텍스트 뷰에 세팅
-          route_file = getArguments().getString("profile");
-          Glide.with(this).load(route_file).into(iv_userProfile); //프로필 url을 이미지 뷰에 세팅
-       }
+        DocumentReference documentReference = FirebaseFirestore.getInstance().collection("users").document(FirebaseAuth.getInstance().getCurrentUser().getUid());
+        documentReference.get().addOnCompleteListener((task -> {
+            if(task.isSuccessful()){
+                DocumentSnapshot document = task.getResult();
+                if(document != null){
+                    if(document.exists()){
+                        tv_userName.setText(document.getData().get("name").toString());
+                    }
+                }
+            }
+        }));
+        if (getArguments() != null) {
+            //String user_name = extra.getString("이름");
+            //String route_profile = extra.getString("프로필사진");
+            user_name = getArguments().getString("name");
+            tv_userName.setText(user_name);//닉네임 text를 텍스트 뷰에 세팅
+            route_file = getArguments().getString("profile");
+            Glide.with(this).load(route_file).into(iv_userProfile); //프로필 url을 이미지 뷰에 세팅
+        }
         else{
             Log.e("getArguments()","값이 없음 ㅜㅜㅜㅜㅜㅜㅜㅜㅜㅜㅜㅜㅜ왜??????????????");
-       }
+        }
 
         btn_logout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -116,7 +116,7 @@ public class Account extends Fragment {
                 }
             }
         });
-       return view;
+        return view;
     }
     /*private void user_logout(){
         FirebaseAuth.getInstance().signOut();
@@ -145,3 +145,4 @@ public class Account extends Fragment {
 
 
 }
+

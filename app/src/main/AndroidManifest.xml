@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.example.erunning">
-
-    <!--인터넷 permission*/-->
+    <!-- 인터넷 permission*/ -->
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name = "android.permission.VIBRATE"/>
+    <uses-permission android:name="android.permission.VIBRATE" />
 
     <application
         android:allowBackup="true"
@@ -12,20 +12,21 @@
         android:label="eRunning"
         android:roundIcon="@drawable/erunning_icon"
         android:supportsRtl="true"
-
         android:theme="@style/Theme.eRunning">
-        <!--android:theme="@style/Theme.Design.NoActionBar"> //상단바 없애기-->
+        <activity android:name=".Account_Activity"></activity>
+        <!-- android:theme="@style/Theme.Design.NoActionBar"> //상단바 없애기 -->
+        <activity android:name=".Loading">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
 
-        <activity android:name="com.example.erunning.Loading">
-        <intent-filter>
-            <action android:name="android.intent.action.MAIN" />
-            <category android:name="android.intent.category.LAUNCHER" />
-        </intent-filter>
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
-        <activity android:name="com.example.erunning.Login"/>
-        <activity android:name="com.example.erunning.SignUp" />
-        <activity android:name="com.example.erunning.MainActivity"/>
-        <activity android:name=".PasswordReset"/>
-        <activity android:name=".AuthCheck"/>
+        <activity android:name=".Login" />
+        <activity android:name=".SignUp" />
+        <activity android:name=".MainActivity" />
+        <activity android:name=".PasswordReset" />
+        <activity android:name=".AuthCheck" />
     </application>
+
 </manifest>
