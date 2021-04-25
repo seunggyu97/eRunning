@@ -6,6 +6,12 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name = "android.permission.VIBRATE"/>
 
+    <uses-permission android:name="android.permission.CAMERA" />
+
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-feature android:name="android.hardware.camera" />
+    <uses-feature android:name="android.hardware.camera.autofocus" />
+
     <application
         android:allowBackup="true"
         android:icon="@drawable/erunning_icon"
@@ -27,5 +33,7 @@
         <activity android:name="com.example.erunning.MainActivity"/>
         <activity android:name=".PasswordReset"/>
         <activity android:name=".AuthCheck"/>
+        <activity android:name=".CameraActivity"/>
+        <activity android:name=".Gallery"/>
     </application>
 </manifest>

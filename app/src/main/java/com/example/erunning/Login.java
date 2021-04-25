@@ -48,7 +48,6 @@ public class Login extends AppCompatActivity implements GoogleApiClient.OnConnec
 
         String Email = ((TextInputEditText)findViewById(R.id.emailEditText)).getText().toString();
         String Password = ((TextInputEditText)findViewById(R.id.passwordEditText)).getText().toString();
-
         mAuth = FirebaseAuth.getInstance();
         if(mAuth.getCurrentUser() != null)
         {

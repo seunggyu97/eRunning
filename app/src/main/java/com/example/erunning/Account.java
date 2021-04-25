@@ -1,6 +1,10 @@
 package com.example.erunning;
 
+import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -13,16 +17,30 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
 import com.firebase.ui.auth.AuthUI;
+import com.firebase.ui.auth.data.model.User;
+import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 
 public class Account extends Fragment {
  private View view;
@@ -32,12 +50,35 @@ public class Account extends Fragment {
  private String route_file;
  private Button btn_logout;
  private Button btn_accountDelete;
-
+ private Button btn_picture;
+ private Button cv_picture;
+ private Button cv_gallery;
+ private Button cv_basic;
+ private ImageView iv_profileImage;
+ private ImageView profileImageView;
+ private String profilePath;
 
     public static Account newinstance(){
         Account account = new Account();
         return account;
     }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data){
+        super.onActivityResult(requestCode, resultCode, data);
+        switch(requestCode){
+            case 0 :{
+                if(resultCode == Activity.RESULT_OK){
+                    profilePath = data.getStringExtra("profilePath");
+                    Log.e("로그: ","profilePath: "+ profilePath);
+                    Bitmap bmp = BitmapFactory.decodeFile(profilePath);
+                    profileImageView.setImageBitmap(bmp);
+                }
+                break;
+            }
+        }
+    }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -45,10 +86,17 @@ public class Account extends Fragment {
        view = inflater.inflate(R.layout.account, container, false);
        Bundle extra = getArguments();
 
+       FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+
        tv_userName = view.findViewById(R.id.tv_userName);
-       iv_userProfile = view.findViewById(R.id.iv_userProfile);
+       //iv_userProfile = view.findViewById(R.id.cv_userProfile);
        btn_logout= view.findViewById(R.id.logout_btn);
        btn_accountDelete = view.findViewById(R.id.delete_btn);
+       iv_profileImage = view.findViewById(R.id.iv_profileimage);
+       cv_picture = view.findViewById(R.id.cv_picture);
+       cv_gallery = view.findViewById(R.id.cv_gallery);
+       cv_basic = view.findViewById(R.id.cv_basic);
 
        DocumentReference documentReference = FirebaseFirestore.getInstance().collection("users").document(FirebaseAuth.getInstance().getCurrentUser().getUid());
        documentReference.get().addOnCompleteListener((task -> {
@@ -69,10 +117,85 @@ public class Account extends Fragment {
           route_file = getArguments().getString("profile");
           Glide.with(this).load(route_file).into(iv_userProfile); //프로필 url을 이미지 뷰에 세팅
        }
-        else{
-            Log.e("getArguments()","값이 없음 ㅜㅜㅜㅜㅜㅜㅜㅜㅜㅜㅜㅜㅜ왜??????????????");
-       }
+        profileImageView = view.findViewById(R.id.iv_profileimage);
+        profileImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                switch (v.getId()){
+                    case R.id.iv_profileimage:
+                        CardView cardView = view.findViewById(R.id.btn_cardview);
+                        if(cardView.getVisibility() == View.VISIBLE){
+                            cardView.setVisibility(View.GONE);
+                        }else{
+                            cardView.setVisibility(View.VISIBLE);
+                        }
+                        break;
+                }
+            }
+        });
+        cv_picture.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                switch (v.getId()){
+                    case R.id.cv_picture:
+                        startActivity(new Intent(getActivity(), CameraActivity.class));
+                        FirebaseStorage storage = FirebaseStorage.getInstance();
+                        StorageReference storageRef = storage.getReference();
 
+                        final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                        final StorageReference mountainImagesRef = storageRef.child("users/" +user.getUid()+"/profile_image.jpg");
+                        if(profilePath == null){
+
+                        } else{
+                            try{
+                                InputStream stream = new FileInputStream(new File(profilePath));
+
+                                UploadTask uploadTask = mountainImagesRef.putStream(stream);
+
+                                uploadTask.continueWithTask((task) ->  {
+                                    if(!task.isSuccessful()){
+                                        throw task.getException();
+                                    }
+                                    return mountainImagesRef.getDownloadUrl();
+                                }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Uri> task) {
+                                        if(task.isSuccessful()){
+                                            Uri downloadUri = task.getResult();
+                                            FirebaseFirestore db = FirebaseFirestore.getInstance();
+                                            UserInfo userInfo = new UserInfo(downloadUri.toString());
+                                            db.collection("users").document(user.getUid()).set(userInfo)
+                                                    .addOnSuccessListener((OnSuccessListener) (aVoid) ->{
+                                                        Log.w("SignUp_profileUpdate", "회원정보 등록성공");
+                                                        //finish();
+                                                    })
+                                                    .addOnFailureListener((e) -> {
+                                                        Log.w("SignUp_profileUpdate", "회원정보 등록 실패");
+
+                                                    });
+                                        }else{
+                                            Log.e("로그","실패");
+                                        }
+                                    }
+                                });
+                            }catch (FileNotFoundException e){
+                                Log.e("로그","에러"+e.toString());
+                            }
+                        }
+                        break;
+                }
+            }
+        });
+        cv_gallery.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                switch (v.getId()){
+                    case R.id.cv_gallery:
+                        startActivity(new Intent(getActivity(), Gallery.class));
+                        break;
+                }
+            }
+        });
         btn_logout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -95,6 +218,7 @@ public class Account extends Fragment {
             }
         });
 
+
         btn_accountDelete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -116,6 +240,21 @@ public class Account extends Fragment {
                 }
             }
         });
+
+        /*profileImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                switch (v.getId()){
+                    case R.id.iv_profileimage:
+                        startActivity(new Intent(getActivity(), CameraActivity.class));
+                        Log.e("사진촬영","버튼입력");
+                        profileUpdate();
+
+                        break;
+                }
+            }
+        });*/
+
        return view;
     }
     /*private void user_logout(){
