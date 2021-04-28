@@ -9,5 +9,10 @@
     <color name="white">#FFFFFFFF</color>
     <color name="error">#FFE32C2C</color>
     <color name="control_background">#cc4285f4</color>
-
+    <color name="colorPrimary">#2196F3</color>
+    <color name="colorPrimaryDark">#1976D2</color>
+    <color name="colorAccent">#FF5252</color>
+    <color name="colorPrimaryText">#212121</color>
+    <color name="colorSecondaryText">#757575</color>
+    <color name="colorDivider">#ECECEC</color>
 </resources>

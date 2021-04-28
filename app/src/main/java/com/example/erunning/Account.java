@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -32,6 +33,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
@@ -46,6 +48,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 
+import static com.firebase.ui.auth.AuthUI.getApplicationContext;
+
 public class Account extends Fragment {
     private View view;
     private TextView tv_userName; // 닉네임 text
@@ -55,9 +59,9 @@ public class Account extends Fragment {
     private Button btn_logout;
     private Button btn_accountDelete;
     private Button btn_picture;
-    private Button cv_picture;
-    private Button cv_gallery;
-    private Button cv_basic;
+    private View LL_picture;
+    private View LL_gallery;
+    private View LL_basic;
     private ImageView iv_profileImage;
     private ImageView profileImageView;
     private String profilePath;
@@ -111,9 +115,7 @@ public class Account extends Fragment {
         btn_logout= view.findViewById(R.id.logout_btn);
         btn_accountDelete = view.findViewById(R.id.delete_btn);
         iv_profileImage = view.findViewById(R.id.iv_profileimage);
-        cv_picture = view.findViewById(R.id.cv_picture);
-        cv_gallery = view.findViewById(R.id.cv_gallery);
-        cv_basic = view.findViewById(R.id.cv_basic);
+
 
         DocumentReference documentReference = FirebaseFirestore.getInstance().collection("users").document(FirebaseAuth.getInstance().getCurrentUser().getUid());
         documentReference.get().addOnCompleteListener((task -> {
@@ -140,102 +142,124 @@ public class Account extends Fragment {
             public void onClick(View v) {
                 switch (v.getId()){
                     case R.id.iv_profileimage:
-                        CardView cardView = view.findViewById(R.id.btn_cardview);
+                        BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(
+                                getActivity(),R.style.BottomSheetDialogTheme
+                                );
+                        View bottomSheetView = LayoutInflater.from(getActivity().getApplicationContext())
+                                .inflate(
+                                        R.layout.account_bottom_sheet,
+                                        (LinearLayout)view.findViewById(R.id.bottomSheetContainer)
+                                );
+                        LL_picture = bottomSheetView.findViewById(R.id.LL_picture);
+                        LL_gallery = bottomSheetView.findViewById(R.id.LL_gallery);
+                        LL_basic = bottomSheetView.findViewById(R.id.LL_basic);
+
+                        LL_picture.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                switch (v.getId()){
+                                    case R.id.LL_picture:
+                                        bottomSheetDialog.dismiss();
+                                        startActivity(new Intent(getActivity(), CameraActivity.class));
+                                        FirebaseStorage storage = FirebaseStorage.getInstance();
+                                        StorageReference storageRef = storage.getReference();
+
+                                        final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                                        final StorageReference mountainImagesRef = storageRef.child("users/" +user.getUid()+"/profile_image.jpg");
+                                        if(profilePath == null){
+
+                                        } else{
+                                            try{
+                                                InputStream stream = new FileInputStream(new File(profilePath));
+
+                                                UploadTask uploadTask = mountainImagesRef.putStream(stream);
+
+                                                uploadTask.continueWithTask((task) ->  {
+                                                    if(!task.isSuccessful()){
+                                                        throw task.getException();
+                                                    }
+                                                    return mountainImagesRef.getDownloadUrl();
+                                                }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+                                                    @Override
+                                                    public void onComplete(@NonNull Task<Uri> task) {
+                                                        if(task.isSuccessful()){
+                                                            Uri downloadUri = task.getResult();
+                                                            FirebaseFirestore db = FirebaseFirestore.getInstance();
+                                                            UserInfo userInfo = new UserInfo(downloadUri.toString());
+                                                            db.collection("users").document(user.getUid()).set(userInfo)
+                                                                    .addOnSuccessListener((OnSuccessListener) (aVoid) ->{
+                                                                        Log.w("SignUp_profileUpdate", "회원정보 등록성공");
+                                                                        //finish();
+                                                                    })
+                                                                    .addOnFailureListener((e) -> {
+                                                                        Log.w("SignUp_profileUpdate", "회원정보 등록 실패");
+
+                                                                    });
+                                                        }else{
+                                                            Log.e("로그","실패");
+                                                        }
+                                                    }
+                                                });
+                                            }catch (FileNotFoundException e){
+                                                Log.e("로그","에러"+e.toString());
+                                            }
+                                        }
+                                        break;
+                                }
+                            }
+                        });
+
+
+                        LL_gallery.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                switch (v.getId()){
+                                    case R.id.LL_gallery:
+
+                                        if(ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE)!= PackageManager.PERMISSION_GRANTED) {
+                                            ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
+
+                                            if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE)) {
+
+                                            } else {
+                                                Toast.makeText(getActivity(), "권한을 허용해 주세요.",
+                                                        Toast.LENGTH_SHORT).show();
+                                            }
+                                        }else{
+                                            bottomSheetDialog.dismiss();
+                                            startActivity(new Intent(getActivity(), Gallery.class));
+                                        }
+
+                                        break;
+                                }
+                            }
+                        });
+                        LL_basic.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                switch (v.getId()){
+                                    case R.id.LL_basic:
+                                        bottomSheetDialog.dismiss();
+                                        Toast.makeText(getActivity(), "토스트테스트",
+                                                Toast.LENGTH_SHORT).show();
+                                        break;
+                                }
+                            }
+                        });
+
+                        bottomSheetDialog.setContentView(bottomSheetView);
+                        bottomSheetDialog.show();
+                        /*CardView cardView = view.findViewById(R.id.btn_cardview);
                         if(cardView.getVisibility() == View.VISIBLE){
                             cardView.setVisibility(View.GONE);
                         }else{
                             cardView.setVisibility(View.VISIBLE);
-                        }
+                        }*/
                         break;
                 }
             }
         });
-        cv_picture.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                switch (v.getId()){
-                    case R.id.cv_picture:
-                        startActivity(new Intent(getActivity(), CameraActivity.class));
-                        FirebaseStorage storage = FirebaseStorage.getInstance();
-                        StorageReference storageRef = storage.getReference();
 
-                        final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                        final StorageReference mountainImagesRef = storageRef.child("users/" +user.getUid()+"/profile_image.jpg");
-                        if(profilePath == null){
-
-                        } else{
-                            try{
-                                InputStream stream = new FileInputStream(new File(profilePath));
-
-                                UploadTask uploadTask = mountainImagesRef.putStream(stream);
-
-                                uploadTask.continueWithTask((task) ->  {
-                                    if(!task.isSuccessful()){
-                                        throw task.getException();
-                                    }
-                                    return mountainImagesRef.getDownloadUrl();
-                                }).addOnCompleteListener(new OnCompleteListener<Uri>() {
-                                    @Override
-                                    public void onComplete(@NonNull Task<Uri> task) {
-                                        if(task.isSuccessful()){
-                                            Uri downloadUri = task.getResult();
-                                            FirebaseFirestore db = FirebaseFirestore.getInstance();
-                                            UserInfo userInfo = new UserInfo(downloadUri.toString());
-                                            db.collection("users").document(user.getUid()).set(userInfo)
-                                                    .addOnSuccessListener((OnSuccessListener) (aVoid) ->{
-                                                        Log.w("SignUp_profileUpdate", "회원정보 등록성공");
-                                                        //finish();
-                                                    })
-                                                    .addOnFailureListener((e) -> {
-                                                        Log.w("SignUp_profileUpdate", "회원정보 등록 실패");
-
-                                                    });
-                                        }else{
-                                            Log.e("로그","실패");
-                                        }
-                                    }
-                                });
-                            }catch (FileNotFoundException e){
-                                Log.e("로그","에러"+e.toString());
-                            }
-                        }
-                        break;
-                }
-            }
-        });
-        cv_gallery.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                switch (v.getId()){
-                    case R.id.cv_gallery:
-                        if(ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE)!= PackageManager.PERMISSION_GRANTED) {
-                            ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
-
-                            if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE)) {
-
-                            } else {
-                                Toast.makeText(getActivity(), "권한을 허용해 주세요.",
-                                        Toast.LENGTH_SHORT).show();
-                                }
-                        }else{
-                            startActivity(new Intent(getActivity(), Gallery.class));
-                        }
-
-                        break;
-                }
-            }
-        });
-        cv_basic.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                switch (v.getId()){
-                    case R.id.cv_basic:
-                                Toast.makeText(getActivity(), "토스트테스트",
-                                        Toast.LENGTH_SHORT).show();
-                        break;
-                }
-            }
-        });
         btn_logout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
