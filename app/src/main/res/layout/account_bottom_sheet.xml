@@ -10,8 +10,9 @@
     >
 
     <TextView
+        android:layout_marginTop="10dp"
         android:layout_width="80dp"
-        android:layout_height="10dp"
+        android:layout_height="5dp"
         android:layout_gravity="center"
         android:background="@drawable/round_btn_dark"
         android:shadowColor="#FFFFFF" />
