@@ -71,6 +71,10 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
 
 
+    implementation 'com.google.android.gms:play-services-maps:17.0.0' // 구글 maps 서비스를 사용한다는 설정
+    implementation 'com.google.android.gms:play-services-location:18.0.0' // 구글 location 서비스를 사용한다는 설정
+
+    implementation 'gun0912.ted:tedpermission:2.0.0'
 }
 
 
