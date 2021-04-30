@@ -150,15 +150,6 @@
             android:textStyle="bold" />
     </RelativeLayout>
 
-
-    <!--    <androidx.recyclerview.widget.RecyclerView-->
-    <!--        android:id="@+id/account_reyclerview"-->
-    <!--        android:layout_width="match_parent"-->
-    <!--        android:layout_height="match_parent">-->
-
-    <!--    </androidx.recyclerview.widget.RecyclerView>-->
-
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"

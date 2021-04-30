@@ -36,7 +36,6 @@ public class Account_Activity extends AppCompatActivity  {
         Fragment frag1 = new Fragpictures().newInstance(code);
         Fragment frag2 = new Fragbookmark().newInstance(code);
 
-
         mViewPager = findViewById(R.id.viewPager2_container);
         tabLayout = findViewById(R.id.tabLayout);
 

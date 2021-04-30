@@ -26,10 +26,7 @@ import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
 import com.firebase.ui.auth.AuthUI;
-import com.firebase.ui.auth.data.model.User;
-import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -51,6 +48,8 @@ public class Account extends Fragment {
     private TextView tv_userName; // 닉네임 text
     private ImageView iv_userProfile; // 프로필 이미지뷰
     private String user_name;
+    private Button user_profile_edit_btn;
+    private TextView tv_userInfo;
     private String route_file;
     private Button btn_logout;
     private Button btn_accountDelete;
@@ -62,19 +61,21 @@ public class Account extends Fragment {
     private ImageView profileImageView;
     private String profilePath;
 
-    public static Account newinstance(){
+
+    public static Account newinstance() {
         Account account = new Account();
         return account;
     }
 
+
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data){
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        switch(requestCode){
-            case 0 :{
-                if(resultCode == Activity.RESULT_OK){
+        switch (requestCode) {
+            case 0: {
+                if (resultCode == Activity.RESULT_OK) {
                     profilePath = data.getStringExtra("profilePath");
-                    Log.e("로그: ","profilePath: "+ profilePath);
+                    Log.e("로그: ", "profilePath: " + profilePath);
                     Bitmap bmp = BitmapFactory.decodeFile(profilePath);
                     profileImageView.setImageBitmap(bmp);
                 }
@@ -82,20 +83,21 @@ public class Account extends Fragment {
             }
         }
     }
+
     @Override
-    public void onRequestPermissionsResult(int requestCode, String permission[], int[] grantResults){
-        switch (requestCode){
+    public void onRequestPermissionsResult(int requestCode, String permission[], int[] grantResults) {
+        switch (requestCode) {
             case 1: {
-                if(grantResults.length >0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     startActivity(new Intent(getActivity(), Gallery.class));
-                }
-                else{
+                } else {
                     Toast.makeText(getActivity(), "권한을 허용해 주세요.",
                             Toast.LENGTH_SHORT).show();
                 }
             }
         }
     }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -108,7 +110,7 @@ public class Account extends Fragment {
 
         tv_userName = view.findViewById(R.id.tv_userName);
         //iv_userProfile = view.findViewById(R.id.cv_userProfile);
-        btn_logout= view.findViewById(R.id.logout_btn);
+        btn_logout = view.findViewById(R.id.logout_btn);
         btn_accountDelete = view.findViewById(R.id.delete_btn);
         iv_profileImage = view.findViewById(R.id.iv_profileimage);
         cv_picture = view.findViewById(R.id.cv_picture);
@@ -117,10 +119,10 @@ public class Account extends Fragment {
 
         DocumentReference documentReference = FirebaseFirestore.getInstance().collection("users").document(FirebaseAuth.getInstance().getCurrentUser().getUid());
         documentReference.get().addOnCompleteListener((task -> {
-            if(task.isSuccessful()){
+            if (task.isSuccessful()) {
                 DocumentSnapshot document = task.getResult();
-                if(document != null){
-                    if(document.exists()){
+                if (document != null) {
+                    if (document.exists()) {
                         tv_userName.setText(document.getData().get("name").toString());
                     }
                 }
@@ -138,12 +140,12 @@ public class Account extends Fragment {
         profileImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                switch (v.getId()){
+                switch (v.getId()) {
                     case R.id.iv_profileimage:
                         CardView cardView = view.findViewById(R.id.btn_cardview);
-                        if(cardView.getVisibility() == View.VISIBLE){
+                        if (cardView.getVisibility() == View.VISIBLE) {
                             cardView.setVisibility(View.GONE);
-                        }else{
+                        } else {
                             cardView.setVisibility(View.VISIBLE);
                         }
                         break;
@@ -153,36 +155,36 @@ public class Account extends Fragment {
         cv_picture.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                switch (v.getId()){
+                switch (v.getId()) {
                     case R.id.cv_picture:
                         startActivity(new Intent(getActivity(), CameraActivity.class));
                         FirebaseStorage storage = FirebaseStorage.getInstance();
                         StorageReference storageRef = storage.getReference();
 
                         final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                        final StorageReference mountainImagesRef = storageRef.child("users/" +user.getUid()+"/profile_image.jpg");
-                        if(profilePath == null){
+                        final StorageReference mountainImagesRef = storageRef.child("users/" + user.getUid() + "/profile_image.jpg");
+                        if (profilePath == null) {
 
-                        } else{
-                            try{
+                        } else {
+                            try {
                                 InputStream stream = new FileInputStream(new File(profilePath));
 
                                 UploadTask uploadTask = mountainImagesRef.putStream(stream);
 
-                                uploadTask.continueWithTask((task) ->  {
-                                    if(!task.isSuccessful()){
+                                uploadTask.continueWithTask((task) -> {
+                                    if (!task.isSuccessful()) {
                                         throw task.getException();
                                     }
                                     return mountainImagesRef.getDownloadUrl();
                                 }).addOnCompleteListener(new OnCompleteListener<Uri>() {
                                     @Override
                                     public void onComplete(@NonNull Task<Uri> task) {
-                                        if(task.isSuccessful()){
+                                        if (task.isSuccessful()) {
                                             Uri downloadUri = task.getResult();
                                             FirebaseFirestore db = FirebaseFirestore.getInstance();
                                             UserInfo userInfo = new UserInfo(downloadUri.toString());
                                             db.collection("users").document(user.getUid()).set(userInfo)
-                                                    .addOnSuccessListener((OnSuccessListener) (aVoid) ->{
+                                                    .addOnSuccessListener((OnSuccessListener) (aVoid) -> {
                                                         Log.w("SignUp_profileUpdate", "회원정보 등록성공");
                                                         //finish();
                                                     })
@@ -190,13 +192,13 @@ public class Account extends Fragment {
                                                         Log.w("SignUp_profileUpdate", "회원정보 등록 실패");
 
                                                     });
-                                        }else{
-                                            Log.e("로그","실패");
+                                        } else {
+                                            Log.e("로그", "실패");
                                         }
                                     }
                                 });
-                            }catch (FileNotFoundException e){
-                                Log.e("로그","에러"+e.toString());
+                            } catch (FileNotFoundException e) {
+                                Log.e("로그", "에러" + e.toString());
                             }
                         }
                         break;
@@ -206,9 +208,9 @@ public class Account extends Fragment {
         cv_gallery.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                switch (v.getId()){
+                switch (v.getId()) {
                     case R.id.cv_gallery:
-                        if(ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE)!= PackageManager.PERMISSION_GRANTED) {
+                        if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
                             ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
 
                             if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE)) {
@@ -216,8 +218,8 @@ public class Account extends Fragment {
                             } else {
                                 Toast.makeText(getActivity(), "권한을 허용해 주세요.",
                                         Toast.LENGTH_SHORT).show();
-                                }
-                        }else{
+                            }
+                        } else {
                             startActivity(new Intent(getActivity(), Gallery.class));
                         }
 
@@ -228,10 +230,10 @@ public class Account extends Fragment {
         cv_basic.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                switch (v.getId()){
+                switch (v.getId()) {
                     case R.id.cv_basic:
-                                Toast.makeText(getActivity(), "토스트테스트",
-                                        Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivity(), "토스트테스트",
+                                Toast.LENGTH_SHORT).show();
                         break;
                 }
             }
@@ -239,7 +241,7 @@ public class Account extends Fragment {
         btn_logout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                switch (v.getId()){
+                switch (v.getId()) {
                     case R.id.logout_btn:
                         //user_logout();
                         AuthUI.getInstance()
@@ -252,7 +254,7 @@ public class Account extends Fragment {
                                                 Toast.LENGTH_SHORT).show();
                                     }
                                 });
-                        Log.e("로그아웃","버튼입력");
+                        Log.e("로그아웃", "버튼입력");
                         break;
                 }
             }
@@ -262,7 +264,7 @@ public class Account extends Fragment {
         btn_accountDelete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                switch (v.getId()){
+                switch (v.getId()) {
                     case R.id.delete_btn:
                         //user_delete();
                         AuthUI.getInstance()
@@ -275,11 +277,13 @@ public class Account extends Fragment {
                                         startActivity(new Intent(getActivity(), Login.class));
                                     }
                                 });
-                        Log.e("회원탈퇴","버튼입력");
+                        Log.e("회원탈퇴", "버튼입력");
                         break;
                 }
             }
         });
+
+
 
         /*profileImageView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -295,8 +299,30 @@ public class Account extends Fragment {
             }
         });*/
 
+//            view = inflater.inflate(R.layout.account, container, false);
+//            ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.activity_edit_profile, container, false);
+//            user_profile_edit_btn = rootView.findViewById(R.id.user_profile_edit_btn);
+//
+//            user_profile_edit_btn.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//                    Intent intent = new Intent(getActivity(), EditProfileActivity.class);
+//                    startActivity(intent);
+//                }
+//            });
+//
+//            return rootView;
+        //프로필편집버튼 ㅠㅠ 안돼 ㅠㅠ
         return view;
+        }
     }
+
+
+
+
+
+
+
     /*private void user_logout(){
         FirebaseAuth.getInstance().signOut();
         getActivity().finish();
@@ -323,4 +349,3 @@ public class Account extends Fragment {
 
 
 
-}

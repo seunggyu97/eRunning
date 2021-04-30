@@ -1,15 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.erunning">
-
-    <!--인터넷 permission*/-->
+    <!-- 인터넷 permission*/ -->
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name = "android.permission.VIBRATE"/>
-
+    <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.CAMERA" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-feature android:name="android.hardware.camera" />
     <uses-feature android:name="android.hardware.camera.autofocus" />
 
@@ -19,22 +17,23 @@
         android:label="eRunning"
         android:roundIcon="@drawable/erunning_icon"
         android:supportsRtl="true"
-
         android:theme="@style/Theme.eRunning">
-        <!--android:theme="@style/Theme.Design.NoActionBar"> //상단바 없애기-->
-
-        <activity android:name="com.example.erunning.Loading">
+        <activity android:name=".EditProfileActivity"></activity>
+        <!-- android:theme="@style/Theme.Design.NoActionBar"> //상단바 없애기 -->
+        <activity android:name=".Loading">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="com.example.erunning.Login"/>
-        <activity android:name="com.example.erunning.SignUp" />
-        <activity android:name="com.example.erunning.MainActivity"/>
-        <activity android:name=".PasswordReset"/>
-        <activity android:name=".AuthCheck"/>
-        <activity android:name=".CameraActivity"/>
-        <activity android:name=".Gallery"/>
+        <activity android:name=".Login" />
+        <activity android:name=".SignUp" />
+        <activity android:name=".MainActivity" />
+        <activity android:name=".PasswordReset" />
+        <activity android:name=".AuthCheck" />
+        <activity android:name=".CameraActivity" />
+        <activity android:name=".Gallery" />
     </application>
+
 </manifest>
