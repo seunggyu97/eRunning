@@ -44,8 +44,8 @@ public class EditProfileActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 User user = snapshot.getValue(User.class);
-//                username.setText(user.getName());
-//                bio.setText(user.getBio());
+                //username.setText(user.getName());
+                //bio.setText(user.getBio());
 
             }
 
