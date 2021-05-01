@@ -27,7 +27,7 @@
             android:id="@+id/user_search_button"
             android:layout_width="85dp"
             android:layout_height="match_parent"
-            android:src="@drawable/ic_user_search" />
+            />
 
 
     </LinearLayout>

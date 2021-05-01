@@ -50,9 +50,12 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class Account extends Fragment {
     private View view;
     private TextView tv_userName; // 닉네임 text
+    private TextView tv_biomsg;
     private CircleImageView iv_userProfile; // 프로필 이미지뷰
     private String user_name;
+    private String bio_msg;
     private String route_file;
+    private Button btn_profile_edit;
     private Button btn_logout;
     private Button btn_accountDelete;
     private Button btn_picture;
@@ -177,9 +180,39 @@ public class Account extends Fragment {
                 }
                 break;
             }
-            default:{
+            case MainActivity.REQUEST_EDITPROFILE:{
+                if(resultCode == Activity.RESULT_OK){
+                    Log.e("REQUEST_EDITPROFILE","resultCode == Activity.RESULT_OK 실행");
+                    //String edit_username;
+                    //String edit_bio;
+                    //edit_username = data.getStringExtra("edit_name");//인텐트
+                    //edit_bio = data.getStringExtra("edit_bio");
 
-                Log.e("REQUEST_CAMERA","switch문 실행 실패");
+                    /*업로드
+                    final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                    FirebaseFirestore db = FirebaseFirestore.getInstance();
+                    db.collection("users").document(user.getUid())
+                            .update(
+                                    "name", edit_username
+                            );
+                    */
+                    DocumentReference documentReference = FirebaseFirestore.getInstance().collection("users").document(FirebaseAuth.getInstance().getCurrentUser().getUid());
+                    documentReference.get().addOnCompleteListener((task -> {
+                        if(task.isSuccessful()){
+                            DocumentSnapshot document = task.getResult();
+                            if(document != null){
+                                if(document.exists()){
+                                    if(document.getData().get("name") != null){
+                                        tv_userName.setText(document.getData().get("name").toString());
+                                    }
+                                    if(document.getData().get("bio") != null){
+                                        tv_biomsg.setText(document.getData().get("bio").toString());
+                                    }
+                                }
+                            }
+                        }
+                    }));
+                }
             }
         }
     }
@@ -208,9 +241,11 @@ public class Account extends Fragment {
 
 
         tv_userName = view.findViewById(R.id.tv_userName);
+        tv_biomsg = view.findViewById(R.id.tv_userInfo);
         //iv_userProfile = view.findViewById(R.id.cv_userProfile);
         btn_logout= view.findViewById(R.id.logout_btn);
         btn_accountDelete = view.findViewById(R.id.delete_btn);
+        btn_profile_edit = view.findViewById(R.id.user_profile_edit_btn);
         iv_profileImage = view.findViewById(R.id.iv_profileimage);
 
         DocumentReference documentReference = FirebaseFirestore.getInstance().collection("users").document(FirebaseAuth.getInstance().getCurrentUser().getUid());
@@ -221,6 +256,10 @@ public class Account extends Fragment {
                     if(document.exists()){
                         tv_userName.setText(document.getData().get("name").toString());
                         user_name = document.getData().get("name").toString();
+                        if(document.getData().get("bio") != null) {
+                            bio_msg = document.getData().get("bio").toString();
+                            tv_biomsg.setText(bio_msg);
+                        }
                         if(document.getData().get("photoUrl") != null){
                             FirebaseStorage storage = FirebaseStorage.getInstance();
                             StorageReference storageRef = storage.getReference();
@@ -253,6 +292,7 @@ public class Account extends Fragment {
             //String route_profile = extra.getString("프로필사진");
             user_name = getArguments().getString("name");
             tv_userName.setText(user_name);//닉네임 text를 텍스트 뷰에 세팅
+            tv_biomsg.setText(bio_msg);
             route_file = getArguments().getString("profile");
             Glide.with(this).load(route_file).circleCrop().into(iv_profileImage); //프로필 url을 이미지 뷰에 세팅
         }
@@ -349,9 +389,11 @@ public class Account extends Fragment {
                                                 // Uh-oh, an error occurred!
                                             }
                                         });
+                                        /***********새로고침 코드**************/
                                         FragmentTransaction ft = getFragmentManager().beginTransaction();
                                         ft.detach(Account.this).attach(Account.this).commit();
                                         bottomSheetDialog.dismiss();
+                                        /************************************/
                                         break;
                                 }
                             }
@@ -391,7 +433,18 @@ public class Account extends Fragment {
                 }
             }
         });
-
+        btn_profile_edit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                switch (v.getId()){
+                    case R.id.user_profile_edit_btn:
+                        //user_logout();
+                        Intent intent = new Intent(getActivity(), EditProfileActivity.class);
+                        startActivityForResult(intent, MainActivity.REQUEST_EDITPROFILE);
+                        break;
+                }
+            }
+        });
 
         btn_accountDelete.setOnClickListener(new View.OnClickListener() {
             @Override

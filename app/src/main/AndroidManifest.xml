@@ -42,6 +42,7 @@
         <activity android:name=".PasswordReset"/>
         <activity android:name=".AuthCheck"/>
         <activity android:name=".CameraActivity"/>
+        <activity android:name=".EditProfileActivity"/>
         <activity android:name=".Gallery"/>
         <meta-data
             android:name="com.google.android.maps.v2.API_KEY"

@@ -6,13 +6,14 @@ public class UserInfo {
     private int birthmonth;
     private int birthday;
     private String photoUrl;
-
+    private String bio;
     public UserInfo(String name, int birthyear, int birthmonth, int birthday){
         this.name = name;
         this.birthyear = birthyear;
         this.birthmonth = birthmonth;
         this.birthday = birthday;
         this.photoUrl = null;
+        this.bio = null;
     }
     /*
     public UserInfo(String name, int birthyear, int birthmonth, int birthday,String photoUrl){
@@ -51,5 +52,11 @@ public class UserInfo {
     }
     public void setPhotoUrl(String photoUrl){
         this.photoUrl = photoUrl;
+    }
+    public String getBio(){
+        return this.bio;
+    }
+    public void setBio(String bio){
+        this.bio = bio;
     }
 }

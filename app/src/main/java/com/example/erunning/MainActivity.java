@@ -39,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
 
     static final int REQUEST_CAMERA = 1;
     static final int REQUEST_GALLERY = 1000;
+    static final int REQUEST_EDITPROFILE = 2000;
     //private TextView user_name; // 이름 Text
     //public ImageView route_profile; // 이미지 뷰
     Context context;
