@@ -52,13 +52,12 @@ import java.util.Locale;
 
 
 public class Record extends Fragment implements OnMapReadyCallback {
-   private View view;
-   private MapView mapView = null;
-   private Button btnStart;
-   private Button btnFinish;
-   private Button btnPin;
+   private View view; // rootview
+   private MapView mapView = null; //맵뷰
+   private Button btnStart; //시작 버튼
+   private Button btnFinish; //중지 버튼
+   private Button btnPin; //핀 등록 버튼
 
-   //블로그 코드
    private FragmentActivity mContext;
 
    private static final String TAG = Record.class.getSimpleName();
@@ -76,11 +75,12 @@ public class Record extends Fragment implements OnMapReadyCallback {
    private boolean mLocationPermissionGranted;
 
    private static final int GPS_ENABLE_REQUEST_CODE = 2001;
-   private static final int UPDATE_INTERVAL_MS = 1000 * 60 * 1;  // 1분 단위 시간 갱신
-   private static final int FASTEST_UPDATE_INTERVAL_MS = 1000 * 30 ; // 30초 단위로 화면 갱신
+   private static final int UPDATE_INTERVAL_MS = 1000 * 30;  // 1분 단위 시간 갱신 1000 * 60 * 1
+   private static final int FASTEST_UPDATE_INTERVAL_MS = 1000 * 15; // 30초 단위로 화면 갱신 1000 * 30
 
    private static final String KEY_CAMERA_POSITION = "camera_position";
    private static final String KEY_LOCATION = "location";
+
 
    public static Record newinstance(){
       Record record = new Record();
@@ -213,7 +213,7 @@ public class Record extends Fragment implements OnMapReadyCallback {
       try {
          addressList = geocoder.getFromLocation(latlng.latitude,latlng.longitude,1);
       } catch (IOException e) {
-         Toast. makeText( mContext, "위치로부터 주소를 인식할 수 없습니다. 네트워크가 연결되어 있는지 확인해 주세요.", Toast.LENGTH_SHORT ).show();
+         //Toast. makeText( mContext, "위치로부터 주소를 인식할 수 없습니다. 네트워크가 연결되어 있는지 확인해 주세요.", Toast.LENGTH_SHORT ).show();
          e.printStackTrace();
          return "주소 인식 불가" ;
       }
@@ -339,7 +339,7 @@ public class Record extends Fragment implements OnMapReadyCallback {
    }
 
    @Override
-   public void onStop() {
+   public void onStop() { //중지
       super.onStop();
       mapView.onStop();
       if (mFusedLocationProviderClient != null) {
@@ -362,7 +362,7 @@ public class Record extends Fragment implements OnMapReadyCallback {
    }
 
    @Override
-   public void onPause() {
+   public void onPause() { //일시중지
       super.onPause();
       mapView.onPause();
    }
