@@ -12,10 +12,16 @@ public class UserInfo {
         this.birthyear = birthyear;
         this.birthmonth = birthmonth;
         this.birthday = birthday;
+        this.photoUrl = null;
     }
-    public UserInfo(String photoUrl){
+    /*
+    public UserInfo(String name, int birthyear, int birthmonth, int birthday,String photoUrl){
+        this.name = name;
+        this.birthyear = birthyear;
+        this.birthmonth = birthmonth;
+        this.birthday = birthday;
         this.photoUrl = photoUrl;
-    }
+    }*/
     public String getName(){
         return this.name;
     }
@@ -43,7 +49,7 @@ public class UserInfo {
     public String getPhotoUrl(){
         return this.photoUrl;
     }
-    public void setPhotoUrl(String name){
+    public void setPhotoUrl(String photoUrl){
         this.photoUrl = photoUrl;
     }
 }

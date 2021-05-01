@@ -9,8 +9,11 @@ import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.viewpager.widget.ViewPager;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -48,6 +51,9 @@ public class MainActivity extends AppCompatActivity {
     private Feed feed;
     private Flag flag;
     private Record record;
+
+    static final int REQUEST_CAMERA = 1;
+    static final int REQUEST_GALLERY = 1000;
     //private TextView user_name; // 이름 Text
     //public ImageView route_profile; // 이미지 뷰
     Context context;
@@ -63,7 +69,44 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(context, "권한 허용을 하지 않으면 서비스를 이용할 수 없습니다.", Toast.LENGTH_SHORT).show();
         }
     };
+    /*public void onActivityResult(int requestCode, int resultCode, Intent data){
+        super.onActivityResult(requestCode, resultCode, data);
 
+        Log.e("MainActivity","onActivityResult실행");
+        if(requestCode == REQUEST_CAMERA){
+            Log.e("REQUEST_CAMERA","if문 실행");
+            if(resultCode == Activity.RESULT_OK){
+
+                Log.e("REQUEST_CAMERA","resultCode == Activity.RESULT_OK 실행");
+                String profilePath;
+                profilePath = data.getStringExtra("profilePath");
+                Log.e("로그: ","profilePath: "+ profilePath);
+                Bundle bundle = new Bundle(1); // 파라미터의 숫자는 전달하려는 값의 갯수
+                bundle.putString("profilePath", "profilePath");
+                account.setArguments(bundle);
+            }
+        }
+        switch(requestCode){
+            case REQUEST_CAMERA :{
+                Log.e("REQUEST_CAMERA","switch문 실행");
+                if(resultCode == Activity.RESULT_OK){
+
+                    Log.e("REQUEST_CAMERA","resultCode == Activity.RESULT_OK 실행");
+                    String profilePath;
+                    profilePath = data.getStringExtra("profilePath");
+                    Log.e("로그: ","profilePath: "+ profilePath);
+                    Bundle bundle = new Bundle(1); // 파라미터의 숫자는 전달하려는 값의 갯수
+                    bundle.putString("profilePath", "profilePath");
+                    account.setArguments(bundle);
+                }
+                break;
+            }
+            default:{
+
+                Log.e("REQUEST_CAMERA","switch문 실행 실패");
+            }
+        }
+    }*/
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -94,66 +137,6 @@ public class MainActivity extends AppCompatActivity {
 
         context = this.getBaseContext();
         checkPermissions(); //권한 체크 메소드 호출
-
-
-        /*bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                switch (item.getItemId()){
-                    case R.id.action_record:
-                        setFrag(0);
-                        break;
-                    case R.id.action_flag:
-                        setFrag(1);
-                        break;
-                    case R.id.action_feed:
-                        setFrag(2);
-                        break;
-                    case R.id.action_analytics:
-                        setFrag(3);
-                        break;
-                    case R.id.action_account:
-                        setFrag(4);
-                        account.setArguments(bundle);
-                        break;
-                }
-
-                return true;
-            }
-        });
-        account = new Account();
-        analytics = new Analytics();
-        feed = new Feed();
-        flag = new Flag();
-        record = new Record();
-        setFrag(0); // 첫 프래그먼트 화면을 선택 0:기록 1:참여자모집 2:피드 3:순위 4:프로필*/
-        // 프래그먼트 교체가 일어나는 실행문
-    /*private void setFrag(int n) {
-        fm = getSupportFragmentManager();
-        ft = fm.beginTransaction();
-        switch (n) {
-            case 0:
-                ft.replace(R.id.main_frame, record);
-                ft.commit();
-                break;
-            case 1:
-                ft.replace(R.id.main_frame, flag);
-                ft.commit();
-                break;
-            case 2:
-                ft.replace(R.id.main_frame, feed);
-                ft.commit();
-                break;
-            case 3:
-                ft.replace(R.id.main_frame, analytics);
-                ft.commit();
-                break;
-            case 4:
-                ft.replace(R.id.main_frame, account);
-                ft.commit();
-                break;
-        }
-    }*/
 
     }
 
@@ -195,4 +178,41 @@ public class MainActivity extends AppCompatActivity {
         tabLayout.setupWithViewPager(viewPager);
 
     }
+    public class ActivityResultEvent {
+
+        private int requestCode;
+        private int resultCode;
+        private Intent data;
+
+        public ActivityResultEvent(int requestCode, int resultCode, Intent data) {
+            this.requestCode = requestCode;
+            this.resultCode = resultCode;
+            this.data = data;
+        }
+
+        public int getRequestCode() {
+            return requestCode;
+        }
+
+        public void setRequestCode(int requestCode) {
+            this.requestCode = requestCode;
+        }
+
+        public int getResultCode() {
+            return resultCode;
+        }
+
+        public void setResultCode(int resultCode) {
+            this.resultCode = resultCode;
+        }
+
+        public Intent getData() {
+            return data;
+        }
+
+        public void setData(Intent data) {
+            this.data = data;
+        }
+    }
+
 }

@@ -4,11 +4,28 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
+    <!--이러닝 로고 표시 바-->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1.5">
+
+    </LinearLayout>
+
+    <!--날씨 정보 표시 바 - 송모-->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="@drawable/border">
+
+    </LinearLayout>
+
     <!--지도 화면-->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="2">
+        android:layout_weight="5">
 
         <com.google.android.gms.maps.MapView
             android:id="@+id/map"
@@ -18,11 +35,40 @@
             />
     </LinearLayout>
 
+    <!--운동 정보 표시 바-->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1.5">
+        <TextView
+            android:id="@+id/exerciseTime"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="시간 (시:분:초)"
+            android:gravity="center" />
+        <TextView
+            android:id="@+id/exerciseDistance"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="거리 (km)"
+            android:gravity="center" />
+        <TextView
+            android:id="@+id/calories"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="칼로리 (kcal)"
+            android:gravity="center" />
+
+    </LinearLayout>
+
     <!--버튼 화면-->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1">
+        android:layout_weight="2">
         <Button
             android:layout_width="0dp"
             android:layout_height="match_parent"
