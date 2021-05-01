@@ -22,7 +22,6 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.ImageFormat;
@@ -42,13 +41,14 @@ import android.hardware.camera2.TotalCaptureResult;
 import android.hardware.camera2.params.StreamConfigurationMap;
 import android.media.Image;
 import android.media.ImageReader;
-import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
+import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.Fragment;
+import androidx.core.content.ContextCompat;
 import android.util.Log;
 import android.util.Size;
 import android.util.SparseIntArray;
@@ -59,24 +59,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.Fragment;
-
-import com.google.android.gms.tasks.Continuation;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
+//import com.example.erunning.R;
+//import com.example.erunning.view.AutoFitTextureView;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -90,7 +74,6 @@ import java.util.List;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
-@RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
 public class Camera2BasicFragment extends Fragment
         implements View.OnClickListener, ActivityCompat.OnRequestPermissionsResultCallback {
 
@@ -197,22 +180,25 @@ public class Camera2BasicFragment extends Fragment
     private CameraDevice mCameraDevice;
 
     /**
-     * The {@link Size} of camera preview.
+     * The {@link android.util.Size} of camera preview.
      */
     private Size mPreviewSize;
+
     /**
      * 카메라 전면 후면 아이디 값
      */
-    private int facingid = 0;
+    private int facingId = 0;
 
     /**
      * 자동 포커스 체크
      */
-    private  boolean mAutoFocusSupported;
+    private boolean mAutoFocusSupported;
+
     /**
      * {@link CameraDevice.StateCallback} is called when {@link CameraDevice} changes its state.
      */
     private final CameraDevice.StateCallback mStateCallback = new CameraDevice.StateCallback() {
+
         @Override
         public void onOpened(@NonNull CameraDevice cameraDevice) {
             // This method is called when the camera is opened.  We start camera preview here.
@@ -238,6 +224,7 @@ public class Camera2BasicFragment extends Fragment
                 activity.finish();
             }
         }
+
     };
 
     /**
@@ -267,17 +254,15 @@ public class Camera2BasicFragment extends Fragment
     /*
     private final ImageReader.OnImageAvailableListener mOnImageAvailableListener
             = new ImageReader.OnImageAvailableListener() {
-
         @Override
         public void onImageAvailable(ImageReader reader) {
             mBackgroundHandler.post(new ImageUpLoader(reader.acquireNextImage()));
         }
-
     };
     */
 
     private ImageReader.OnImageAvailableListener mOnImageAvailableListener;
-    public void setOnOnImageAvailableListener(ImageReader.OnImageAvailableListener mOnImageAvailableListener) {
+    public void setOnImageAvailableListener(ImageReader.OnImageAvailableListener mOnImageAvailableListener) {
         this.mOnImageAvailableListener = mOnImageAvailableListener;
     }
 
@@ -532,13 +517,16 @@ public class Camera2BasicFragment extends Fragment
 
                 int[] afAvailableModes = characteristics.get(CameraCharacteristics.CONTROL_AF_AVAILABLE_MODES);
 
-                if(afAvailableModes.length == 0 || (afAvailableModes.length == 1 && afAvailableModes[0] == CameraMetadata.CONTROL_AF_MODE_OFF)){
+                if (afAvailableModes.length == 0 || (afAvailableModes.length == 1
+                        && afAvailableModes[0] == CameraMetadata.CONTROL_AF_MODE_OFF)) {
                     mAutoFocusSupported = false;
                 } else {
                     mAutoFocusSupported = true;
                 }
+
                 Integer facing = characteristics.get(CameraCharacteristics.LENS_FACING);
-                if (facing != null && facing == facingid) {
+                if (facing != null && facing == facingId) {
+
                     StreamConfigurationMap map = characteristics.get(
                             CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
                     if (map == null) {
@@ -623,8 +611,6 @@ public class Camera2BasicFragment extends Fragment
                     mCameraId = cameraId;
                     return;
                 }
-
-
             }
         } catch (CameraAccessException e) {
             e.printStackTrace();
@@ -770,7 +756,7 @@ public class Camera2BasicFragment extends Fragment
     }
 
     /**
-     * Configures the necessary {@link Matrix} transformation to `mTextureView`.
+     * Configures the necessary {@link android.graphics.Matrix} transformation to `mTextureView`.
      * This method should be called after the camera preview size is determined in
      * setUpCameraOutputs and also the size of `mTextureView` is fixed.
      *
@@ -806,7 +792,7 @@ public class Camera2BasicFragment extends Fragment
      * Initiate a still image capture.
      */
     private void takePicture() {
-        if(mAutoFocusSupported){
+        if (mAutoFocusSupported) {
             lockFocus();
         } else {
             captureStillPicture();
@@ -931,29 +917,22 @@ public class Camera2BasicFragment extends Fragment
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
-            case R.id.picture: {
+            case R.id.picture:
                 takePicture();
                 break;
-            }
-            case R.id.change: {
-                if(facingid == CameraCharacteristics.LENS_FACING_FRONT){
-                    facingid = CameraCharacteristics.LENS_FACING_BACK;
-                }else{
-                    facingid = CameraCharacteristics.LENS_FACING_FRONT;
+            case R.id.change:
+                if(facingId == CameraCharacteristics.LENS_FACING_FRONT){
+                    facingId = CameraCharacteristics.LENS_FACING_BACK;
+                }else {
+                    facingId = CameraCharacteristics.LENS_FACING_FRONT;
                 }
                 closeCamera();
                 openCamera(mTextureView.getWidth(), mTextureView.getHeight());
                 break;
-            }
-            case R.id.back: {
-                mCameraOpenCloseLock.release();
-                mCameraDevice = null;
-                Activity activity = getActivity();
-                if (null != activity) {
-                    activity.finish();
-                }
+            case R.id.back:
+                closeCamera();
+                getActivity().finish();
                 break;
-            }
         }
     }
 

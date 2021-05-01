@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -24,6 +25,7 @@ import androidx.cardview.widget.CardView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.bumptech.glide.Glide;
 import com.firebase.ui.auth.AuthUI;
@@ -48,12 +50,14 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 
+import de.hdodenhof.circleimageview.CircleImageView;
+
 import static com.firebase.ui.auth.AuthUI.getApplicationContext;
 
 public class Account extends Fragment {
     private View view;
     private TextView tv_userName; // 닉네임 text
-    private ImageView iv_userProfile; // 프로필 이미지뷰
+    private CircleImageView iv_userProfile; // 프로필 이미지뷰
     private String user_name;
     private String route_file;
     private Button btn_logout;
@@ -62,10 +66,10 @@ public class Account extends Fragment {
     private View LL_picture;
     private View LL_gallery;
     private View LL_basic;
-    private ImageView iv_profileImage;
-    private ImageView profileImageView;
+    private CircleImageView iv_profileImage;
+    private CircleImageView profileImageView;
     private String profilePath;
-
+    //private static final int REQUEST_CAMERA = 1;
     public static Account newinstance(){
         Account account = new Account();
         return account;
@@ -74,15 +78,115 @@ public class Account extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data){
         super.onActivityResult(requestCode, resultCode, data);
+
+        Log.e("Account","onActivityResult실행");
+
         switch(requestCode){
-            case 0 :{
+            case MainActivity.REQUEST_CAMERA:{
+                Log.e("REQUEST_CAMERA","switch문 실행");
                 if(resultCode == Activity.RESULT_OK){
+
+                    Log.e("REQUEST_CAMERA","resultCode == Activity.RESULT_OK 실행");
+                    String profilePath;
                     profilePath = data.getStringExtra("profilePath");
                     Log.e("로그: ","profilePath: "+ profilePath);
                     Bitmap bmp = BitmapFactory.decodeFile(profilePath);
-                    profileImageView.setImageBitmap(bmp);
+                    Glide.with(this).load(bmp).circleCrop().into(iv_profileImage);
+
+                    FirebaseStorage storage = FirebaseStorage.getInstance();
+                    StorageReference storageRef = storage.getReference();
+
+                    final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                    final StorageReference mountainImagesRef = storageRef.child("users/" +user.getUid()+"/profile_image.jpg");
+                    if(profilePath == null){
+
+                    } else{
+                        try{
+                            InputStream stream = new FileInputStream(new File(profilePath));
+
+                            UploadTask uploadTask = mountainImagesRef.putStream(stream);
+
+                            uploadTask.continueWithTask((task) ->  {
+                                if(!task.isSuccessful()){
+                                    throw task.getException();
+                                }
+                                return mountainImagesRef.getDownloadUrl();
+                            }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Uri> task) {
+                                    if(task.isSuccessful()){
+                                        Uri downloadUri = task.getResult();
+                                        FirebaseFirestore db = FirebaseFirestore.getInstance();
+                                        db.collection("users").document(user.getUid())
+                                                .update(
+                                                        "photoUrl", downloadUri.toString()
+                                                );
+                                    }else{
+                                        Log.e("로그","실패");
+                                    }
+                                }
+                            });
+                        }catch (FileNotFoundException e){
+                            Log.e("로그","에러"+e.toString());
+                        }
+                    }
                 }
                 break;
+            }
+            case MainActivity.REQUEST_GALLERY:{
+                Log.e("REQUEST_GALLERY","switch문 실행");
+                if(resultCode == Activity.RESULT_OK){
+
+                    Log.e("REQUEST_CAMERA","resultCode == Activity.RESULT_OK 실행");
+                    String profilePath;
+                    profilePath = data.getStringExtra("profilePath");
+                    Log.e("로그: ","profilePath: "+ profilePath);
+                    Bitmap bmp = BitmapFactory.decodeFile(profilePath);
+                    Glide.with(this).load(bmp).circleCrop().into(iv_profileImage);
+
+                    FirebaseStorage storage = FirebaseStorage.getInstance();
+                    StorageReference storageRef = storage.getReference();
+
+                    final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                    final StorageReference mountainImagesRef = storageRef.child("users/" +user.getUid()+"/profile_image.jpg");
+                    if(profilePath == null){
+
+                    } else{
+                        try{
+                            InputStream stream = new FileInputStream(new File(profilePath));
+
+                            UploadTask uploadTask = mountainImagesRef.putStream(stream);
+
+                            uploadTask.continueWithTask((task) ->  {
+                                if(!task.isSuccessful()){
+                                    throw task.getException();
+                                }
+                                return mountainImagesRef.getDownloadUrl();
+                            }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Uri> task) {
+                                    if(task.isSuccessful()){
+                                        Uri downloadUri = task.getResult();
+                                        FirebaseFirestore db = FirebaseFirestore.getInstance();
+                                        db.collection("users").document(user.getUid())
+                                                .update(
+                                                        "photoUrl", downloadUri.toString()
+                                                );
+                                    }else{
+                                        Log.e("로그","실패");
+                                    }
+                                }
+                            });
+                        }catch (FileNotFoundException e){
+                            Log.e("로그","에러"+e.toString());
+                        }
+                    }
+                }
+                break;
+            }
+            default:{
+
+                Log.e("REQUEST_CAMERA","switch문 실행 실패");
             }
         }
     }
@@ -116,7 +220,6 @@ public class Account extends Fragment {
         btn_accountDelete = view.findViewById(R.id.delete_btn);
         iv_profileImage = view.findViewById(R.id.iv_profileimage);
 
-
         DocumentReference documentReference = FirebaseFirestore.getInstance().collection("users").document(FirebaseAuth.getInstance().getCurrentUser().getUid());
         documentReference.get().addOnCompleteListener((task -> {
             if(task.isSuccessful()){
@@ -124,6 +227,30 @@ public class Account extends Fragment {
                 if(document != null){
                     if(document.exists()){
                         tv_userName.setText(document.getData().get("name").toString());
+                        user_name = document.getData().get("name").toString();
+                        if(document.getData().get("photoUrl") != null){
+                            FirebaseStorage storage = FirebaseStorage.getInstance();
+                            StorageReference storageRef = storage.getReference();
+
+                            final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                            final StorageReference mountainImagesRef = storageRef.child("users/" +user.getUid()+"/profile_image.jpg");
+
+                            storageRef.child("users/" +user.getUid()+"/profile_image.jpg").getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                @Override
+                                public void onSuccess(Uri uri) {
+                                    //이미지 로드 성공시
+
+                                    Glide.with(view.getContext()).load(uri).circleCrop().into(iv_profileImage);
+                                }
+                            }).addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception exception) {
+                                    //이미지 로드 실패시
+                                    Log.e("프로필 이미지 로드","실패");
+                                }
+                            });
+
+                        }
                     }
                 }
             }
@@ -134,7 +261,7 @@ public class Account extends Fragment {
             user_name = getArguments().getString("name");
             tv_userName.setText(user_name);//닉네임 text를 텍스트 뷰에 세팅
             route_file = getArguments().getString("profile");
-            Glide.with(this).load(route_file).into(iv_userProfile); //프로필 url을 이미지 뷰에 세팅
+            Glide.with(this).load(route_file).circleCrop().into(iv_profileImage); //프로필 url을 이미지 뷰에 세팅
         }
         profileImageView = view.findViewById(R.id.iv_profileimage);
         profileImageView.setOnClickListener(new View.OnClickListener() {
@@ -160,50 +287,13 @@ public class Account extends Fragment {
                                 switch (v.getId()){
                                     case R.id.LL_picture:
                                         bottomSheetDialog.dismiss();
-                                        startActivity(new Intent(getActivity(), CameraActivity.class));
-                                        FirebaseStorage storage = FirebaseStorage.getInstance();
-                                        StorageReference storageRef = storage.getReference();
+                                        Intent intent = new Intent(getActivity(), CameraActivity.class);
+                                        startActivityForResult(intent, MainActivity.REQUEST_CAMERA);
+                                        Log.e("MainActivity>Account","startActivityForResult실행"+MainActivity.REQUEST_CAMERA);
 
-                                        final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                                        final StorageReference mountainImagesRef = storageRef.child("users/" +user.getUid()+"/profile_image.jpg");
-                                        if(profilePath == null){
 
-                                        } else{
-                                            try{
-                                                InputStream stream = new FileInputStream(new File(profilePath));
+                                        //startActivity(new Intent(getActivity(), CameraActivity.class));
 
-                                                UploadTask uploadTask = mountainImagesRef.putStream(stream);
-
-                                                uploadTask.continueWithTask((task) ->  {
-                                                    if(!task.isSuccessful()){
-                                                        throw task.getException();
-                                                    }
-                                                    return mountainImagesRef.getDownloadUrl();
-                                                }).addOnCompleteListener(new OnCompleteListener<Uri>() {
-                                                    @Override
-                                                    public void onComplete(@NonNull Task<Uri> task) {
-                                                        if(task.isSuccessful()){
-                                                            Uri downloadUri = task.getResult();
-                                                            FirebaseFirestore db = FirebaseFirestore.getInstance();
-                                                            UserInfo userInfo = new UserInfo(downloadUri.toString());
-                                                            db.collection("users").document(user.getUid()).set(userInfo)
-                                                                    .addOnSuccessListener((OnSuccessListener) (aVoid) ->{
-                                                                        Log.w("SignUp_profileUpdate", "회원정보 등록성공");
-                                                                        //finish();
-                                                                    })
-                                                                    .addOnFailureListener((e) -> {
-                                                                        Log.w("SignUp_profileUpdate", "회원정보 등록 실패");
-
-                                                                    });
-                                                        }else{
-                                                            Log.e("로그","실패");
-                                                        }
-                                                    }
-                                                });
-                                            }catch (FileNotFoundException e){
-                                                Log.e("로그","에러"+e.toString());
-                                            }
-                                        }
                                         break;
                                 }
                             }
@@ -226,8 +316,9 @@ public class Account extends Fragment {
                                                         Toast.LENGTH_SHORT).show();
                                             }
                                         }else{
+                                            Intent intent = new Intent(getActivity(), Gallery.class);
+                                            startActivityForResult(intent, MainActivity.REQUEST_GALLERY);
                                             bottomSheetDialog.dismiss();
-                                            startActivity(new Intent(getActivity(), Gallery.class));
                                         }
 
                                         break;
@@ -239,9 +330,35 @@ public class Account extends Fragment {
                             public void onClick(View v) {
                                 switch (v.getId()){
                                     case R.id.LL_basic:
+                                        final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                                        FirebaseFirestore db = FirebaseFirestore.getInstance();
+                                        db.collection("users").document(user.getUid())
+                                                .update(
+                                                        "photoUrl", null
+                                                );
+                                        FirebaseStorage storage = FirebaseStorage.getInstance();
+
+                                        // Create a storage reference from our app
+                                        StorageReference storageRef = storage.getReference();
+
+                                        // Create a reference to the file to delete
+                                        StorageReference desertRef = storageRef.child("users/" +user.getUid()+"/profile_image.jpg");
+
+                                        // Delete the file
+                                        desertRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                            @Override
+                                            public void onSuccess(Void aVoid) {
+                                                // File deleted successfully
+                                            }
+                                        }).addOnFailureListener(new OnFailureListener() {
+                                            @Override
+                                            public void onFailure(@NonNull Exception exception) {
+                                                // Uh-oh, an error occurred!
+                                            }
+                                        });
+                                        FragmentTransaction ft = getFragmentManager().beginTransaction();
+                                        ft.detach(Account.this).attach(Account.this).commit();
                                         bottomSheetDialog.dismiss();
-                                        Toast.makeText(getActivity(), "토스트테스트",
-                                                Toast.LENGTH_SHORT).show();
                                         break;
                                 }
                             }
