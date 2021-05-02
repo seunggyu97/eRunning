@@ -172,7 +172,13 @@ public class Record extends Fragment implements OnMapReadyCallback, SensorEventL
       btnStart.setOnClickListener(new View.OnClickListener() {
          @Override
          public void onClick(View view) {
-            changeWalkState();        //걸음 상태 변경
+            if(mCurrentLocation != null){
+               changeWalkState();        //걸음 상태 변경
+            }
+            else{
+               Toast.makeText(getActivity(), "위치 정보를 가져오는 중입니다. 잠시만 기다려주세요...",
+                       Toast.LENGTH_SHORT).show();
+            }
          }
       });
 
@@ -352,17 +358,18 @@ public class Record extends Fragment implements OnMapReadyCallback, SensorEventL
       });
 
    }
-
+   //private double GpsStatus = android.location.Location.getLatitude();
    private void changeWalkState(){
+      Log.e(startLatLng.toString(),"startLatLng");
       if(!walkState) {
-         Toast.makeText(mContext.getApplicationContext(), "기록 시작", Toast.LENGTH_SHORT).show();
-         walkState = true;
+            Toast.makeText(mContext.getApplicationContext(), "기록 시작", Toast.LENGTH_SHORT).show();
+            walkState = true;
+            Log.e(startLatLng.toString(),"startLatLng");
+            StartTime = SystemClock.uptimeMillis();
+            handler.postDelayed(runnable, 0);
 
-         StartTime = SystemClock.uptimeMillis();
-         handler.postDelayed(runnable, 0);
-
-         startLatLng = new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());        //현재 위치를 시작점으로 설정
-         btnStart.setText("정지");
+            startLatLng = new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());        //현재 위치를 시작점으로 설정
+            btnStart.setText("정지");
       }else{
          Toast.makeText(mContext.getApplicationContext(), "기록 일시정지", Toast.LENGTH_SHORT).show();
          walkState = false;
