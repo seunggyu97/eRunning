@@ -4,6 +4,11 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -12,11 +17,10 @@ import android.os.Bundle;
 import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -43,31 +47,39 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
 
-public class Record extends Fragment implements OnMapReadyCallback {
+public class Record extends Fragment implements OnMapReadyCallback, SensorEventListener {
    private View view; // rootview
    private MapView mapView = null; //맵뷰
    private Button btnStart; //시작 버튼
    private Button btnFinish; //중지 버튼
    private Button btnPin; //핀 등록 버튼
+   private TextView textTime; //운동 시간 텍스트뷰
+   private TextView textDistance; //운동 거리 텍스트뷰
+   private TextView textStep; //걸음수 텍스트뷰
+   private TextView textCalories; //소모 칼로리 텍스트뷰
 
    private FragmentActivity mContext;
 
    private static final String TAG = Record.class.getSimpleName();
    private GoogleMap mMap;
-   private Marker currentMarker = null;
+   private Marker currentMarker = null; // 현재 위치 마커
+   private Marker pinMarker = null; // 핀 등록 마커
 
    // The entry point to the Fused Location Provider.
    private FusedLocationProviderClient mFusedLocationProviderClient; // Deprecated된 FusedLocationApi를 대체
    private LocationRequest locationRequest;
-   private Location mCurrentLocatiion;
+   private Location mCurrentLocation;
 
    private final LatLng mDefaultLocation = new LatLng(37.56, 126.97);
    private static final int DEFAULT_ZOOM = 15;
@@ -75,12 +87,25 @@ public class Record extends Fragment implements OnMapReadyCallback {
    private boolean mLocationPermissionGranted;
 
    private static final int GPS_ENABLE_REQUEST_CODE = 2001;
-   private static final int UPDATE_INTERVAL_MS = 1000 * 30;  // 1분 단위 시간 갱신 1000 * 60 * 1
-   private static final int FASTEST_UPDATE_INTERVAL_MS = 1000 * 15; // 30초 단위로 화면 갱신 1000 * 30
+   private static final int UPDATE_INTERVAL_MS = 1000 * 10;  // 1분 단위 시간 갱신 1000 * 60 * 1
+   private static final int FASTEST_UPDATE_INTERVAL_MS = 1000 * 5; // 30초 단위로 화면 갱신 1000 * 30
 
    private static final String KEY_CAMERA_POSITION = "camera_position";
    private static final String KEY_LOCATION = "location";
 
+   private LatLng startLatLng = new LatLng(0, 0);        //polyline 시작점
+   private LatLng endLatLng = new LatLng(0, 0);        //polyline 끝점
+   private boolean walkState = false;                    //걸음 상태
+   private List<Polyline> polylines = new ArrayList();
+
+   double time = 0; //운동 시간
+   double distance = 0; //운동 거리
+   int steps = 0; //걸음수
+   int calories = 0; //소모 칼로리
+   float[] results = new float[1];
+
+   SensorManager sm; //센서 매니저 (만보기용)
+   Sensor sensor_step_detector;
 
    public static Record newinstance(){
       Record record = new Record();
@@ -101,7 +126,7 @@ public class Record extends Fragment implements OnMapReadyCallback {
    @Override
    public void onCreate(@Nullable Bundle savedInstanceState) {
       super.onCreate(savedInstanceState);
-      // 초기화 해야 하는 리소스들을 여기서 초기화 해준다.
+      // 초기화해야 하는 리소스들을 여기서 초기화 해준다.
    }
 
    @Nullable
@@ -109,7 +134,7 @@ public class Record extends Fragment implements OnMapReadyCallback {
    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
       // Layout 을 inflate 하는 곳이다.
       if (savedInstanceState != null) {
-         mCurrentLocatiion = savedInstanceState.getParcelable(KEY_LOCATION);
+         mCurrentLocation = savedInstanceState.getParcelable(KEY_LOCATION);
          CameraPosition mCameraPosition = savedInstanceState.getParcelable(KEY_CAMERA_POSITION);
       }
       view = inflater.inflate(R.layout.record, container, false);
@@ -123,6 +148,23 @@ public class Record extends Fragment implements OnMapReadyCallback {
       btnStart = (Button)view.findViewById(R.id.btnStart);
       btnFinish = (Button)view.findViewById(R.id.btnFinish);
       btnPin = (Button)view.findViewById(R.id.btnPin);
+
+      textTime = (TextView)view.findViewById(R.id.textTime);
+      textDistance = (TextView)view.findViewById(R.id.textDistance);
+      textCalories = (TextView)view.findViewById(R.id.textCalories);
+      textStep = (TextView)view.findViewById(R.id.textStep);
+
+      textStep.setText("0"); // 걸음 수 초기화 및 출력
+      sm = (SensorManager)getActivity().getSystemService(Context.SENSOR_SERVICE);  // 센서 매니저 생성
+      sensor_step_detector = sm.getDefaultSensor(Sensor.TYPE_STEP_DETECTOR);  // 스템 감지 센서 등록
+
+      btnStart.setOnClickListener(new View.OnClickListener() {
+         @Override
+         public void onClick(View view) {
+            changeWalkState();        //걸음 상태 변경
+         }
+      });
+
 
       return view;
    }
@@ -181,7 +223,7 @@ public class Record extends Fragment implements OnMapReadyCallback {
          } else {
             mMap.setMyLocationEnabled(false);
             mMap.getUiSettings().setMyLocationButtonEnabled(false);
-            mCurrentLocatiion = null;
+            mCurrentLocation = null;
             getLocationPermission();
          }
       } catch (SecurityException e)  {
@@ -255,7 +297,7 @@ public class Record extends Fragment implements OnMapReadyCallback {
 
             //현재 위치에 마커 생성하고 이동
             setCurrentLocation(location, markerTitle, markerSnippet);
-            mCurrentLocatiion = location;
+            mCurrentLocation = location;
          }
       }
 
@@ -268,10 +310,12 @@ public class Record extends Fragment implements OnMapReadyCallback {
       return time.format(today);
    }
 
-   public void setCurrentLocation(Location location, String markerTitle, String markerSnippet) {
+   public void setCurrentLocation(Location location, String markerTitle, String markerSnippet) { //실시간 현재 위치 설정
+      double latitude = location.getLatitude(), longtitude = location.getLongitude();
+
       if (currentMarker != null) currentMarker.remove();
 
-      LatLng currentLatLng = new LatLng(location.getLatitude(), location.getLongitude());
+      LatLng currentLatLng = new LatLng(latitude, longtitude);
 
       MarkerOptions markerOptions = new MarkerOptions();
       markerOptions.position(currentLatLng);
@@ -283,6 +327,66 @@ public class Record extends Fragment implements OnMapReadyCallback {
 
       CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLng(currentLatLng);
       mMap.moveCamera(cameraUpdate);
+      if(walkState){                        //걸음 시작 버튼이 눌렸을 때
+         endLatLng = new LatLng(latitude, longtitude);        //현재 위치를 끝점으로 설정
+         drawPath();                                            //polyline 그리기
+         startLatLng = new LatLng(latitude, longtitude);        //시작점을 끝점으로 다시 설정
+      }
+
+      btnPin.setOnClickListener(new View.OnClickListener() {
+         @Override
+         public void onClick(View view) { //핀 버튼 클릭 시
+            pinMarker = mMap.addMarker(markerOptions); //핀 마커 추가
+         }
+      });
+
+   }
+
+   private void changeWalkState(){
+      if(!walkState) {
+         Toast.makeText(mContext.getApplicationContext(), "기록 시작", Toast.LENGTH_SHORT).show();
+         walkState = true;
+         startLatLng = new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());        //현재 위치를 시작점으로 설정
+         btnStart.setText("정지");
+      }else{
+         Toast.makeText(mContext.getApplicationContext(), "기록 일시정지", Toast.LENGTH_SHORT).show();
+         walkState = false;
+         btnStart.setText("시작");
+      }
+   }
+
+   private void drawPath(){        //polyline을 그려주는 메소드
+      PolylineOptions options = new PolylineOptions().add(startLatLng).add(endLatLng).width(8).color(Color.RED).geodesic(true);
+      polylines.add(mMap.addPolyline(options));
+      mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(startLatLng, 15));
+      //Polyline polyline = polylines.get(polylines.size() - 1);
+      //distance = distance + polyline.getLength();
+      Location.distanceBetween(startLatLng.latitude, startLatLng.longitude, endLatLng.latitude, endLatLng.longitude, results); //거리 계산. 결과값은 results[0]에 있음.
+      distance = distance + results[0]; //거리 합 누적
+      //Toast.makeText(mContext.getApplicationContext(), String.valueOf(results[0]), Toast.LENGTH_SHORT).show();
+      textDistance.setText(String.valueOf(String.format("%.2f", distance * 0.001))); //운동 거리 표시(km 단위로)
+      calories = (int)(distance * 0.001 * 41);
+      textCalories.setText(String.valueOf(calories)); //소모 칼로리 표시(1km당 41kcal, 천천히 걷는다고 가정)
+   }
+
+   public void SetListener() //버튼 클릭 시 이벤트 처리
+   {
+      btnFinish.setOnClickListener(new View.OnClickListener(){
+         @Override
+         public void onClick(View view)
+         {
+            //textView.setTextColor(Color.RED);
+         }
+      });
+
+      btnPin.setOnClickListener(new View.OnClickListener(){
+         @Override
+         public void onClick(View view)
+         {
+            //textView.setTextColor(Color.BLUE);
+         }
+      });
+
    }
 
    private void getDeviceLocation() {
@@ -339,7 +443,7 @@ public class Record extends Fragment implements OnMapReadyCallback {
    }
 
    @Override
-   public void onStop() { //중지
+   public void onStop() {
       super.onStop();
       mapView.onStop();
       if (mFusedLocationProviderClient != null) {
@@ -359,12 +463,14 @@ public class Record extends Fragment implements OnMapReadyCallback {
          if (mMap!=null)
             mMap.setMyLocationEnabled(true);
       }
+      sm.registerListener(this, sensor_step_detector, SensorManager.SENSOR_DELAY_NORMAL);
    }
 
    @Override
-   public void onPause() { //일시중지
+   public void onPause() {
       super.onPause();
       mapView.onPause();
+      sm.unregisterListener(this);
    }
 
    @Override
@@ -389,5 +495,20 @@ public class Record extends Fragment implements OnMapReadyCallback {
       mapView.onDestroy();
    }
 
+   // 센서값이 변할때
+   @Override
+   public void onSensorChanged(SensorEvent event) {
+      // 센서 유형이 스텝감지 센서인 경우 걸음수 +1
+      switch (event.sensor.getType()){
+         case Sensor.TYPE_STEP_DETECTOR:
+            textStep.setText("" + (++steps));
+            break;
+      }
+   }
+
+   @Override
+   public void onAccuracyChanged(Sensor sensor, int accuracy) {
+
+   }
 }
 
