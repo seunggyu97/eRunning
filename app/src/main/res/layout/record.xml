@@ -51,8 +51,8 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:text="0:0:0"
-                android:textSize="28sp"
+                android:text="00:00:00"
+                android:textSize="24sp"
                 android:gravity="center" />
             <TextView
                 android:id="@+id/textDistance"
@@ -60,7 +60,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:text="0.00"
-                android:textSize="28sp"
+                android:textSize="24sp"
                 android:gravity="center" />
             <TextView
                 android:id="@+id/textStep"
@@ -68,7 +68,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:text="0"
-                android:textSize="28sp"
+                android:textSize="24sp"
                 android:gravity="center" />
             <TextView
                 android:id="@+id/textCalories"
@@ -76,7 +76,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:text="0"
-                android:textSize="28sp"
+                android:textSize="24sp"
                 android:gravity="center" />
         </LinearLayout>
 

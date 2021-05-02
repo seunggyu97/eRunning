@@ -14,7 +14,9 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Looper;
+import android.os.SystemClock;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -104,8 +106,12 @@ public class Record extends Fragment implements OnMapReadyCallback, SensorEventL
    int calories = 0; //소모 칼로리
    float[] results = new float[1];
 
-   SensorManager sm; //센서 매니저 (만보기용)
-   Sensor sensor_step_detector;
+   private SensorManager sm; //센서 매니저 (만보기용)
+   private Sensor sensor_step_detector;
+
+   long MillisecondTime, StartTime, TimeBuff, UpdateTime = 0L ;
+   Handler handler;
+   int Seconds, Minutes, Hours, MilliSeconds ;
 
    public static Record newinstance(){
       Record record = new Record();
@@ -154,9 +160,14 @@ public class Record extends Fragment implements OnMapReadyCallback, SensorEventL
       textCalories = (TextView)view.findViewById(R.id.textCalories);
       textStep = (TextView)view.findViewById(R.id.textStep);
 
-      textStep.setText("0"); // 걸음 수 초기화 및 출력
+      //textStep.setText("0"); // 걸음 수 초기화 및 출력
       sm = (SensorManager)getActivity().getSystemService(Context.SENSOR_SERVICE);  // 센서 매니저 생성
       sensor_step_detector = sm.getDefaultSensor(Sensor.TYPE_STEP_DETECTOR);  // 스템 감지 센서 등록
+      if(sensor_step_detector == null){
+         //Toast. makeText( mContext, "No Step Detect Sensor", Toast.LENGTH_SHORT ).show();
+      }
+
+      handler = new Handler(); //스톱워치 관련
 
       btnStart.setOnClickListener(new View.OnClickListener() {
          @Override
@@ -346,11 +357,19 @@ public class Record extends Fragment implements OnMapReadyCallback, SensorEventL
       if(!walkState) {
          Toast.makeText(mContext.getApplicationContext(), "기록 시작", Toast.LENGTH_SHORT).show();
          walkState = true;
+
+         StartTime = SystemClock.uptimeMillis();
+         handler.postDelayed(runnable, 0);
+
          startLatLng = new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());        //현재 위치를 시작점으로 설정
          btnStart.setText("정지");
       }else{
          Toast.makeText(mContext.getApplicationContext(), "기록 일시정지", Toast.LENGTH_SHORT).show();
          walkState = false;
+
+         TimeBuff += MillisecondTime;
+         handler.removeCallbacks(runnable);
+
          btnStart.setText("시작");
       }
    }
@@ -367,26 +386,6 @@ public class Record extends Fragment implements OnMapReadyCallback, SensorEventL
       textDistance.setText(String.valueOf(String.format("%.2f", distance * 0.001))); //운동 거리 표시(km 단위로)
       calories = (int)(distance * 0.001 * 41);
       textCalories.setText(String.valueOf(calories)); //소모 칼로리 표시(1km당 41kcal, 천천히 걷는다고 가정)
-   }
-
-   public void SetListener() //버튼 클릭 시 이벤트 처리
-   {
-      btnFinish.setOnClickListener(new View.OnClickListener(){
-         @Override
-         public void onClick(View view)
-         {
-            //textView.setTextColor(Color.RED);
-         }
-      });
-
-      btnPin.setOnClickListener(new View.OnClickListener(){
-         @Override
-         public void onClick(View view)
-         {
-            //textView.setTextColor(Color.BLUE);
-         }
-      });
-
    }
 
    private void getDeviceLocation() {
@@ -499,6 +498,7 @@ public class Record extends Fragment implements OnMapReadyCallback, SensorEventL
    @Override
    public void onSensorChanged(SensorEvent event) {
       // 센서 유형이 스텝감지 센서인 경우 걸음수 +1
+      // Toast. makeText( mContext, "만보기 센서", Toast.LENGTH_SHORT ).show();
       switch (event.sensor.getType()){
          case Sensor.TYPE_STEP_DETECTOR:
             textStep.setText("" + (++steps));
@@ -510,5 +510,33 @@ public class Record extends Fragment implements OnMapReadyCallback, SensorEventL
    public void onAccuracyChanged(Sensor sensor, int accuracy) {
 
    }
+
+   public Runnable runnable = new Runnable() { //스톱워치
+
+      public void run() {
+
+         MillisecondTime = SystemClock.uptimeMillis() - StartTime;
+
+         UpdateTime = TimeBuff + MillisecondTime;
+
+         Seconds = (int) (UpdateTime / 1000);
+
+         Minutes = Seconds / 60;
+
+         Seconds = Seconds % 60;
+
+         Hours = Minutes / 60;
+
+         MilliSeconds = (int) (UpdateTime % 1000);
+
+         textTime.setText(String.format("%02d", Hours) + ":"
+                 + String.format("%02d", Minutes) + ":"
+                 + String.format("%02d", Seconds));
+
+         handler.postDelayed(this, 0);
+      }
+
+   };
+
 }
 
