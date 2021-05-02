@@ -28,7 +28,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.Calendar;
 
-public class SignUp extends AppCompatActivity {
+public class SignUp extends BasicActivity {
 
     private FirebaseAuth mAuth;
     private static final String TAG = "SignUpActivity";
