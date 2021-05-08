@@ -62,11 +62,11 @@
 //
 //        holder.btn_follow.setVisibility(View.VISIBLE);
 //
-//        holder.username.setText();
-//        Glide.with(mContext).load(user.getPhotoUri()).into(holder.image_profile);
-//        isFollowing(UserInfo.get, holder.btn_follow);
+//        holder.username.setText(user.getid);
+//        Glide.with(mContext).load(user.getPhotoUrl()).into(holder.image_profile);
+//        isFollowing(user.uid, holder.btn_follow);
 //
-//        if(user.getId()).equals(firebaseUser.getUid()) {
+//        if(user.getid().equals(firebaseUser.getUid())) {
 //            holder.btn_follow.setVisibility(View.GONE);
 //        }
 //

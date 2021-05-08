@@ -20,9 +20,9 @@ public class NewPost extends BasicActivity{
             case R.id.btn_addpost:
                 Intent intent = new Intent();
                 setResult(Activity.RESULT_OK, intent);
-
                 finish();
                 break;
+
             case R.id.btn_writingback:
                 finish();
                 break;
