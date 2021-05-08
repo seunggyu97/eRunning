@@ -17,7 +17,7 @@ import android.view.View;
 
 import java.util.ArrayList;
 
-public class Gallery extends AppCompatActivity {
+public class Gallery extends BasicActivity {
     private RecyclerView recyclerView;
     private RecyclerView.Adapter mAdapter;
 

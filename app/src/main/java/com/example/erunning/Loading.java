@@ -6,7 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 
-public class Loading extends AppCompatActivity {
+public class Loading extends BasicActivity {
     Handler handler;
     Runnable runnable;
 

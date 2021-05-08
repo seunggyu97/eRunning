@@ -35,7 +35,7 @@ import java.nio.ByteBuffer;
 
 //import static com.example.erunning.Util.INTENT_PATH;
 
-public class CameraActivity extends AppCompatActivity {
+public class CameraActivity extends BasicActivity {
     private Camera2BasicFragment camera2BasicFragment;
 
     /**

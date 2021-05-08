@@ -2,22 +2,34 @@ package com.example.erunning;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.bumptech.glide.Glide;
+import com.firebase.ui.auth.data.model.User;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.rengwuxian.materialedittext.MaterialEditText;
+
+import java.util.HashMap;
 
 public class EditProfileActivity extends AppCompatActivity {
 
@@ -80,9 +92,10 @@ public class EditProfileActivity extends AppCompatActivity {
             }
         });
     }
-
-
     private void updateProfile() {
+        /*HashMap<String, Object> map = new HashMap<>();
+        map.put("username", username.getText().toString());
+        map.put("bio", bio.getText().toString());*/
         Log.e("updateProfile","실행");
         final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -92,6 +105,8 @@ public class EditProfileActivity extends AppCompatActivity {
                         "bio", bio.getText().toString()
                 );
         Intent intent = new Intent();
+        //intent.putExtra("edit_name", user_name);
+        //intent.putExtra("edit_bio", bio_msg);
         setResult(Activity.RESULT_OK, intent);
 
         finish();

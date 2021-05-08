@@ -12,7 +12,7 @@ import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
 
-public class Account_Activity extends AppCompatActivity  {
+public class Account_Activity extends BasicActivity  {
 
     private final String TAG = this.getClass().getSimpleName();
     Context mContext;
