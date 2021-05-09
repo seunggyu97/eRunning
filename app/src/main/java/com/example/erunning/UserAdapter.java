@@ -2,6 +2,8 @@
 //
 //import android.content.Context;
 //import android.content.SharedPreferences;
+//import android.net.Uri;
+//import android.util.Log;
 //import android.view.LayoutInflater;
 //import android.view.View;
 //import android.view.ViewGroup;
@@ -14,6 +16,8 @@
 //
 //import com.bumptech.glide.Glide;
 //import com.firebase.ui.auth.data.model.User;
+//import com.google.android.gms.tasks.OnFailureListener;
+//import com.google.android.gms.tasks.OnSuccessListener;
 //import com.google.firebase.auth.FirebaseAuth;
 //import com.google.firebase.auth.FirebaseUser;
 //import com.google.firebase.database.DataSnapshot;
@@ -24,6 +28,8 @@
 //import com.google.firebase.firestore.DocumentReference;
 //import com.google.firebase.firestore.DocumentSnapshot;
 //import com.google.firebase.firestore.FirebaseFirestore;
+//import com.google.firebase.storage.FirebaseStorage;
+//import com.google.firebase.storage.StorageReference;
 //
 //import java.util.List;
 //
@@ -32,13 +38,13 @@
 //public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder>{
 //
 //    private Context mContext; //context
-//    private List<User> mUsers; //arrayList
+//    private List<UserInfo> mUsers; //arrayList
 //    private boolean isActivity;
 //
 //    private FirebaseUser firebaseUser;
 //
 //
-//    public UserAdapter(Context mContext, List<User> mUsers) {
+//    public UserAdapter(Context mContext, List<UserInfo> mUsers) {
 //        this.mContext = mContext;
 //        this.mUsers = mUsers;
 //    }
@@ -55,16 +61,46 @@
 //
 //        firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
 //
+//        UserInfo userInfo = mUsers.get(position);
 //        User user = mUsers.get(position);
-////        DocumentReference documentReference = FirebaseFirestore.getInstance().collection("users").document(FirebaseAuth.getInstance().getCurrentUser().getUid());
-////        DocumentSnapshot document = task.getResult();
-//
-//
 //        holder.btn_follow.setVisibility(View.VISIBLE);
+//        DocumentReference documentReference = FirebaseFirestore.getInstance().collection("users").document(FirebaseAuth.getInstance().getCurrentUser().getUid());
+//        FirebaseStorage storage = FirebaseStorage.getInstance();
+//        StorageReference storageRef = storage.getReference();
 //
-//        holder.username.setText(user.getName().toString());
+//        documentReference.get().addOnCompleteListener((task -> {
+//            if(task.isSuccessful()){
+//                DocumentSnapshot document = task.getResult();
+//                if(document != null){
+//                    if(document.exists()){
+//                        if(document.getData().get("name") != null){
+//                            holder.username.setText(document.getData().get("name").toString());
+//                        }
+//                        if(document.getData().get("photoUrl") != null){
+//                            if(mUsers.get(position).getPhotoUrl() != null){
+//                                Glide.with(mContext).load(mUsers.get(position).getPhotoUrl()).centerCrop().override(500).into(holder.image_profile);
+//                            }
+//                            /*storageRef.child("users/" +user.getUid()+"/profile_image.jpg").getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+//                                @Override
+//                                public void onSuccess(Uri uri) {
+//                                    Glide.with(mContext).load(uri).circleCrop().into(holder.image_profile);
+//                                }
+//                            }).addOnFailureListener(new OnFailureListener() {
+//                                @Override
+//                                public void onFailure(@NonNull Exception exception) {
+//                                    Log.e("프로필 이미지 로드","실패");
+//                                }
+//                            });*/
+//                        }
+//                    }
+//                }
+//            }
+//        }));
+////        holder.username.setText(user.getName());
+//
+//
 //        Glide.with(mContext).load(user.getPhotoUrl()).into(holder.image_profile);
-//        isFollowing(user.uid, holder.btn_follow);
+//        isFollowing(user.getuid, holder.btn_follow);
 //
 //        if(user.getid().equals(firebaseUser.getUid())) {
 //            holder.btn_follow.setVisibility(View.GONE);
