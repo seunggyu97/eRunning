@@ -31,14 +31,14 @@
 //
 //public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder>{
 //
-//    private Context mContext;
-//    private List<User> mUsers;
+//    private Context mContext; //context
+//    private List<User> mUsers; //arrayList
+//    private boolean isActivity;
 //
 //    private FirebaseUser firebaseUser;
 //
-//    private String user_name;
 //
-//    private UserAdapter(Context mContext, List<User> mUsers) {
+//    public UserAdapter(Context mContext, List<User> mUsers) {
 //        this.mContext = mContext;
 //        this.mUsers = mUsers;
 //    }
@@ -55,14 +55,14 @@
 //
 //        firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
 //
-//        final User user = mUsers.get(position);
+//        User user = mUsers.get(position);
 ////        DocumentReference documentReference = FirebaseFirestore.getInstance().collection("users").document(FirebaseAuth.getInstance().getCurrentUser().getUid());
 ////        DocumentSnapshot document = task.getResult();
-////        user_name = document.getData().get("name").toString();
+//
 //
 //        holder.btn_follow.setVisibility(View.VISIBLE);
 //
-//        holder.username.setText(user.getid);
+//        holder.username.setText(user.getName().toString());
 //        Glide.with(mContext).load(user.getPhotoUrl()).into(holder.image_profile);
 //        isFollowing(user.uid, holder.btn_follow);
 //
@@ -96,7 +96,7 @@
 //
 //    @Override
 //    public int getItemCount() {
-//        return mUsers.size();
+//        return (mUsers != null ? mUsers.size() : 0);
 //    }
 //
 //    public class ViewHolder extends RecyclerView.ViewHolder {
