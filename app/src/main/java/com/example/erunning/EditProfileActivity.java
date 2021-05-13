@@ -31,7 +31,7 @@ import com.rengwuxian.materialedittext.MaterialEditText;
 
 import java.util.HashMap;
 
-public class EditProfileActivity extends BasicActivity {
+public class EditProfileActivity extends AppCompatActivity {
 
     private ImageView close;
     private TextView save;
@@ -105,6 +105,8 @@ public class EditProfileActivity extends BasicActivity {
                         "bio", bio.getText().toString()
                 );
         Intent intent = new Intent();
+        //intent.putExtra("edit_name", user_name);
+        //intent.putExtra("edit_bio", bio_msg);
         setResult(Activity.RESULT_OK, intent);
 
         finish();

@@ -6,7 +6,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.widget.Toast;
 
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
@@ -41,6 +40,8 @@ public class MainActivity extends BasicActivity {
     static final int REQUEST_GALLERY = 1000;
     static final int REQUEST_EDITPROFILE = 2000;
     static final int REQUEST_POST = 3000;
+    static final int REQUEST_USER_SEARCH = 4000;
+
     //private TextView user_name; // 이름 Text
     //public ImageView route_profile; // 이미지 뷰
     Context context;

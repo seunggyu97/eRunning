@@ -135,7 +135,7 @@
             android:layout_height="30dp"
             android:layout_marginLeft="15dp"
             android:layout_marginRight="15dp"
-            android:text="안녕하세요. 매일 운동하는 대학생입니다."
+            android:text=""
             android:textColor="#000000"
             android:maxLines="1"
             android:textSize="13sp" />

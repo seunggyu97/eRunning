@@ -75,14 +75,10 @@ public class Account extends Fragment {
     public void onActivityResult(int requestCode, int resultCode, Intent data){
         super.onActivityResult(requestCode, resultCode, data);
 
-        Log.e("Account","onActivityResult실행");
-
         switch(requestCode){
             case MainActivity.REQUEST_CAMERA:{
-                Log.e("REQUEST_CAMERA","switch문 실행");
                 if(resultCode == Activity.RESULT_OK){
 
-                    Log.e("REQUEST_CAMERA","resultCode == Activity.RESULT_OK 실행");
                     String profilePath;
                     profilePath = data.getStringExtra("profilePath");
                     Log.e("로그: ","profilePath: "+ profilePath);
