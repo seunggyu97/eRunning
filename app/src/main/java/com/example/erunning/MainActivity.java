@@ -46,6 +46,13 @@ public class MainActivity extends BasicActivity {
     //public ImageView route_profile; // 이미지 뷰
     Context context;
 
+    public void replaceFragment(Fragment fragment){      ////// 화면전환 메소드 프레그먼트는 이메소드를 받아서 화면전환!!!!
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.const_vp,fragment).commit();
+    }
+
+
     PermissionListener permissionlistener = new PermissionListener() {
         @Override
         public void onPermissionGranted() {
@@ -147,11 +154,7 @@ public class MainActivity extends BasicActivity {
         }
     }
 
-    public void replaceFragment(Fragment fragment){      ////// 화면전환 메소드 프레그먼트는 이메소드를 받아서 화면전환!!!!
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.const_vp,fragment).commit();
-    }
+
 
     private void initView() {
 
@@ -172,6 +175,9 @@ public class MainActivity extends BasicActivity {
         tabLayout.setupWithViewPager(viewPager);
 
     }
+
+
+
     public class ActivityResultEvent {
 
         private int requestCode;

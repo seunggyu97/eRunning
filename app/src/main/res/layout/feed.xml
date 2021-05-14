@@ -5,7 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#81CEF3"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    tools:context=".Feed">
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/btn_add"
@@ -24,8 +25,8 @@
         android:layout_height="80dp"
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
-        android:layout_marginEnd="11dp"
-        android:layout_marginBottom="614dp"
+        android:layout_marginEnd="6dp"
+        android:layout_marginBottom="666dp"
         android:clickable="true"
         app:srcCompat="@drawable/ic_user_search" />
 

@@ -15,7 +15,8 @@
             <androidx.appcompat.widget.Toolbar
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/toolbar">
+                android:id="@+id/toolbar"
+                android:layout_marginTop="0dp">
 
                 <ImageButton
                     android:id="@+id/btn_writingback"
@@ -26,6 +27,7 @@
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginRight="10dp"
                     android:src="@drawable/ic_user_search"/>
 
                 <AutoCompleteTextView
@@ -47,12 +49,12 @@
             android:layout_below="@id/bar"
             android:id="@+id/recycle_view_users"/>
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/recycle_view_tags"
-            android:layout_below="@id/recycle_view_users"
-            android:layout_marginTop="5dp"/>
+<!--        <androidx.recyclerview.widget.RecyclerView-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:id="@+id/recycle_view_tags"-->
+<!--            android:layout_below="@id/recycle_view_users"-->
+<!--            android:layout_marginTop="5dp"/>-->
 
 
 

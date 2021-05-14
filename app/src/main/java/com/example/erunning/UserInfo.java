@@ -8,7 +8,7 @@ public class UserInfo {
     private String photoUrl;
     private String bio;
 
-
+    private UserInfo() {}
     public UserInfo(String name, int birthyear, int birthmonth, int birthday){
         this.name = name;
         this.birthyear = birthyear;
