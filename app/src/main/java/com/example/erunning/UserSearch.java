@@ -2,38 +2,24 @@ package com.example.erunning;
 
 import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
 
-import androidx.annotation.NonNull;
 import androidx.paging.PagedList;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.Glide;
-import com.firebase.ui.firestore.SnapshotParser;
-import com.firebase.ui.firestore.paging.FirestorePagingAdapter;
 import com.firebase.ui.firestore.paging.FirestorePagingOptions;
-import com.firebase.ui.firestore.paging.LoadingState;
-import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 
-import java.util.List;
-
-import de.hdodenhof.circleimageview.CircleImageView;
-
-public class UserSearch extends BasicActivity {
+public class UserSearch extends BasicActivity implements FirestoreAdapter.OnListItemClick {
 
     private RecyclerView recyclerView;
-    private FirestorePagingAdapter adapter;
-    private RecyclerView.LayoutManager layoutManager;
-    private List<UserInfo> arrayList;
+    private FirestoreAdapter adapter;
     private FirebaseFirestore firebaseFirestore;
-    private DatabaseReference databaseReference;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,57 +44,13 @@ public class UserSearch extends BasicActivity {
         //RecyclerOptions
         FirestorePagingOptions<UserInfo> options = new FirestorePagingOptions.Builder<UserInfo>()
                 .setLifecycleOwner(this)
-                .setQuery(query, config, new SnapshotParser<UserInfo>() {
-                    @NonNull
-                    @Override
-                    public UserInfo parseSnapshot(@NonNull DocumentSnapshot snapshot) {
-                        UserInfo userInfo = snapshot.toObject(UserInfo.class);
-                        String itemId = snapshot.getId();
-                        userInfo.setItem_id(itemId);
-                        return userInfo;
-                    }
-                })
+                .setQuery(query, config, UserInfo.class)
                 .build();
 
-        adapter = new FirestorePagingAdapter<UserInfo, ProductsViewHolder>(options) {
-            @NonNull
-            @Override
-            public ProductsViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-                View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.user_item, parent,false);
-                return new ProductsViewHolder(view);
-            }
+        adapter = new FirestoreAdapter(options, this);
 
-            @Override
-            protected void onBindViewHolder(@NonNull ProductsViewHolder productsViewHolder, int i, @NonNull UserInfo userInfo) {
-                productsViewHolder.username.setText(userInfo.getName());
-                productsViewHolder.bio.setText(userInfo.getItem_id()+ "");
-                if (userInfo.getPhotoUrl() != null)
-                    Glide.with(productsViewHolder.itemView).load(userInfo.getPhotoUrl()).into(productsViewHolder.image_profile);
 
-            }
 
-            @Override
-            protected void onLoadingStateChanged(@NonNull LoadingState state) {
-                super.onLoadingStateChanged(state);
-                switch (state){
-                    case LOADING_INITIAL:
-                        Log.d("PAGING_LOG","Loading Initial Data");
-                        break;
-                    case LOADING_MORE:
-                        Log.d("PAGING_LOG","Loading Next Page");
-                        break;
-                    case FINISHED:
-                        Log.d("PAGING_LOG","All Data Loaded");
-                        break;
-                    case ERROR:
-                        Log.d("PAGING_LOG","Error Loading Data");
-                        break;
-                    case LOADED:
-                        Log.d("PAGING_LOG","Total Items Loaded : " + getItemCount());
-                        break;
-                }
-            }
-        };
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
@@ -122,19 +64,9 @@ public class UserSearch extends BasicActivity {
         }
     };
 
-    private class ProductsViewHolder extends RecyclerView.ViewHolder {
+    @Override
+    public void onItemClick(DocumentSnapshot snapshot, int position) {
+        Log.d("ITEM_CLICK", "Clicked an item" + position + " and the ID :" + snapshot.getId());
 
-        private TextView username;
-        private TextView bio;
-        private CircleImageView image_profile;
-
-        public ProductsViewHolder(@NonNull View itemView) {
-            super(itemView);
-
-            username = itemView.findViewById(R.id.username);
-            bio = itemView.findViewById(R.id.bio);
-            image_profile = itemView.findViewById(R.id.image_profile);
-        }
     }
-
 }
