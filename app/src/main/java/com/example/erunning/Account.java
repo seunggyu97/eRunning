@@ -51,6 +51,9 @@ public class Account extends Fragment {
     private View view;
     private TextView tv_userName; // 닉네임 text
     private TextView tv_biomsg;
+    private TextView account_tv_post_count;
+    private TextView account_tv_follower_count;
+    private TextView account_tv_following_count;
     private CircleImageView iv_userProfile; // 프로필 이미지뷰
     private String user_name;
     private String bio_msg;
@@ -66,6 +69,9 @@ public class Account extends Fragment {
     private CircleImageView profileImageView;
     private String profilePath;
     //private static final int REQUEST_CAMERA = 1;
+
+    FirebaseUser firebaseUser;
+
     public static Account newinstance(){
         Account account = new Account();
         return account;
@@ -235,7 +241,9 @@ public class Account extends Fragment {
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-
+        account_tv_post_count = view.findViewById(R.id.account_tv_post_count);
+        account_tv_follower_count = view.findViewById(R.id.account_tv_follower_count);
+        account_tv_following_count = view.findViewById(R.id.account_tv_following_count);
         tv_userName = view.findViewById(R.id.tv_userName);
         tv_biomsg = view.findViewById(R.id.tv_userInfo);
         //iv_userProfile = view.findViewById(R.id.cv_userProfile);

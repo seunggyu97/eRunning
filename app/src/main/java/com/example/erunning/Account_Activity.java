@@ -35,8 +35,8 @@ public class Account_Activity extends BasicActivity  {
         Fragment frag1 = new Fragpictures().newInstance(code);
         Fragment frag2 = new Fragbookmark().newInstance(code);
 
-        mViewPager = findViewById(R.id.viewPager2_container);
-        tabLayout = findViewById(R.id.tabLayout);
+//        mViewPager = findViewById(R.id.viewPager2_container);
+//        tabLayout = findViewById(R.id.tabLayout);
 
         myPagerAdapter = new Account_ViewPageAdapter(this);
         myPagerAdapter.addFrag(frag1);

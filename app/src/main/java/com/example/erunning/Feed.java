@@ -21,10 +21,12 @@ public class Feed extends Fragment {
       return feed;
    }
 
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
        view = inflater.inflate(R.layout.feed, container, false);
+
 
        btn_user_search = view.findViewById(R.id.btn_user_search);
        btn_add = view.findViewById(R.id.btn_add);
@@ -32,7 +34,7 @@ public class Feed extends Fragment {
        btn_user_search.setOnClickListener(new View.OnClickListener() {
            @Override
            public void onClick(View v) {
-               switch (v.getId()){
+               switch (v.getId()) {
                    case R.id.btn_user_search:
                        Intent intent = new Intent(getActivity(), UserSearch.class);
                        startActivityForResult(intent, MainActivity.REQUEST_USER_SEARCH);
@@ -40,6 +42,7 @@ public class Feed extends Fragment {
                }
            }
        });
+
        btn_add.setOnClickListener(new View.OnClickListener() {
            @Override
            public void onClick(View v) {
