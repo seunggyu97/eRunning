@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="bottom"
+        android:orientation="vertical">
+
+        <!--경로 특징 글 작성란-->
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:hint="이 경로에 대한 특징을 남기세요."
+            android:id="@+id/editFeature">
+
+        </EditText>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <!--첨부 이미지 뷰-->
+            <ImageView
+                android:layout_width="310dp"
+                android:layout_height="match_parent"
+                android:id="@+id/imageGallery">
+
+            </ImageView>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:gravity="bottom">
+                <!--사진첨부 버튼-->
+                <Button
+                    android:layout_width="100dp"
+                    android:layout_height="50dp"
+                    android:id="@+id/btnPicture"
+                    android:text="사진첨부"/>
+
+                <!--등록 버튼-->
+                <Button
+                    android:layout_width="100dp"
+                    android:layout_height="50dp"
+                    android:id="@+id/btnFeature"
+                    android:text="등록"/>
+            </LinearLayout>
+
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+</LinearLayout>

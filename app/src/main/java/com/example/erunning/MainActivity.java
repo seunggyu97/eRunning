@@ -36,6 +36,8 @@ public class MainActivity extends BasicActivity {
     private Flag flag;
     private Record record;
 
+    private RecordResult recordResult; // 운동 경로 결과 기능
+
     static final int REQUEST_CAMERA = 1;
     static final int REQUEST_GALLERY = 1000;
     static final int REQUEST_EDITPROFILE = 2000;
@@ -130,6 +132,8 @@ public class MainActivity extends BasicActivity {
         viewPager.setAdapter(fragmentPagerAdapter);
         tabLayout.setupWithViewPager(viewPager);
 
+        recordResult = new RecordResult(); // 운동 경로 결과 생성
+
         context = this.getBaseContext();
         checkPermissions(); //권한 체크 메소드 호출
 
@@ -155,6 +159,18 @@ public class MainActivity extends BasicActivity {
     }
 
 
+
+    // 기록 결과 화면으로 전환 메소드
+    public void changeToResult() {
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.record_layout, recordResult).commit();
+    }
+
+    // 기록 결과 화면 제거 메소드
+    public void removeResult() {
+        getSupportFragmentManager().beginTransaction()
+                .remove(recordResult).commit();
+    }
 
     private void initView() {
 

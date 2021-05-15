@@ -22,6 +22,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -29,8 +30,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
@@ -51,6 +54,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -60,7 +64,7 @@ import java.util.List;
 import java.util.Locale;
 
 
-public class Record extends Fragment implements OnMapReadyCallback, SensorEventListener {
+public class Record extends Fragment implements OnMapReadyCallback, SensorEventListener, GoogleMap.OnMarkerClickListener {
    private View view; // rootview
    private MapView mapView = null; //맵뷰
    private Button btnStart; //시작 버튼
@@ -70,6 +74,7 @@ public class Record extends Fragment implements OnMapReadyCallback, SensorEventL
    private TextView textDistance; //운동 거리 텍스트뷰
    private TextView textStep; //걸음수 텍스트뷰
    private TextView textCalories; //소모 칼로리 텍스트뷰
+   private EditText editFeature; //특징 글 입력 뷰
 
    private FragmentActivity mContext;
 
@@ -77,6 +82,7 @@ public class Record extends Fragment implements OnMapReadyCallback, SensorEventL
    private GoogleMap mMap;
    private Marker currentMarker = null; // 현재 위치 마커
    private Marker pinMarker = null; // 핀 등록 마커
+   private Marker tempMarker = null; // 임시 마커
 
    // The entry point to the Fused Location Provider.
    private FusedLocationProviderClient mFusedLocationProviderClient; // Deprecated된 FusedLocationApi를 대체
@@ -113,6 +119,15 @@ public class Record extends Fragment implements OnMapReadyCallback, SensorEventL
    Handler handler;
    int Seconds, Minutes, Hours, MilliSeconds ;
 
+   private String featuretext; // 특징 글
+
+   private FirebaseFirestore db = FirebaseFirestore.getInstance(); //Cloud FireStore 인스턴스 초기화
+
+   ArrayList<MarkerOptions> ftmarkerOptions = new ArrayList<>(); //전체 특징 마커옵션 리스트
+   ArrayList<LatLng> latlngList = new ArrayList<>(); //전체 경로 위도, 경도값 리스트
+
+   MainActivity mainActivity;
+
    public static Record newinstance(){
       Record record = new Record();
       return record;
@@ -127,6 +142,14 @@ public class Record extends Fragment implements OnMapReadyCallback, SensorEventL
    public void onAttach(Activity activity) { // Fragment 가 Activity에 attach 될 때 호출된다.
       mContext =(FragmentActivity) activity;
       super.onAttach(activity);
+      mainActivity = (MainActivity) getActivity();
+   }
+
+   // 메인 액티비티에서 내려온다.
+   @Override
+   public void onDetach() {
+      super.onDetach();
+      mainActivity = null;
    }
 
    @Override
@@ -160,6 +183,8 @@ public class Record extends Fragment implements OnMapReadyCallback, SensorEventL
       textCalories = (TextView)view.findViewById(R.id.textCalories);
       textStep = (TextView)view.findViewById(R.id.textStep);
 
+      editFeature = (EditText)view.findViewById(R.id.editFeature);
+
       //textStep.setText("0"); // 걸음 수 초기화 및 출력
       sm = (SensorManager)getActivity().getSystemService(Context.SENSOR_SERVICE);  // 센서 매니저 생성
       sensor_step_detector = sm.getDefaultSensor(Sensor.TYPE_STEP_DETECTOR);  // 스템 감지 센서 등록
@@ -179,6 +204,13 @@ public class Record extends Fragment implements OnMapReadyCallback, SensorEventL
                Toast.makeText(getActivity(), "위치 정보를 가져오는 중입니다. 잠시만 기다려주세요...",
                        Toast.LENGTH_SHORT).show();
             }
+         }
+      });
+
+      btnFinish.setOnClickListener(new View.OnClickListener() {
+         @Override
+         public void onClick(View view) {
+            mainActivity.changeToResult();
          }
       });
 
@@ -307,8 +339,10 @@ public class Record extends Fragment implements OnMapReadyCallback, SensorEventL
                     = new LatLng(location.getLatitude(), location.getLongitude());
 
             String markerTitle = getCurrentAddress(currentPosition);
-            String markerSnippet = "위도:" + String.valueOf(location.getLatitude())
+            /* String markerSnippet = "위도:" + String.valueOf(location.getLatitude())
                     + " 경도:" + String.valueOf(location.getLongitude());
+            */
+            String markerSnippet = "특징 글";
 
             Log.d(TAG, "Time :" + CurrentTime() + " onLocationResult : " + markerSnippet);
 
@@ -333,6 +367,7 @@ public class Record extends Fragment implements OnMapReadyCallback, SensorEventL
       if (currentMarker != null) currentMarker.remove();
 
       LatLng currentLatLng = new LatLng(latitude, longtitude);
+      latlngList.add(currentLatLng); //위도, 경도 값 저장 리스트에 추가
 
       MarkerOptions markerOptions = new MarkerOptions();
       markerOptions.position(currentLatLng);
@@ -341,6 +376,8 @@ public class Record extends Fragment implements OnMapReadyCallback, SensorEventL
       markerOptions.draggable(true);
 
       currentMarker = mMap.addMarker(markerOptions);
+
+      mMap.setOnMarkerClickListener(this); // 마커 클릭에 대한 이벤트 처리 (리스너 지정)
 
       CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLng(currentLatLng);
       mMap.moveCamera(cameraUpdate);
@@ -353,11 +390,38 @@ public class Record extends Fragment implements OnMapReadyCallback, SensorEventL
       btnPin.setOnClickListener(new View.OnClickListener() {
          @Override
          public void onClick(View view) { //핀 버튼 클릭 시
-            pinMarker = mMap.addMarker(markerOptions); //핀 마커 추가
+            tempMarker = mMap.addMarker(markerOptions);
+
+            BottomSheetDialog bottomSheetDialog = BottomSheetDialog.getInstance();
+            bottomSheetDialog.show(getFragmentManager(),"bottomSheet"); // 다이얼로그 호출
+            
+            /*if (getArguments() != null)
+            {
+               featuretext = getArguments().getString("featuretext"); // BottomSheetDialog에서 받아온 값 넣기
+               markerOptions.snippet(featuretext);
+               pinMarker = mMap.addMarker(markerOptions); //핀 마커 추가
+               Toast.makeText(getContext(),"전달됨",Toast.LENGTH_SHORT).show();
+            }*/
+
+            bottomSheetDialog.setDialogResult(new BottomSheetDialog.OnMyDialogResult() {
+               @Override
+               public void finish(String result) {
+                  // result에 dialog에서 보낸값이 저장되어 돌아옵니다. 값을 가지고 원하는 동작을 하면됩니다.
+                  featuretext = result;
+                  markerOptions.snippet(featuretext);
+                  pinMarker = mMap.addMarker(markerOptions); //핀 마커 추가
+                  //Toast.makeText(getActivity(),"전달됨",Toast.LENGTH_SHORT).show();
+                  ftmarkerOptions.add(markerOptions); //리스트에 특징 마커 추가
+               }
+            });
+
+            tempMarker.remove();
          }
       });
 
    }
+
+
    //private double GpsStatus = android.location.Location.getLatitude();
    private void changeWalkState(){
       Log.e(startLatLng.toString(),"startLatLng");
@@ -544,6 +608,12 @@ public class Record extends Fragment implements OnMapReadyCallback, SensorEventL
       }
 
    };
+
+   @Override
+   public boolean onMarkerClick(Marker marker) {
+
+      return false;
+   }
 
 }
 
