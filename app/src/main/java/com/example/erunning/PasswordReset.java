@@ -3,6 +3,7 @@ package com.example.erunning;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -15,7 +16,7 @@ public class PasswordReset extends BasicActivity {
 
     private FirebaseAuth mAuth;
     private static final String TAG = "PasswordResetActivity";
-
+    private RelativeLayout loaderLayout;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -33,6 +34,8 @@ public class PasswordReset extends BasicActivity {
         String Email = ((EditText)findViewById(R.id.ResetEmailEditText)).getText().toString();
 
         if(Email.length() > 0 ) {
+            final RelativeLayout loaderLayout = findViewById(R.id.loaderLayout);
+            loaderLayout.setVisibility(View.VISIBLE);
             FirebaseAuth auth = FirebaseAuth.getInstance();
 
             auth.sendPasswordResetEmail(Email)
@@ -40,6 +43,7 @@ public class PasswordReset extends BasicActivity {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
                             if (task.isSuccessful()) {
+                                loaderLayout.setVisibility(View.GONE);
                                 Toast.makeText(PasswordReset.this, "등록하신 이메일로 확인메일을 발송했습니다.",
                                         Toast.LENGTH_SHORT).show();
                                 finish();

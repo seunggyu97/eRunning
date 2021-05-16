@@ -1,14 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
-
+    xmlns:app="http://schemas.android.com/apk/res-auto">
     <LinearLayout
         android:id="@+id/LL_NewPostTabBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+
         android:orientation="horizontal">
 
         <ImageButton
@@ -19,7 +18,7 @@
             android:backgroundTint="#FFFFFF"
             app:srcCompat="@drawable/ic_baseline_arrow_back_24" />
 
-        <EditText
+        <TextView
             android:id="@+id/editTextTextPersonName"
             android:layout_width="300dp"
             android:layout_height="wrap_content"
@@ -40,21 +39,40 @@
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_below="@+id/LL_NewPostTabBar">
 
         <LinearLayout
-            android:id="@+id/LL_NewPostContents"
+
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical" >
+            android:orientation="vertical"
+            android:padding="10dp">
 
-            <ImageView
-                android:id="@+id/iv_writing"
+            <EditText
+                android:id="@+id/et_writing"
                 android:layout_width="match_parent"
-                android:layout_height="350dp"
-                android:adjustViewBounds="true"
-                android:visibility="gone"
-                app:srcCompat="@drawable/border" />
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:hint="문구 입력..."
+                android:inputType="textMultiLine"/>
+
+            <LinearLayout
+                android:id="@+id/LL_NewPostContents"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+
+
+                </LinearLayout>
+
+            </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -63,17 +81,6 @@
                 android:layout_marginEnd="10dp"
                 android:layout_marginBottom="5dp"
                 android:orientation="vertical">
-
-                <EditText
-                    android:id="@+id/et_writing"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:ems="10"
-                    android:gravity="start|top"
-                    android:hint="문구 입력..."
-                    android:inputType="textMultiLine"
-                    android:textSize="18sp" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -147,8 +154,49 @@
                         android:textSize="24sp" />
                 </LinearLayout>
 
+
             </LinearLayout>
+
         </LinearLayout>
+
     </ScrollView>
 
-</LinearLayout>
+    <RelativeLayout
+        android:id="@+id/buttonsBackgroundLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#91646464"
+        android:visibility="gone">
+
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:elevation="10dp"
+            app:cardCornerRadius="15dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:padding="5dp">
+
+
+                <Button
+                    android:id="@+id/delete"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="삭제" />
+            </LinearLayout>
+
+        </androidx.cardview.widget.CardView>
+
+    </RelativeLayout>
+    <include
+        layout="@layout/view_loader"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"/>
+
+</RelativeLayout>

@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -48,6 +49,7 @@ public class Login extends BasicActivity implements GoogleApiClient.OnConnection
         {
             boolean isEmailverified = mAuth.getCurrentUser().isEmailVerified();
             if(isEmailverified) {
+
                 startActivity(new Intent(Login.this, MainActivity.class));
                 finish();
             }
@@ -138,11 +140,13 @@ public class Login extends BasicActivity implements GoogleApiClient.OnConnection
 
         // 이메일 계정 생성 시작
         if (Email.length() > 0 && Password.length() > 0) {
-
+            final RelativeLayout loaderLayout = findViewById(R.id.loaderLayout);
+            loaderLayout.setVisibility(View.VISIBLE);
             mAuth.signInWithEmailAndPassword(Email, Password)
                     .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
+
                             if (task.isSuccessful()) {
                                 if(mAuth.getCurrentUser()!=null){
                                     boolean isEmailverified = mAuth.getCurrentUser().isEmailVerified();
@@ -151,10 +155,12 @@ public class Login extends BasicActivity implements GoogleApiClient.OnConnection
                                         Toast.makeText(Login.this, "로그인이 정상적으로 되었습니다.",
                                                 Toast.LENGTH_SHORT).show();
                                         finish();
+                                        loaderLayout.setVisibility(View.GONE);
                                     }
                                     else{
                                         Toast.makeText(Login.this, "로그인 실패 : 인증되지 않은 이메일",
                                                 Toast.LENGTH_SHORT).show();
+                                        loaderLayout.setVisibility(View.GONE);
                                     }
                                 }
                             } else {
@@ -162,6 +168,7 @@ public class Login extends BasicActivity implements GoogleApiClient.OnConnection
                                 Log.w(TAG, "signInWithEmail:failure", task.getException());
                                 Toast.makeText(Login.this, "이메일과 비밀번호를 확인해주세요.",
                                         Toast.LENGTH_SHORT).show();
+                                loaderLayout.setVisibility(View.GONE);
                             }
                             // ...
                         }
@@ -170,6 +177,7 @@ public class Login extends BasicActivity implements GoogleApiClient.OnConnection
         } else {
             Toast.makeText(Login.this, "이메일과 비밀번호를 입력해주세요.",
                     Toast.LENGTH_SHORT).show();
+
 
         }
     }

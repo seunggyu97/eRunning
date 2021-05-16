@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -35,7 +36,7 @@ public class SignUp extends BasicActivity {
     private int birthyear = 0;
     private int birthmonth = 0;
     private int birthday = 0;
-
+    private RelativeLayout loaderLayout;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -48,6 +49,7 @@ public class SignUp extends BasicActivity {
 
         findViewById(R.id.signup_btn).setOnClickListener(onClickListener);
 
+        loaderLayout = findViewById(R.id.loaderLayout);
         TextInputLayout lo_password = findViewById(R.id.CreatePassWordLayout);
         TextInputLayout lo_checkpassword = findViewById(R.id.CreatePassWordCheckLayout);
 
@@ -182,6 +184,7 @@ public class SignUp extends BasicActivity {
 
         // 이메일 계정 생성 시작
         if (Email.length() > 0 && Password.length() > 0 && CheckPassWord.length() > 0 && UserName.length() > 0) {
+            loaderLayout.setVisibility(View.VISIBLE);
             if (Password.length() > 5 && CheckPassWord.length() > 5) {
                 if (Password.equals(CheckPassWord)) {
                     if (UserName.length() > 1) {
@@ -196,12 +199,14 @@ public class SignUp extends BasicActivity {
                                                                     @Override
                                                                     public void onComplete(@NonNull Task<Void> task) {
                                                                         if (task.isSuccessful()) {
+                                                                            loaderLayout.setVisibility(View.GONE);
                                                                             createSuccess(Email, Password);// 인증 화면 호출
                                                                         }
                                                                     }
                                                                 });
                                                     } else {
                                                         // 실패시
+                                                        loaderLayout.setVisibility(View.GONE);
                                                         String Errormsg = task.getException().toString();
                                                         Log.w(TAG, "이메일 생성 실패", task.getException());
                                                         if (Errormsg.equals(ErrorEmailAlreadyUse)) {
@@ -216,23 +221,28 @@ public class SignUp extends BasicActivity {
                                             }
                                     );
                         } else {
+                            loaderLayout.setVisibility(View.GONE);
                             Toast.makeText(SignUp.this, "생년월일을 입력해주세요.",
                                     Toast.LENGTH_SHORT).show();
                         }
                     } else {
+                        loaderLayout.setVisibility(View.GONE);
                         Toast.makeText(SignUp.this, "이름을 2자이상 입력해주세요.",
                                 Toast.LENGTH_SHORT).show();
                     }
                 } else {
                     //비밀번호 일치하지 않는 경우
+                    loaderLayout.setVisibility(View.GONE);
                     Toast.makeText(SignUp.this, "비밀번호가 일치하지 않습니다.",
                             Toast.LENGTH_SHORT).show();
                 }
             } else {
+                loaderLayout.setVisibility(View.GONE);
                 Toast.makeText(SignUp.this, "비밀번호는 최소 6자 이상 입력해주세요.",
                         Toast.LENGTH_SHORT).show();
             }
         } else {
+            loaderLayout.setVisibility(View.GONE);
             Toast.makeText(SignUp.this, "정보를 모두 입력해주세요.",
                     Toast.LENGTH_SHORT).show();
         }

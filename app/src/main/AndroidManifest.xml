@@ -52,7 +52,7 @@
         <activity android:name=".NewPost"/>
         <meta-data
             android:name="com.google.android.maps.v2.API_KEY"
-            android:value=""/> <!-- 각자 api키 발급받아서 YOUR_API_KEY 대신 넣어주세요! -->
+            android:value="AIzaSyD7t-irS-tYV3szFbs9wa7Ml4GjFCSIiuk"/> <!-- 각자 api키 발급받아서 YOUR_API_KEY 대신 넣어주세요! -->
         <!-- https://console.developers.google.com/flows/enableapi?apiid=maps_android_backend&keyType=CLIENT_SIDE_ANDROID&r=4D:83:32:0E:C5:5D:A9:E7:2F:07:C4:D1:E1:AA:7C:E3:D2:65:51:AD%3Bcom.example.erunning -->
         <uses-library android:name="org.apache.http.legacy" android:required="false"/>
     </application>

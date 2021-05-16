@@ -23,9 +23,9 @@ import java.util.ArrayList;
 
 //import static com.example.erunning.Util.INTENT_PATH;
 
-public class GalleryAdapter  extends RecyclerView.Adapter<GalleryAdapter.GalleryViewHolder> {
-    private ArrayList<String> mDataset;
-    private Activity activity;
+class GalleryAdapter  extends RecyclerView.Adapter<GalleryAdapter.GalleryViewHolder> {
+    ArrayList<String> mDataset;
+    Activity activity;
 
     public static class GalleryViewHolder extends RecyclerView.ViewHolder {
         public CardView cardView;

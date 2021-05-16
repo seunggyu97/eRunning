@@ -1,148 +1,159 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout 
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
-
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="match_parent"
-        android:layout_height="83dp"
-        android:layout_marginTop="30dp"
-        android:layout_marginBottom="30dp"
-        android:gravity="center"
-        android:text="e-Running"
-        android:textColor="#000000"
-        android:textSize="36sp"
-        android:textStyle="bold" />
-
-    <TextView
-        android:id="@+id/textView3"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:text="반갑습니다!"
-        android:textColor="#000000"
-        android:textSize="24sp"
-        android:textStyle="bold" />
-
-    <TextView
-        android:id="@+id/textView4"
-        android:layout_width="match_parent"
-        android:layout_height="36dp"
-        android:layout_marginTop="10dp"
-        android:gravity="center"
-        android:text="함께 달릴 준비 되셨나요?"
-        android:textColor="#6C6A6A"
-        android:textSize="12sp"
-        android:textStyle="bold" />
-
+    android:layout_height="match_parent">
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="10dp"
-        android:orientation="vertical"
-        android:padding="10dp">
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/email_layout"
+        android:orientation="vertical">
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="match_parent"
+            android:layout_height="83dp"
+            android:layout_marginTop="30dp"
+            android:layout_marginBottom="30dp"
+            android:gravity="center"
+            android:text="e-Running"
+            android:textColor="#000000"
+            android:textSize="36sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/textView3"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="5dp"
-            android:ems="10"
-            android:hint="이메일"
-            app:errorEnabled="true"
-            app:endIconMode="custom"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+            android:gravity="center"
+            android:text="반갑습니다!"
+            android:textColor="#000000"
+            android:textSize="24sp"
+            android:textStyle="bold" />
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/emailEditText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="textEmailAddress"
-                />
-
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/password_layout"
+        <TextView
+            android:id="@+id/textView4"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="5dp"
-            android:ems="10"
-            android:hint="비밀번호"
-            app:endIconMode="password_toggle"
-            app:errorEnabled="true"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/passwordEditText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="textPassword"
-                />
-
-        </com.google.android.material.textfield.TextInputLayout>
-        <!--<EditText
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="5dp"
-            android:ems="10"
-            android:hint="이메일"
-            android:inputType="textEmailAddress" />
-
-
-        <EditText
-            android:id="@+id/passwordEditText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="5dp"
-            android:ems="10"
-            android:hint="비밀번호"
-            android:inputType="textPassword" />-->
-
-        <Button
-            android:id="@+id/login_btn"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:layout_marginBottom="10dp"
-            android:background="@drawable/round_btn"
-            android:outlineAmbientShadowColor="#FFFFFF"
-            android:text="로그인" />
-
-        <Button
-            android:id="@+id/LoginPageSignUp_btn"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/round_btn"
-            android:text="회원가입"
-            app:backgroundTint="#555454" />
-
-        <Button
-            android:id="@+id/LoginResetPW_btn"
-            android:layout_width="200dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginTop="5dp"
-            android:text="비밀번호를 잊으셨나요?"
-            android:textColor="#5A5959"
-            android:textSize="10sp"
-            app:backgroundTint="#FFFFFF" />
+            android:layout_height="36dp"
+            android:layout_marginTop="10dp"
+            android:gravity="center"
+            android:text="함께 달릴 준비 되셨나요?"
+            android:textColor="#6C6A6A"
+            android:textSize="12sp"
+            android:textStyle="bold" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginTop="15dp"
-            android:gravity="center_horizontal"
-            android:orientation="vertical">
+            android:layout_marginTop="10dp"
+            android:orientation="vertical"
+            android:padding="10dp">
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/email_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:ems="10"
+                android:hint="이메일"
+                app:errorEnabled="true"
+                app:endIconMode="custom"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
-            <com.google.android.gms.common.SignInButton
-                android:id="@+id/btn_googleLogin"
-                android:layout_width="205dp"
-                android:layout_height="36dp" />
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/emailEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textEmailAddress"
+                    />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/password_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:ems="10"
+                android:hint="비밀번호"
+                app:endIconMode="password_toggle"
+                app:errorEnabled="true"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/passwordEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textPassword"
+                    />
+
+            </com.google.android.material.textfield.TextInputLayout>
+            <!--<EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:ems="10"
+                android:hint="이메일"
+                android:inputType="textEmailAddress" />
+
+
+            <EditText
+                android:id="@+id/passwordEditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:ems="10"
+                android:hint="비밀번호"
+                android:inputType="textPassword" />-->
+
+            <Button
+                android:id="@+id/login_btn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="10dp"
+                android:background="@drawable/round_btn"
+                android:outlineAmbientShadowColor="#FFFFFF"
+                android:text="로그인" />
+
+            <Button
+                android:id="@+id/LoginPageSignUp_btn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/round_btn"
+                android:text="회원가입"
+                app:backgroundTint="#555454" />
+
+            <Button
+                android:id="@+id/LoginResetPW_btn"
+                android:layout_width="200dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="5dp"
+                android:text="비밀번호를 잊으셨나요?"
+                android:textColor="#5A5959"
+                android:textSize="10sp"
+                app:backgroundTint="#FFFFFF" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="15dp"
+                android:gravity="center_horizontal"
+                android:orientation="vertical">
+
+                <com.google.android.gms.common.SignInButton
+                    android:id="@+id/btn_googleLogin"
+                    android:layout_width="205dp"
+                    android:layout_height="36dp" />
+            </LinearLayout>
+
         </LinearLayout>
-
     </LinearLayout>
+    <include
+        layout="@layout/view_loader"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"/>
 
-</LinearLayout>
+
+
+</RelativeLayout>

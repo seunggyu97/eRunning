@@ -125,7 +125,7 @@ public class Account extends Fragment {
                 }
                 break;
             }
-            case MainActivity.REQUEST_GALLERY:{
+            case 0:{
                 Log.e("REQUEST_GALLERY","switch문 실행");
                 if(resultCode == Activity.RESULT_OK){
 
@@ -345,8 +345,9 @@ public class Account extends Fragment {
                                                         Toast.LENGTH_SHORT).show();
                                             }
                                         }else{
-                                            Intent intent = new Intent(getActivity(), Gallery.class);
-                                            startActivityForResult(intent, MainActivity.REQUEST_GALLERY);
+                                            //Intent intent = new Intent(getActivity(), Gallery.class);
+                                            //startActivityForResult(intent, MainActivity.REQUEST_GALLERY);
+                                            myStartActivity(Gallery.class);
                                             bottomSheetDialog.dismiss();
                                         }
 
@@ -503,7 +504,10 @@ public class Account extends Fragment {
                 });
 
     }*/
-
+    private void myStartActivity(Class c) {
+        Intent intent = new Intent(getActivity(), c);
+        startActivityForResult(intent, 0);
+    }
 
 
 }
