@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/record_layout"
+    android:id="@+id/record_result_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
@@ -19,12 +19,34 @@
 
     </LinearLayout>
 
-    <!--날씨 정보 표시 바 - 송모-->
+    <!--운동 기록 날짜, 시간 표시 바-->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
         android:background="@drawable/border">
+
+        <Button
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:id="@+id/btnCancel"
+            android:text="닫기"/>
+
+        <TextView
+            android:id="@+id/textDate"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="3"
+            android:text="날짜"
+            android:gravity="center"/>
+
+        <Button
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:id="@+id/btnShare"
+            android:text="공유"/>
 
     </LinearLayout>
 
@@ -32,10 +54,10 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="5">
+        android:layout_weight="3.5">
 
         <com.google.android.gms.maps.MapView
-            android:id="@+id/map"
+            android:id="@+id/rsmap"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:name="com.google.android.gms.maps.MapFragment"
@@ -54,7 +76,7 @@
             android:layout_height="0dp"
             android:layout_weight="2">
             <TextView
-                android:id="@+id/textTime"
+                android:id="@+id/rstextTime"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
@@ -62,7 +84,7 @@
                 android:textSize="24sp"
                 android:gravity="center" />
             <TextView
-                android:id="@+id/textDistance"
+                android:id="@+id/rstextDistance"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
@@ -70,7 +92,7 @@
                 android:textSize="24sp"
                 android:gravity="center" />
             <TextView
-                android:id="@+id/textStep"
+                android:id="@+id/rstextStep"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
@@ -78,7 +100,7 @@
                 android:textSize="24sp"
                 android:gravity="center" />
             <TextView
-                android:id="@+id/textCalories"
+                android:id="@+id/rstextCalories"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
@@ -93,28 +115,28 @@
             android:layout_height="0dp"
             android:layout_weight="1">
             <TextView
-                android:id="@+id/textTimeTitle"
+                android:id="@+id/rstextTimeTitle"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:text="시간 (시:분:초)"
                 android:gravity="center_horizontal" />
             <TextView
-                android:id="@+id/textDistanceTitle"
+                android:id="@+id/rstextDistanceTitle"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:text="거리 (km)"
                 android:gravity="center_horizontal" />
             <TextView
-                android:id="@+id/textStepTitle"
+                android:id="@+id/rstextStepTitle"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:text="걸음수 (보)"
                 android:gravity="center_horizontal" />
             <TextView
-                android:id="@+id/textCaloriesTitle"
+                android:id="@+id/rstextCaloriesTitle"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
@@ -124,31 +146,12 @@
 
     </LinearLayout>
 
-    <!--버튼 화면-->
+    <!--특징 등록 팝업창-->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="2">
-        <Button
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:id="@+id/btnStart"
-            android:text="시작"/>
+        android:layout_weight="3.5">
 
-        <Button
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:id="@+id/btnFinish"
-            android:text="중지"/>
-
-        <Button
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:id="@+id/btnPin"
-            android:text="핀등록"/>
 
     </LinearLayout>
 

@@ -1,6 +1,7 @@
 package com.example.erunning;
 
 public class UserInfo {
+    private String item_id;
     private String name;
     private int birthyear;
     private int birthmonth;
@@ -8,7 +9,7 @@ public class UserInfo {
     private String photoUrl;
     private String bio;
 
-
+    private UserInfo() {}
     public UserInfo(String name, int birthyear, int birthmonth, int birthday){
         this.name = name;
         this.birthyear = birthyear;
@@ -60,5 +61,13 @@ public class UserInfo {
     }
     public void setBio(String bio){
         this.bio = bio;
+    }
+
+    public String getItem_id() {
+        return item_id;
+    }
+
+    public void setItem_id(String item_id) {
+        this.item_id = item_id;
     }
 }

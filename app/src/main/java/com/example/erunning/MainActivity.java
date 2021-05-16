@@ -38,6 +38,8 @@ public class MainActivity extends BasicActivity {
     private Flag flag;
     private Record record;
 
+    private RecordResult recordResult; // 운동 경로 결과 기능
+
     static final int REQUEST_CAMERA = 1;
     static final int REQUEST_GALLERY = 1000;
     static final int REQUEST_EDITPROFILE = 2000;
@@ -47,6 +49,13 @@ public class MainActivity extends BasicActivity {
     //private TextView user_name; // 이름 Text
     //public ImageView route_profile; // 이미지 뷰
     Context context;
+
+    public void replaceFragment(Fragment fragment){      ////// 화면전환 메소드 프레그먼트는 이메소드를 받아서 화면전환!!!!
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.const_vp,fragment).commit();
+    }
+
 
     PermissionListener permissionlistener = new PermissionListener() {
         @Override
@@ -125,6 +134,8 @@ public class MainActivity extends BasicActivity {
         viewPager.setAdapter(fragmentPagerAdapter);
         tabLayout.setupWithViewPager(viewPager);
 
+        recordResult = new RecordResult(); // 운동 경로 결과 생성
+
         context = this.getBaseContext();
         checkPermissions(); //권한 체크 메소드 호출
 
@@ -149,10 +160,18 @@ public class MainActivity extends BasicActivity {
         }
     }
 
-    public void replaceFragment(Fragment fragment){      ////// 화면전환 메소드 프레그먼트는 이메소드를 받아서 화면전환!!!!
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.const_vp,fragment).commit();
+
+
+    // 기록 결과 화면으로 전환 메소드
+    public void changeToResult() {
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.record_layout, recordResult).commit();
+    }
+
+    // 기록 결과 화면 제거 메소드
+    public void removeResult() {
+        getSupportFragmentManager().beginTransaction()
+                .remove(recordResult).commit();
     }
 
     private void initView() {
@@ -174,6 +193,9 @@ public class MainActivity extends BasicActivity {
         tabLayout.setupWithViewPager(viewPager);
 
     }
+
+
+
     public class ActivityResultEvent {
 
         private int requestCode;

@@ -27,6 +27,14 @@
             android:maxLines="1"
             android:textStyle="bold"
             android:textColor="@color/colorPrimaryDark"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/bio"
+            android:text="bio"
+            android:maxLines="1"
+            android:textColor="@color/black"/>
+
 
 
     </LinearLayout>
@@ -36,7 +44,9 @@
         android:layout_height="30dp"
         android:background="@drawable/fui_idp_button_background_google"
         android:id="@+id/btn_follow"
-        android:textColor="@color/colorPrimary"
+        android:text="팔로우"
+        android:textSize="10dp"
+        android:textColor="#FFFFFF"
         android:layout_alignParentEnd="true"
         android:layout_centerVertical="true"
         android:visibility="gone"/>
