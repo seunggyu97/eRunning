@@ -198,7 +198,7 @@ class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.GalleryViewHolder> {
             else if(min == 25){ createdAtTextView.setText("26분 전"); }
             else if(min == 26){ createdAtTextView.setText("28분 전"); }
             else if(min == 27){ createdAtTextView.setText("29분 전"); }
-            else if(min == 28){ createdAtTextView.setText("30분 전"); }
+            else if(min == 28){ createdAtTextView.setText("30분 전"); }//
             else if(min >= 29 && min <= 59){ createdAtTextView.setText("+ 30분"); }
             else if(min >= 60 && min <= 119){ createdAtTextView.setText("+ 1시간"); }
             else if(min >= 120 && min <= 179){ createdAtTextView.setText("+ 2시간"); }
