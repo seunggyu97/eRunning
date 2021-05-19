@@ -6,7 +6,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -25,6 +24,8 @@ import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.GoogleAuthProvider;
+
+import static com.example.erunning.Utillity.showToast;
 
 public class Login extends BasicActivity implements GoogleApiClient.OnConnectionFailedListener {
     private FirebaseAuth mAuth;
@@ -104,14 +105,14 @@ public class Login extends BasicActivity implements GoogleApiClient.OnConnection
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) { //로그인이 성공했으면
-                            Toast.makeText(Login.this, "로그인이 정상적으로 되었습니다.", Toast.LENGTH_SHORT).show();
+                            showToast(Login.this,"로그인이 정상적으로 되었습니다.");
                             Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                             intent.putExtra("nickName", account.getDisplayName());
                             intent.putExtra("photoURL", String.valueOf(account.getPhotoUrl()));
                             startActivity(new Intent(Login.this, MainActivity.class));
                             finish();
                         } else { // 로그인 실패시
-                            Toast.makeText(Login.this, "로그인 실패", Toast.LENGTH_SHORT).show();
+                            showToast(Login.this,"로그인 실패");
                         }
                     }
                 });
@@ -152,22 +153,19 @@ public class Login extends BasicActivity implements GoogleApiClient.OnConnection
                                     boolean isEmailverified = mAuth.getCurrentUser().isEmailVerified();
                                     if(isEmailverified){
                                         startActivity(new Intent(Login.this, MainActivity.class));
-                                        Toast.makeText(Login.this, "로그인이 정상적으로 되었습니다.",
-                                                Toast.LENGTH_SHORT).show();
+                                        showToast(Login.this,"로그인이 정상적으로 되었습니다.");
                                         finish();
                                         loaderLayout.setVisibility(View.GONE);
                                     }
                                     else{
-                                        Toast.makeText(Login.this, "로그인 실패 : 인증되지 않은 이메일",
-                                                Toast.LENGTH_SHORT).show();
+                                        showToast(Login.this,"로그인 실패 : 인증되지 않은 이메일");
                                         loaderLayout.setVisibility(View.GONE);
                                     }
                                 }
                             } else {
                                 // If sign in fails, display a message to the user.
                                 Log.w(TAG, "signInWithEmail:failure", task.getException());
-                                Toast.makeText(Login.this, "이메일과 비밀번호를 확인해주세요.",
-                                        Toast.LENGTH_SHORT).show();
+                                showToast(Login.this,"이메일과 비밀번호를 확인해주세요.");
                                 loaderLayout.setVisibility(View.GONE);
                             }
                             // ...
@@ -175,8 +173,7 @@ public class Login extends BasicActivity implements GoogleApiClient.OnConnection
                     });
 
         } else {
-            Toast.makeText(Login.this, "이메일과 비밀번호를 입력해주세요.",
-                    Toast.LENGTH_SHORT).show();
+            showToast(Login.this,"이메일과 비밀번호를 입력해주세요.");
 
 
         }

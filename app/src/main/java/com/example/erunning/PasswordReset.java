@@ -12,6 +12,8 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 
+import static com.example.erunning.Utillity.showToast;
+
 public class PasswordReset extends BasicActivity {
 
     private FirebaseAuth mAuth;
@@ -44,8 +46,7 @@ public class PasswordReset extends BasicActivity {
                         public void onComplete(@NonNull Task<Void> task) {
                             if (task.isSuccessful()) {
                                 loaderLayout.setVisibility(View.GONE);
-                                Toast.makeText(PasswordReset.this, "등록하신 이메일로 확인메일을 발송했습니다.",
-                                        Toast.LENGTH_SHORT).show();
+                                showToast(PasswordReset.this, "등록하신 이메일로 확인메일을 발송했습니다.");
                                 finish();
                             }
                         }
@@ -53,8 +54,8 @@ public class PasswordReset extends BasicActivity {
         }
 
         else{
-                Toast.makeText(PasswordReset.this, "이메일을 입력해주세요.",
-                        Toast.LENGTH_SHORT).show();
+                showToast(PasswordReset.this, "이메일을 입력해주세요.");
+
         }
 
 

@@ -22,9 +22,11 @@
             android:id="@+id/editTextTextPersonName"
             android:layout_width="300dp"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
             android:ems="10"
             android:inputType="textPersonName"
             android:text="새 게시물"
+            android:textColor="#000000"
             android:textSize="24sp"
             android:textStyle="bold" />
 
@@ -50,13 +52,10 @@
             android:orientation="vertical"
             android:padding="10dp">
 
-            <EditText
-                android:id="@+id/et_writing"
+            <include
+                layout="@layout/view_contents_edit_text"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:ems="10"
-                android:hint="문구 입력..."
-                android:inputType="textMultiLine"/>
+                android:layout_height="wrap_content" />
 
             <LinearLayout
                 android:id="@+id/LL_NewPostContents"

@@ -10,7 +10,6 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
@@ -26,6 +25,8 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.Calendar;
+
+import static com.example.erunning.Utillity.showToast;
 
 public class SignUp extends BasicActivity {
 
@@ -210,11 +211,10 @@ public class SignUp extends BasicActivity {
                                                         String Errormsg = task.getException().toString();
                                                         Log.w(TAG, "이메일 생성 실패", task.getException());
                                                         if (Errormsg.equals(ErrorEmailAlreadyUse)) {
-                                                            Toast.makeText(SignUp.this, "이미 가입된 이메일입니다.",
-                                                                    Toast.LENGTH_SHORT).show();
+
+                                                            showToast(SignUp.this, "이미 가입된 이메일입니다.");
                                                         } else if (Errormsg.equals(ErrorEmailNot)) {
-                                                            Toast.makeText(SignUp.this, "올바르지 않은 이메일 형식입니다.",
-                                                                    Toast.LENGTH_SHORT).show();
+                                                            showToast(SignUp.this, "올바르지 않은 이메일 형식입니다.");
                                                         }
                                                     }
                                                 }
@@ -222,29 +222,24 @@ public class SignUp extends BasicActivity {
                                     );
                         } else {
                             loaderLayout.setVisibility(View.GONE);
-                            Toast.makeText(SignUp.this, "생년월일을 입력해주세요.",
-                                    Toast.LENGTH_SHORT).show();
+                            showToast(SignUp.this, "생년월일을 입력해주세요.");
                         }
                     } else {
                         loaderLayout.setVisibility(View.GONE);
-                        Toast.makeText(SignUp.this, "이름을 2자이상 입력해주세요.",
-                                Toast.LENGTH_SHORT).show();
+                        showToast(SignUp.this, "이름을 2자이상 입력해주세요.");
                     }
                 } else {
                     //비밀번호 일치하지 않는 경우
                     loaderLayout.setVisibility(View.GONE);
-                    Toast.makeText(SignUp.this, "비밀번호가 일치하지 않습니다.",
-                            Toast.LENGTH_SHORT).show();
+                    showToast(SignUp.this, "비밀번호가 일치하지 않습니다.");
                 }
             } else {
                 loaderLayout.setVisibility(View.GONE);
-                Toast.makeText(SignUp.this, "비밀번호는 최소 6자 이상 입력해주세요.",
-                        Toast.LENGTH_SHORT).show();
+                showToast(SignUp.this, "비밀번호는 최소 6자 이상 입력해주세요.");
             }
         } else {
             loaderLayout.setVisibility(View.GONE);
-            Toast.makeText(SignUp.this, "정보를 모두 입력해주세요.",
-                    Toast.LENGTH_SHORT).show();
+            showToast(SignUp.this, "정보를 모두 입력해주세요.");
         }
 
     }

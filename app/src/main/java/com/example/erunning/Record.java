@@ -63,6 +63,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import static com.example.erunning.Utillity.showToast;
+
 
 public class Record extends Fragment implements OnMapReadyCallback, SensorEventListener, GoogleMap.OnMarkerClickListener {
    private View view; // rootview
@@ -201,8 +203,7 @@ public class Record extends Fragment implements OnMapReadyCallback, SensorEventL
                changeWalkState();        //걸음 상태 변경
             }
             else{
-               Toast.makeText(getActivity(), "위치 정보를 가져오는 중입니다. 잠시만 기다려주세요...",
-                       Toast.LENGTH_SHORT).show();
+               showToast(getActivity(), "위치 정보를 가져오는 중입니다. 잠시만 기다려주세요...");
             }
          }
       });

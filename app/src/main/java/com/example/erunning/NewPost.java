@@ -14,7 +14,6 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
@@ -26,6 +25,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageMetadata;
@@ -39,8 +39,13 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Date;
 
+import static com.example.erunning.Utillity.isStorageUrl;
+import static com.example.erunning.Utillity.showToast;
+import static com.example.erunning.Utillity.storageUrlToName;
+
 public class NewPost extends BasicActivity {
     private FirebaseUser user;
+    private StorageReference storageRef;
     private static final String TAG = "NewPost";
     private ArrayList<String> pathList = new ArrayList<>();
     private LinearLayout parent;
@@ -48,8 +53,11 @@ public class NewPost extends BasicActivity {
     private ImageView selectedImageView;
     private EditText selectedEditText;
     private EditText contentsEditText;
+    private PostInfo postInfo;
+    private Utillity util;
     private int pathCount, successCount;
     private RelativeLayout loaderLayout;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -77,7 +85,11 @@ public class NewPost extends BasicActivity {
                 }
             }
         });
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+        storageRef = storage.getReference();
 
+        postInfo = (PostInfo) getIntent().getSerializableExtra("postInfo");
+        postInit();
     }
 
     @Override
@@ -89,40 +101,28 @@ public class NewPost extends BasicActivity {
                     String profilePath = data.getStringExtra("profilePath");
                     pathList.add(profilePath);
 
-                    ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                    ContentsItemView contentsItemView = new ContentsItemView(this);
 
-                    LinearLayout linearLayout = new LinearLayout(NewPost.this);
-                    linearLayout.setLayoutParams(layoutParams);
-                    linearLayout.setOrientation(LinearLayout.VERTICAL);
                     if (selectedEditText == null) {
-                        parent.addView(linearLayout);
+                        parent.addView(contentsItemView);
                     } else {
                         for (int i = 0; i < parent.getChildCount(); i++) {
                             if (parent.getChildAt(i) == selectedEditText.getParent()) {
-                                parent.addView(linearLayout, i + 1);
+                                parent.addView(contentsItemView, i + 1);
                                 break;
                             }
                         }
                     }
 
-                    ImageView imageView = new ImageView(NewPost.this);
-                    imageView.setLayoutParams(layoutParams);
-                    imageView.setOnClickListener(new View.OnClickListener() {
+                    contentsItemView.setImage(profilePath);
+                    contentsItemView.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
                             buttonsBackgroundLayout.setVisibility(View.VISIBLE);
                             selectedImageView = (ImageView) v;
                         }
                     });
-                    Glide.with(this).load(profilePath).override(1000).into(imageView);
-                    linearLayout.addView(imageView);
-
-                    EditText editText = new EditText(NewPost.this);
-                    editText.setLayoutParams(layoutParams);
-                    editText.setInputType(InputType.TYPE_TEXT_FLAG_MULTI_LINE | InputType.TYPE_CLASS_TEXT);
-                    editText.setHint("사진/동영상에 대한 설명을 추가하시려면 여기에 입력하세요.");
-                    editText.setOnFocusChangeListener(onFocusChangeListener);
-                    linearLayout.addView(editText);
+                    contentsItemView.setOnFocusChangeListener(onFocusChangeListener);
                 }
                 break;
             }
@@ -146,8 +146,7 @@ public class NewPost extends BasicActivity {
                     if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_EXTERNAL_STORAGE)) {
 
                     } else {
-                        Toast.makeText(this, "권한을 허용해 주세요.",
-                                Toast.LENGTH_SHORT).show();
+                        showToast(NewPost.this, "권한을 허용해 주세요.");
                     }
                 } else {
                     myStartActivity(Gallery.class, "image", 0);
@@ -160,8 +159,7 @@ public class NewPost extends BasicActivity {
                     if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_EXTERNAL_STORAGE)) {
 
                     } else {
-                        Toast.makeText(this, "권한을 허용해 주세요.",
-                                Toast.LENGTH_SHORT).show();
+                        showToast(NewPost.this, "권한을 허용해 주세요.");
                     }
                 } else {
                     myStartActivity(Gallery.class, "video", 0);
@@ -176,8 +174,25 @@ public class NewPost extends BasicActivity {
                 }
                 break;
             case R.id.delete:
-                parent.removeView((View) selectedImageView.getParent());
-                buttonsBackgroundLayout.setVisibility(View.GONE);
+                final View selectedView = (View) selectedImageView.getParent();
+                Log.e("pathList-1",storageUrlToName(pathList.get(parent.indexOfChild(selectedView) - 1)));
+                StorageReference desertRef = storageRef.child("posts/" + postInfo.getId() + "/" + storageUrlToName(pathList.get(parent.indexOfChild(selectedView) - 1)));
+                desertRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        showToast(NewPost.this, "파일을 삭제하였습니다.");
+
+                        pathList.remove(parent.indexOfChild(selectedView) - 1);
+                        parent.removeView(selectedView);
+                        buttonsBackgroundLayout.setVisibility(View.GONE);
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception exception) {
+                        Log.e("e :::::::::::::: ",exception.toString());
+                        showToast(NewPost.this, "파일을 삭제하는데 실패하였습니다.");
+                    }
+                });
                 break;
         }
     };
@@ -185,6 +200,7 @@ public class NewPost extends BasicActivity {
 
     private void PostUpload() {
         final String title = ((EditText) findViewById(R.id.et_writing)).getText().toString();
+
         if (title.length() > 0) {
 
             loaderLayout.setVisibility(View.VISIBLE);
@@ -194,73 +210,87 @@ public class NewPost extends BasicActivity {
             FirebaseStorage storage = FirebaseStorage.getInstance();
             StorageReference storageRef = storage.getReference();
             FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
+            DocumentReference documentReference2 = FirebaseFirestore.getInstance().collection("users").document(user.getUid());
+            documentReference2.get().addOnCompleteListener((task -> {
+                if(task.isSuccessful()){
+                    DocumentSnapshot document = task.getResult();
+                    if(document != null){
+                        if(document.exists()){
+                            String PublisherName = document.getData().get("name").toString();
 
-            final DocumentReference documentReference = firebaseFirestore.collection("posts").document();
+                            if(document.getData().get("photoUrl") != null){
+                                String profilePhotoUrl = document.getData().get("photoUrl").toString();
+                                final DocumentReference documentReference = postInfo == null ? firebaseFirestore.collection("posts").document() : firebaseFirestore.collection("posts").document(postInfo.getId());
+                                final Date date = postInfo == null ? new Date() : postInfo.getCreatedAt();
 
-            for (int i = 0; i < parent.getChildCount(); i++) {
-                LinearLayout linearLayout = (LinearLayout) parent.getChildAt(i);
-                //getChildAt 시작은 내용입력 LinearLayout 부터
-                //getChildCount : 해당 LinearLayout에 포함되어있는 LinearLayout의 수
-                Log.e("parent.getChildAt(", +i + ") = " + parent.getChildAt(i));
-                Log.e("getChildCount()", " = " + linearLayout.getChildCount());
-                for (int ii = 0; ii < linearLayout.getChildCount(); ii++) {
-                    View view = linearLayout.getChildAt(ii);
-                    if (view instanceof EditText) {
-                        String text = ((EditText) view).getText().toString();
-                        if (text.length() > 0) {
-                            contentsList.add(text);
-                        }
-                    } else {
-                        contentsList.add(pathList.get(pathCount));
-                        String[] pathArray = pathList.get(pathCount).split("\\.");
-                        final StorageReference mountainImageRef = storageRef.child("posts/" + documentReference.getId() + "/" + pathCount + "." +pathArray[pathArray.length-1]);
-                        try {
-                            InputStream stream = new FileInputStream(new File(pathList.get(pathCount)));
-                            StorageMetadata metadata = new StorageMetadata.Builder().setCustomMetadata("index", "" + (contentsList.size() - 1)).build();
-                            UploadTask uploadTask = mountainImageRef.putStream(stream, metadata);
-                            uploadTask.addOnFailureListener(new OnFailureListener() {
-                                @Override
-                                public void onFailure(@NonNull Exception e) {
-                                    // 실패
-                                }
-                            }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                                @Override
-                                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                                    final int index = Integer.parseInt(taskSnapshot.getMetadata().getCustomMetadata("index"));
-                                    mountainImageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                                        @Override
-                                        public void onSuccess(Uri uri) {
-                                            contentsList.set(index, uri.toString());
-                                            successCount++;
-                                            if (pathList.size() == successCount) {
-                                                //완료
-                                                PostInfo postInfo = new PostInfo(title, contentsList, user.getUid(), new Date());
-                                                Log.e("title : ", title + "  //contentsList : " + contentsList + "  //user.getUid() : " + user.getUid() + "  //Date : " + new Date());
-                                                StoreUpload(documentReference, postInfo);
-                                                for (int a = 0; a < contentsList.size(); a++) {
-                                                    Log.e("로그 : ", "콘텐츠 : " + contentsList.get(a));
-                                                }
+                                for (int i = 0; i < parent.getChildCount(); i++) {
+                                    LinearLayout linearLayout = (LinearLayout) parent.getChildAt(i);
+                                    //getChildAt 시작은 내용입력 LinearLayout 부터
+                                    //getChildCount : 해당 LinearLayout에 포함되어있는 LinearLayout의 수
+                                    Log.e("parent.getChildAt(", +i + ") = " + parent.getChildAt(i));
+                                    Log.e("getChildCount()", " = " + linearLayout.getChildCount());
+                                    for (int ii = 0; ii < linearLayout.getChildCount(); ii++) {
+                                        View view = linearLayout.getChildAt(ii);
+                                        if (view instanceof EditText) {
+                                            String text = ((EditText) view).getText().toString();
+                                            if (text.length() > 0) {
+                                                contentsList.add(text);
                                             }
+                                        } else if (!isStorageUrl(pathList.get(pathCount))) {
 
+                                            contentsList.add(pathList.get(pathCount));
+                                            String[] pathArray = pathList.get(pathCount).split("\\.");
+                                            final StorageReference mountainImageRef = storageRef.child("posts/" + documentReference.getId() + "/" + pathCount + "." + pathArray[pathArray.length - 1]);
+                                            try {
+                                                InputStream stream = new FileInputStream(new File(pathList.get(pathCount)));
+                                                StorageMetadata metadata = new StorageMetadata.Builder().setCustomMetadata("index", "" + (contentsList.size() - 1)).build();
+                                                UploadTask uploadTask = mountainImageRef.putStream(stream, metadata);
+                                                uploadTask.addOnFailureListener(new OnFailureListener() {
+                                                    @Override
+                                                    public void onFailure(@NonNull Exception e) {
+                                                        // 실패
+                                                    }
+                                                }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                                                    @Override
+                                                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                                                        final int index = Integer.parseInt(taskSnapshot.getMetadata().getCustomMetadata("index"));
+                                                        mountainImageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                                            @Override
+                                                            public void onSuccess(Uri uri) {
+                                                                contentsList.set(index, uri.toString());
+                                                                successCount++;
+                                                                if (pathList.size() == successCount) {
+                                                                    //완료
+                                                                    PostInfo postInfo = new PostInfo(title, contentsList, user.getUid(), date, PublisherName,profilePhotoUrl);
+                                                                    Log.e("title : ", title + "  //contentsList : " + contentsList + "  //user.getUid() : " + user.getUid() + "  //Date : " + new Date() + "PublisherName : " + PublisherName + "profilePhotoUrl : " + profilePhotoUrl);
+                                                                    StoreUpload(documentReference, postInfo);
+                                                                }
+
+                                                            }
+                                                        });
+                                                    }
+                                                });
+                                            } catch (FileNotFoundException e) {
+                                                loaderLayout.setVisibility(View.GONE);
+                                                Log.e("로그", "에러" + e.toString());
+                                            }
+                                            pathCount++;
                                         }
-                                    });
+                                    }
                                 }
-                            });
-                        } catch (FileNotFoundException e) {
-                            loaderLayout.setVisibility(View.GONE);
-                            Log.e("로그", "에러" + e.toString());
+                                if (pathList.size() == 0) {
+                                    StoreUpload(documentReference, new PostInfo(title, contentsList, user.getUid(), date, PublisherName,profilePhotoUrl));
+                                }
+
+                            }
                         }
-                        pathCount++;
                     }
                 }
-            }
-            if (pathList.size() == 0) {
-                PostInfo postInfo = new PostInfo(title, contentsList, user.getUid(), new Date());
-                StoreUpload(documentReference, postInfo);
-            }
+            }));
+
         } else {
-            Toast.makeText(this, "내용을 작성해 주세요.",
-                    Toast.LENGTH_SHORT).show();
+            showToast(this, "내용을 작성해 주세요.");
+
         }
     }
 
@@ -281,7 +311,7 @@ public class NewPost extends BasicActivity {
                     public void onSuccess(Void aVoid) {
                         Log.d(TAG, "DB 저장 성공!");
                         loaderLayout.setVisibility(View.GONE);
-                        startToast("게시글을 작성했습니다.");
+                        showToast(NewPost.this, "게시글을 작성했습니다.");
                         finish();
                     }
                 })
@@ -293,8 +323,37 @@ public class NewPost extends BasicActivity {
                 });
     }
 
-    private void startToast(String msg) {
-        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
+    private void postInit() {
+        if (postInfo != null) {
+            contentsEditText.setText(postInfo.getTitle());
+            ArrayList<String> contentList = postInfo.getContents();
+            for (int i = 0; i < contentList.size(); i++) {
+                String contents = contentList.get(i);
+                if (isStorageUrl(contents)) {
+                    pathList.add(contents);
+
+                    ContentsItemView contentsItemView = new ContentsItemView(this);
+
+                    parent.addView(contentsItemView);
+
+                    contentsItemView.setImage(contents);
+                    contentsItemView.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            buttonsBackgroundLayout.setVisibility(View.VISIBLE);
+                            selectedImageView = (ImageView) v;
+                        }
+                    });
+                    contentsItemView.setOnFocusChangeListener(onFocusChangeListener);
+                    if (i < contentList.size() - 1) {
+                        String nextContents = contentList.get(i + 1);
+                        if (!isStorageUrl(nextContents)) {
+                            contentsItemView.setText(nextContents);
+                        }
+                    }
+                }
+            }
+        }
     }
 
     private void myStartActivity(Class c, String media, int requestCode) {

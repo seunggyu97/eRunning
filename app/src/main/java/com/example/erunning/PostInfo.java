@@ -1,34 +1,41 @@
 package com.example.erunning;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-public class PostInfo {
+public class PostInfo implements Serializable {
     private String title;
     private ArrayList<String> contents;
     private ArrayList<String> formats;
     private String publisher;
     private Date createdAt;
     private String id;
+    private String publisherName;
+    private String photoUrl;
 
-    public PostInfo(String title, ArrayList<String> contents, String publisher, Date createdAt, String id){
+    public PostInfo(String title, ArrayList<String> contents, String publisher, Date createdAt, String id,String publisherName, String photoUrl){
         this.title = title;
         this.contents = contents;
         //this.formats = formats;
         this.publisher = publisher;
         this.createdAt = createdAt;
         this.id = id;
+        this.publisherName = publisherName;
+        this.photoUrl = photoUrl;
     }
 
-    public PostInfo(String title, ArrayList<String> contents, String publisher, Date createdAt){
+    public PostInfo(String title, ArrayList<String> contents, String publisher, Date createdAt, String publisherName, String photoUrl){
         this.title = title;
         this.contents = contents;
         //this.formats = formats;
         this.publisher = publisher;
-        this.createdAt = createdAt
-        ;
+        this.createdAt = createdAt;
+
+        this.publisherName = publisherName;
+        this.photoUrl = photoUrl;
     }
 
     public Map<String, Object> getPostInfo(){
@@ -38,6 +45,9 @@ public class PostInfo {
         //docData.put("formats",formats);
         docData.put("publisher",publisher);
         docData.put("createdAt",createdAt);
+
+        docData.put("publisherName",publisherName);
+        docData.put("photoUrl",photoUrl);
         return  docData;
     }
 
@@ -58,5 +68,11 @@ public class PostInfo {
 
     public String getId(){ return this.id; }
     public void setId(String id){ this.id = id; }
+
+    public String getPublisherName(){ return this.publisherName; }
+    public void setPublisherName(String publisherName){ this.publisherName = publisherName; }
+
+    public String getPhotoUrl(){ return this.photoUrl; }
+    public void setPhotoUrl(String photoUrl){ this.photoUrl = photoUrl; }
 
 }
