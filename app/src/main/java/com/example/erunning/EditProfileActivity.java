@@ -35,8 +35,8 @@ public class EditProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_profile);
 
-        close = findViewById(R.id.close);
-        save = findViewById(R.id.save);
+        close = findViewById(R.id.btn_close);
+        save = findViewById(R.id.btn_save);
         username = findViewById(R.id.username);
         bio = findViewById(R.id.bio);
 

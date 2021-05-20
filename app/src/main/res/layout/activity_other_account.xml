@@ -2,17 +2,32 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/account_profile"
+    android:id="@+id/other_account_profile"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#FFFFFF"
     android:orientation="vertical">
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="45dp">
+
+        <ImageButton
+            android:id="@+id/btn_back2"
+            android:layout_width="40dp"
+            android:layout_height="match_parent"
+            android:backgroundTint="#FFFFFF"
+            android:src="@drawable/ic_baseline_arrow_back_24"
+            android:layout_marginLeft="5dp"/>
+
+    </LinearLayout>
+
+
+
     <RelativeLayout
         android:id="@+id/profileTopLayout"
         android:layout_width="match_parent"
-        android:layout_height="100dp"
-        android:layout_marginTop="15dp">
+        android:layout_height="100dp">
 
         <androidx.cardview.widget.CardView
             android:id="@+id/cv_userProfile"
@@ -23,7 +38,7 @@
             <!--app:cardCornerRadius="100dp"-->
 
             <de.hdodenhof.circleimageview.CircleImageView
-                android:id="@+id/iv_profileimage"
+                android:id="@+id/iv_otherprofileimage"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
 
@@ -33,14 +48,23 @@
         </androidx.cardview.widget.CardView>
 
 
-
+        <Button
+            android:id="@+id/account_btn_follow"
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:layout_alignParentBottom="true"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_toRightOf="@id/cv_userProfile"
+            android:text="팔로우"
+            android:textStyle="bold" />
 
         <LinearLayout
             android:gravity="center"
             android:layout_toRightOf="@id/cv_userProfile"
+            android:layout_above="@id/account_btn_follow"
             android:layout_width="match_parent"
-            android:layout_centerVertical="true"
-            android:layout_height="wrap_content">
+            android:layout_height="match_parent">
             <!-- 게시글 -->
             <LinearLayout
                 android:layout_weight="1"
@@ -104,9 +128,8 @@
         android:layout_height="30dp"
         android:layout_marginTop="10dp">
 
-
-    <TextView
-            android:id="@+id/tv_userName"
+        <TextView
+            android:id="@+id/tv_otheruserName"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginLeft="15dp"
@@ -120,10 +143,10 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="80dp">
+        android:layout_height="wrap_content">
 
         <TextView
-            android:id="@+id/tv_userInfo"
+            android:id="@+id/tv_otheruserInfo"
             android:layout_width="match_parent"
             android:layout_height="30dp"
             android:layout_marginLeft="15dp"
@@ -133,17 +156,7 @@
             android:maxLines="1"
             android:textSize="13sp" />
 
-        <Button
-            android:id="@+id/user_profile_edit_btn"
-            android:layout_width="match_parent"
-            android:layout_height="45dp"
-            android:layout_below="@+id/tv_userInfo"
-            android:layout_alignParentBottom="true"
-            android:layout_marginLeft="10dp"
-            android:layout_marginTop="7dp"
-            android:layout_marginRight="10dp"
-            android:text="프로필 편집"
-            android:textStyle="bold" />
+
     </RelativeLayout>
 
     <LinearLayout
@@ -179,125 +192,125 @@
         android:layout_height="wrap_content"
         android:id="@+id/recycle_view_save"/>
 
-<!--    <LinearLayout-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="match_parent"-->
-<!--        android:orientation="vertical">-->
+    <!--    <LinearLayout-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="match_parent"-->
+    <!--        android:orientation="vertical">-->
 
-<!--        <com.google.android.material.tabs.TabLayout-->
-<!--            android:id="@+id/tabLayout"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            app:layout_constraintBottom_toTopOf="@+id/const_vp"-->
-<!--            app:layout_constraintEnd_toEndOf="parent"-->
-<!--            app:layout_constraintStart_toStartOf="parent"-->
-<!--            app:layout_constraintTop_toTopOf="parent">-->
+    <!--        <com.google.android.material.tabs.TabLayout-->
+    <!--            android:id="@+id/tabLayout"-->
+    <!--            android:layout_width="match_parent"-->
+    <!--            android:layout_height="wrap_content"-->
+    <!--            app:layout_constraintBottom_toTopOf="@+id/const_vp"-->
+    <!--            app:layout_constraintEnd_toEndOf="parent"-->
+    <!--            app:layout_constraintStart_toStartOf="parent"-->
+    <!--            app:layout_constraintTop_toTopOf="parent">-->
 
-<!--            <com.google.android.material.tabs.TabItem-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:text="게시글" />-->
+    <!--            <com.google.android.material.tabs.TabItem-->
+    <!--                android:layout_width="wrap_content"-->
+    <!--                android:layout_height="wrap_content"-->
+    <!--                android:text="게시글" />-->
 
-<!--            <com.google.android.material.tabs.TabItem-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:text="북마크" />-->
+    <!--            <com.google.android.material.tabs.TabItem-->
+    <!--                android:layout_width="wrap_content"-->
+    <!--                android:layout_height="wrap_content"-->
+    <!--                android:text="북마크" />-->
 
-<!--        </com.google.android.material.tabs.TabLayout>-->
+    <!--        </com.google.android.material.tabs.TabLayout>-->
 
 
-<!--        <androidx.viewpager2.widget.ViewPager2-->
-<!--            android:id="@+id/viewPager2_container"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="match_parent"-->
-<!--            android:orientation="horizontal" />-->
+    <!--        <androidx.viewpager2.widget.ViewPager2-->
+    <!--            android:id="@+id/viewPager2_container"-->
+    <!--            android:layout_width="match_parent"-->
+    <!--            android:layout_height="match_parent"-->
+    <!--            android:orientation="horizontal" />-->
 
-        <LinearLayout
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+        <Button
+            android:id="@+id/delete_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="회원 탈퇴(임시버튼)"
+            android:textStyle="bold"
+            app:backgroundTint="@color/purple_700"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.955"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/logout_btn"
+            android:visibility="gone"
+            />
+        <!--            visibility : gone 으로 숨겨놓았습니당-->
+
+        <Button
+            android:id="@+id/logout_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="로그아웃(임시버튼)"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.937"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.716"
+            android:visibility="gone"
+            />
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/btn_cardview"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal">
-            <Button
-                android:id="@+id/delete_btn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:text="회원 탈퇴(임시버튼)"
-                android:textStyle="bold"
-                app:backgroundTint="@color/purple_700"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.955"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/logout_btn"
-                android:visibility="gone"
-                />
-            <!--            visibility : gone 으로 숨겨놓았습니당-->
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:elevation="10dp"
+            android:padding="10dp"
+            android:visibility="gone"
+            app:cardCornerRadius="15dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            tools:layout_editor_absoluteX="136dp">
 
-            <Button
-                android:id="@+id/logout_btn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="로그아웃(임시버튼)"
-                android:textStyle="bold"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.937"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.716"
-                android:visibility="gone"
-              />
-
-            <androidx.cardview.widget.CardView
-                android:id="@+id/btn_cardview"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="bottom"
-                android:elevation="10dp"
-                android:padding="10dp"
-                android:visibility="gone"
-                app:cardCornerRadius="15dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                tools:layout_editor_absoluteX="136dp">
+                android:layout_height="match_parent"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
+                android:orientation="vertical"
+                android:visibility="visible">
 
-                <LinearLayout
+                <Button
+                    android:id="@+id/cv_picture"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_marginStart="10dp"
-                    android:layout_marginEnd="10dp"
-                    android:orientation="vertical"
-                    android:visibility="visible">
+                    android:backgroundTint="#FFFFFF"
+                    android:text="프로필 사진 촬영"
+                    android:textColor="#000000" />
 
-                    <Button
-                        android:id="@+id/cv_picture"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:backgroundTint="#FFFFFF"
-                        android:text="프로필 사진 촬영"
-                        android:textColor="#000000" />
+                <Button
+                    android:id="@+id/cv_gallery"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:backgroundTint="#FFFFFF"
+                    android:text="앨범에서 프로필 사진 선택"
+                    android:textColor="#000000" />
 
-                    <Button
-                        android:id="@+id/cv_gallery"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:backgroundTint="#FFFFFF"
-                        android:text="앨범에서 프로필 사진 선택"
-                        android:textColor="#000000" />
+                <Button
+                    android:id="@+id/cv_basic"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:backgroundTint="#FFFFFF"
+                    android:text="기본 이미지로 설정"
+                    android:textColor="#000000" />
+            </LinearLayout>
 
-                    <Button
-                        android:id="@+id/cv_basic"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:backgroundTint="#FFFFFF"
-                        android:text="기본 이미지로 설정"
-                        android:textColor="#000000" />
-                </LinearLayout>
-
-            </androidx.cardview.widget.CardView>
-        </LinearLayout>
+        </androidx.cardview.widget.CardView>
     </LinearLayout>
+</LinearLayout>
 
 
 
 
 
-<!--</LinearLayout>-->
+    <!--</LinearLayout>-->
