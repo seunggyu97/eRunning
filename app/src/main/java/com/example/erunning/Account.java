@@ -47,6 +47,8 @@ import java.io.InputStream;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
+import static com.example.erunning.Utillity.showToast;
+
 public class Account extends Fragment {
     private View view;
     private TextView tv_userName; // 닉네임 text
@@ -226,8 +228,7 @@ public class Account extends Fragment {
                     startActivity(new Intent(getActivity(), Gallery.class));
                 }
                 else{
-                    Toast.makeText(getActivity(), "권한을 허용해 주세요.",
-                            Toast.LENGTH_SHORT).show();
+                    showToast(getActivity(), "권한을 허용해 주세요.");
                 }
             }
         }
@@ -347,13 +348,12 @@ public class Account extends Fragment {
                                             if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE)) {
 
                                             } else {
-                                                Toast.makeText(getActivity(), "권한을 허용해 주세요.",
-                                                        Toast.LENGTH_SHORT).show();
+                                                showToast(getActivity(), "권한을 허용해 주세요.");
                                             }
                                         }else{
                                             //Intent intent = new Intent(getActivity(), Gallery.class);
                                             //startActivityForResult(intent, MainActivity.REQUEST_GALLERY);
-                                            myStartActivity(Gallery.class);
+                                            myStartActivity(Gallery.class,"image", 0);
                                             bottomSheetDialog.dismiss();
                                         }
 
@@ -427,8 +427,8 @@ public class Account extends Fragment {
                                     public void onComplete(@NonNull Task<Void> task) {
                                         getActivity().finish();
                                         startActivity(new Intent(getActivity(), Login.class));
-                                        Toast.makeText(getActivity(), "정상적으로 로그아웃 되었습니다.",
-                                                Toast.LENGTH_SHORT).show();
+                                        showToast(getActivity(), "정상적으로 로그아웃 되었습니다.");
+
                                     }
                                 });
                         Log.e("로그아웃","버튼입력");
@@ -510,10 +510,9 @@ public class Account extends Fragment {
                 });
 
     }*/
-    private void myStartActivity(Class c) {
+    private void myStartActivity(Class c, String media, int requestCode) {
         Intent intent = new Intent(getActivity(), c);
-        startActivityForResult(intent, 0);
+        intent.putExtra("media", media);
+        startActivityForResult(intent, requestCode);
     }
-
-
 }
