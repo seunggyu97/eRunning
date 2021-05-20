@@ -175,24 +175,33 @@ public class NewPost extends BasicActivity {
                 break;
             case R.id.delete:
                 final View selectedView = (View) selectedImageView.getParent();
-                Log.e("pathList-1",storageUrlToName(pathList.get(parent.indexOfChild(selectedView) - 1)));
-                StorageReference desertRef = storageRef.child("posts/" + postInfo.getId() + "/" + storageUrlToName(pathList.get(parent.indexOfChild(selectedView) - 1)));
-                desertRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        showToast(NewPost.this, "파일을 삭제하였습니다.");
+                String path = pathList.get(parent.indexOfChild(selectedView) - 1);
+                if(isStorageUrl(path)){
 
-                        pathList.remove(parent.indexOfChild(selectedView) - 1);
-                        parent.removeView(selectedView);
-                        buttonsBackgroundLayout.setVisibility(View.GONE);
-                    }
-                }).addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception exception) {
-                        Log.e("e :::::::::::::: ",exception.toString());
-                        showToast(NewPost.this, "파일을 삭제하는데 실패하였습니다.");
-                    }
-                });
+                    String[] list = pathList.get(parent.indexOfChild(selectedView) - 1 ).split("\\?");
+                    String[] list2 = list[0].split("%2F");
+                    String name = list2[list2.length -1];
+
+                    StorageReference desertRef = storageRef.child("posts/" + postInfo.getId() + "/" + name);
+                    desertRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            showToast(NewPost.this, "파일을 삭제하였습니다.");
+                            pathList.remove(parent.indexOfChild(selectedView) - 1);
+                            parent.removeView(selectedView);
+                            buttonsBackgroundLayout.setVisibility(View.GONE);
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception exception) {
+                            showToast(NewPost.this, "파일을 삭제하는데 실패하였습니다.");
+                        }
+                    });
+                }else{
+                    pathList.remove(parent.indexOfChild(selectedView) - 1);
+                    parent.removeView(selectedView);
+                    buttonsBackgroundLayout.setVisibility(View.GONE);
+                }
                 break;
         }
     };
