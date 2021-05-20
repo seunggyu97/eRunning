@@ -19,7 +19,7 @@
                 android:layout_marginTop="0dp">
 
                 <ImageButton
-                    android:id="@+id/btn_writingback"
+                    android:id="@+id/btn_back"
                     android:layout_width="40dp"
                     android:layout_height="match_parent"
                     android:backgroundTint="#FFFFFF"

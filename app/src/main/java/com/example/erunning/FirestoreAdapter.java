@@ -17,7 +17,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class FirestoreAdapter extends FirestorePagingAdapter<UserInfo, FirestoreAdapter.ProductsViewHolder> {
+public class FirestoreAdapter extends FirestorePagingAdapter<UserInfo, FirestoreAdapter.UserInfoViewHolder> {
 
     private  OnListItemClick onListItemClick;
 
@@ -28,7 +28,7 @@ public class FirestoreAdapter extends FirestorePagingAdapter<UserInfo, Firestore
     }
 
     @Override
-    protected void onBindViewHolder(@NonNull ProductsViewHolder productsViewHolder, int i, @NonNull UserInfo userInfo) {
+    protected void onBindViewHolder(@NonNull UserInfoViewHolder productsViewHolder, int i, @NonNull UserInfo userInfo) {
         productsViewHolder.username.setText(userInfo.getName());
         productsViewHolder.bio.setText(userInfo.getBio()+ "");
         if (userInfo.getPhotoUrl() != null)
@@ -38,9 +38,9 @@ public class FirestoreAdapter extends FirestorePagingAdapter<UserInfo, Firestore
 
     @NonNull
     @Override
-    public ProductsViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public UserInfoViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.user_item, parent,false);
-        return new ProductsViewHolder(view);
+        return new UserInfoViewHolder(view);
     }
 
     @Override
@@ -65,13 +65,13 @@ public class FirestoreAdapter extends FirestorePagingAdapter<UserInfo, Firestore
         }
     }
 
-    public class ProductsViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    public class UserInfoViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         private TextView username;
         private TextView bio;
         private CircleImageView image_profile;
 
-        public ProductsViewHolder(@NonNull View itemView) {
+        public UserInfoViewHolder(@NonNull View itemView) {
             super(itemView);
 
             username = itemView.findViewById(R.id.username);

@@ -40,6 +40,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity android:name="com.example.erunning.Login"/>
         <activity android:name="com.example.erunning.SignUp" />
         <activity android:name="com.example.erunning.MainActivity"/>

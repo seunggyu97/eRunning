@@ -27,7 +27,7 @@ public class UserSearch extends BasicActivity implements FirestoreAdapter.OnList
         setContentView(R.layout.activity_user_search);
 
         firebaseFirestore = FirebaseFirestore.getInstance();
-        findViewById(R.id.btn_writingback).setOnClickListener(onClickListener);
+        findViewById(R.id.btn_back).setOnClickListener(onClickListener);
 
 
         recyclerView = findViewById(R.id.recycle_view_users); // 아이디 연결
@@ -58,7 +58,7 @@ public class UserSearch extends BasicActivity implements FirestoreAdapter.OnList
 
     View.OnClickListener onClickListener = (v) -> {
         switch (v.getId()){
-            case R.id.btn_writingback:
+            case R.id.btn_back:
                 finish();
                 break;
         }

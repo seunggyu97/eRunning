@@ -292,8 +292,6 @@ public class Account extends Fragment {
             }
         }));
         if (getArguments() != null) {
-            //String user_name = extra.getString("이름");
-            //String route_profile = extra.getString("프로필사진");
             user_name = getArguments().getString("name");
             tv_userName.setText(user_name);//닉네임 text를 텍스트 뷰에 세팅
             tv_biomsg.setText(bio_msg);
