@@ -355,7 +355,7 @@ public class Account extends Fragment {
                                         }else{
                                             //Intent intent = new Intent(getActivity(), Gallery.class);
                                             //startActivityForResult(intent, MainActivity.REQUEST_GALLERY);
-                                            myStartActivity(Gallery.class);
+                                            myStartActivity(Gallery.class,"image", 0);
                                             bottomSheetDialog.dismiss();
                                         }
 
@@ -512,10 +512,9 @@ public class Account extends Fragment {
                 });
 
     }*/
-    private void myStartActivity(Class c) {
+    private void myStartActivity(Class c, String media, int requestCode) {
         Intent intent = new Intent(getActivity(), c);
-        startActivityForResult(intent, 0);
+        intent.putExtra("media", media);
+        startActivityForResult(intent, requestCode);
     }
-
-
 }
