@@ -220,16 +220,15 @@
                 android:id="@+id/delete_btn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
+                android:layout_marginRight="30dp"
+                android:layout_marginLeft="30dp"
                 android:text="회원 탈퇴(임시버튼)"
                 android:textStyle="bold"
                 app:backgroundTint="@color/purple_700"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.955"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/logout_btn"
-                android:visibility="gone"
-                />
+                app:layout_constraintTop_toBottomOf="@+id/logout_btn" />
             <!--            visibility : gone 으로 숨겨놓았습니당-->
 
             <Button
@@ -244,7 +243,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintVertical_bias="0.716"
-                android:visibility="gone"
+
               />
 
             <androidx.cardview.widget.CardView

@@ -38,7 +38,7 @@ public class UserSearch extends BasicActivity implements FirestoreAdapter.OnList
 
 
         //Query
-        Query query = firebaseFirestore.collection("users").orderBy("name").startAt("s"); // 데이터 정렬 orderBy
+        Query query = firebaseFirestore.collection("users").orderBy("name"); // 데이터 정렬 orderBy
 
         PagedList.Config config = new PagedList.Config.Builder()
                 .setInitialLoadSizeHint(10)
@@ -58,10 +58,15 @@ public class UserSearch extends BasicActivity implements FirestoreAdapter.OnList
         recyclerView.setAdapter(adapter);
     }
 
+
+
+
+
     View.OnClickListener onClickListener = (v) -> {
         switch (v.getId()){
             case R.id.btn_back:
-                finish();
+                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                startActivity(intent);
                 break;
         }
     };
@@ -71,9 +76,10 @@ public class UserSearch extends BasicActivity implements FirestoreAdapter.OnList
     public void onItemClick(DocumentSnapshot snapshot, int position) {
         nullProfile = findViewById(R.id.iv_otherprofileimage);
         String name = snapshot.getData().get("name").toString();
-//        String post = snapshot.getData().get("post").toString();
-//        String follower = snapshot.getData().get("follower").toString();
-//        String following = snapshot.getData().get("following").toString();
+        String post = snapshot.getData().get("post").toString();
+        String follower = snapshot.getData().get("follower").toString();
+        String following = snapshot.getData().get("following").toString();
+        String UID = snapshot.getId();
 
 
         Intent intent = new Intent(getApplicationContext(), OtherAccount.class);
@@ -88,9 +94,12 @@ public class UserSearch extends BasicActivity implements FirestoreAdapter.OnList
         }
 
         intent.putExtra("username", name);
-
+        intent.putExtra("post",post);
+        intent.putExtra("follower",follower);
+        intent.putExtra("following",following);
+        intent.putExtra("UID",UID);
 
         startActivity(intent);
-        Log.d("ITEM_CLICK", "Clicked an item" + position + " and the ID :" + snapshot.getId() + " and username : " + snapshot.getData().get("username"));
+        Log.e("ITEM_CLICK", "Clicked an item" + position + " and the ID :" + snapshot.getId() + " and username : " + snapshot.getData().get("follower"));
     }
 }
