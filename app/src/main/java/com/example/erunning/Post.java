@@ -1,54 +1,142 @@
 package com.example.erunning;
 
+import android.app.Activity;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageMetadata;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+
+import org.w3c.dom.Comment;
 import org.w3c.dom.Text;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 
+import de.hdodenhof.circleimageview.CircleImageView;
+
 import static com.example.erunning.Utillity.isStorageUrl;
+import static com.example.erunning.Utillity.showToast;
 
 public class Post extends BasicActivity{
-    private Button btn_comment;
+    private ImageButton btn_writecomment;
     private ImageButton like;
     private ImageButton bookmark;
     private TextView tv_like;
+    private CommentInfo commentInfo;
+    private Utillity util;
+    private RelativeLayout loaderLayout;
+
+    private static final String TAG = "Post";
+
+    private ArrayList<CommentInfo> commentList;
+    private CommentAdapter commentAdapter;
+    private FirebaseUser firebaseUser;
+    private FirebaseFirestore firebaseFirestore;
+    private PostInfo postdata;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_post);
 
+        firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+
         boolean isLiked = false;
         boolean isBookmarked = false;
 
-        btn_comment = findViewById(R.id.btn_comment);
+        btn_writecomment = findViewById(R.id.btn_writecomment);
         like = findViewById(R.id.btn_nolike);
         bookmark = findViewById(R.id.btn_bookmark);
         tv_like = findViewById(R.id.tv_like);
+        loaderLayout = findViewById(R.id.loaderLayout);
 
+        CircleImageView iv_profileImage = findViewById(R.id.iv_profileimage);
         PostInfo postInfo = (PostInfo) getIntent().getSerializableExtra("postInfo");
+        postdata = postInfo;
         TextView titleTextView = findViewById(R.id.titleTextView);
         titleTextView.setText(postInfo.getTitle());
-
+        TextView tv_feedname = findViewById(R.id.tv_feedname);
+        tv_feedname.setText(postInfo.getPublisherName());
+        Log.e("1차 feedname","설정");
+        Glide.with(getApplication()).load(postInfo.getPhotoUrl()).circleCrop().into(iv_profileImage);
+        Log.e("1차 프사","설정");
         TextView createdAtTextView = findViewById(R.id.createdAtTextView);
 
-        btn_comment.setOnClickListener(new View.OnClickListener() {
+        DocumentReference documentReference = FirebaseFirestore.getInstance().collection("users").document(postInfo.getPublisher());
+        documentReference.get().addOnCompleteListener((task -> {
+            if(task.isSuccessful()){
+                DocumentSnapshot document = task.getResult();
+                if(document != null){
+                    if(document.exists()){
+                        tv_feedname.setText(document.getData().get("name").toString());
+                        Log.e("2차 feedname","설정");
+                        if(document.getData().get("photoUrl") != null){
+                            FirebaseStorage storage = FirebaseStorage.getInstance();
+                            StorageReference storageRef = storage.getReference();
+
+                            storageRef.child("users/" +postInfo.getPublisher()+"/profile_image.jpg").getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                @Override
+                                public void onSuccess(Uri uri) {
+                                    //이미지 로드 성공시
+
+                                    Glide.with(getApplicationContext()).load(uri).circleCrop().into(iv_profileImage);
+                                    Log.e("2차 프사","설정");
+                                }
+                            }).addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception exception) {
+                                    //이미지 로드 실패시
+                                    Log.e("프로필 이미지 로드","실패");
+                                }
+                            });
+
+                        }
+                    }
+                }
+            }
+        }));
+
+        btn_writecomment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                CommentUpload();
                 Log.e("comment : ", "클릭");
             }
         });
@@ -235,6 +323,105 @@ public class Post extends BasicActivity{
                     contentsLayout.addView(textView);
                 }
             }
+        }
+
+        commentList = new ArrayList<>();
+        commentInfo = (CommentInfo) getIntent().getSerializableExtra("commentInfo");
+        commentAdapter = new CommentAdapter(this, commentList);
+        //commentAdapter.setOnPostListener(onPostListener);
+
+        RecyclerView recyclerView = findViewById(R.id.rv_comment);
+
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setAdapter(commentAdapter);
+    }
+
+    private void CommentUpload() {
+        final String title = ((EditText) findViewById(R.id.et_writecomment)).getText().toString();
+
+        if (title.length() > 0) {
+
+            loaderLayout.setVisibility(View.VISIBLE);
+
+            firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+            FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
+            DocumentReference documentReference2= FirebaseFirestore.getInstance().collection("users").document(firebaseUser.getUid());
+            documentReference2.get().addOnCompleteListener((task -> {
+                if(task.isSuccessful()){
+                    DocumentSnapshot document = task.getResult();
+                    if(document != null){
+                        if(document.exists()){
+                            String PublisherName = document.getData().get("name").toString();
+
+                            if(document.getData().get("photoUrl") != null){
+                                String profilePhotoUrl = document.getData().get("photoUrl").toString();
+                                final DocumentReference documentReference = commentInfo == null ? firebaseFirestore.collection("posts").document(postdata.getId()).collection("comments").document() : firebaseFirestore.collection("comments").document(postdata.getId()).collection("comments").document(commentInfo.getId());
+                                final Date date = commentInfo == null ? new Date() : commentInfo.getCreatedAt();
+
+                                StoreUpload(documentReference, new CommentInfo(title, firebaseUser.getUid(), date, PublisherName,profilePhotoUrl));
+                            }
+                        }
+                    }
+                }
+            }));
+        } else {
+            showToast(this, "내용을 작성해 주세요.");
+        }
+    }
+    private void StoreUpload(DocumentReference documentReference, final CommentInfo commentInfo) {
+        documentReference.set(commentInfo.getCommentInfo())
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d("comment", "DB 저장 성공!");
+                        loaderLayout.setVisibility(View.GONE);
+                        showToast(Post.this, "댓글을 작성하였습니다.");
+                        commentAdapter.notifyDataSetChanged();
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w("comment", "XXXXXX DB 저장 실패 XXXXXX" + e + "commentInfo : " + commentInfo);
+                    }
+                });
+    }
+    @Override
+    public void onResume() {
+        super.onResume();
+        commentUpdate();
+
+    }
+    private void commentUpdate() {
+        if (firebaseUser != null) {
+            FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
+            CollectionReference collectionReference = firebaseFirestore.collection("posts").document("postdata.getId()").collection("comments");
+            collectionReference.orderBy("createdAt", Query.Direction.ASCENDING).get()
+                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                            if (task.isSuccessful()) {
+                                Log.e("onComplete","실행!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+                                commentList.clear();
+                                for (QueryDocumentSnapshot document : task.getResult()) {
+                                    Log.d(TAG, document.getId() + " => " + document.getData());
+                                    commentList.add(new CommentInfo(
+                                            document.getData().get("title").toString(),
+                                            document.getData().get("publisher").toString(),
+                                            new Date(document.getDate("createdAt").getTime()),
+                                            document.getId(),
+
+                                            document.getData().get("publisherName").toString(),
+                                            document.getData().get("photoUrl").toString()));
+
+                                }
+                                commentAdapter.notifyDataSetChanged();
+                            } else {
+                                Log.d(TAG, "Error getting documents: ", task.getException());
+                            }
+                        }
+                    });
         }
     }
 }

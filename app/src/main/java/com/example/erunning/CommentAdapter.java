@@ -8,8 +8,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -40,33 +42,34 @@ import static com.example.erunning.Utillity.isStorageUrl;
 
 //import static com.example.erunning.Util.INTENT_PATH;
 
-class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder> {
-    ArrayList<PostInfo> mDataset;
+class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentViewHolder> {
+
+    // 이 데이터들을 가지고 각 뷰 홀더에 들어갈 텍스트 뷰에 연결할 것
+    ArrayList<CommentInfo> mDataset;
     Activity activity;
 
-    private ImageView like;
-    private ImageView nolike;
-    private ImageView bookmark;
-    private ImageView nobookmark;
-    private Button btn_comment;
-    private TextView tv_like;
-    private ImageView postmenu;
+
+    private ImageButton btn_comment;
+    private ImageView commentmenu;
     private View LL_PostEdit;
     private View LL_PostDelete;
 
+    private CommentInfo commentInfo;
     private OnPostListener onPostListener;
 
-    public static class FeedViewHolder extends RecyclerView.ViewHolder {
+    // 리사이클러뷰에 들어갈 뷰 홀더, 그리고 그 뷰 홀더에 들어갈 아이템들을 지정
+    public static class CommentViewHolder extends RecyclerView.ViewHolder {
         CardView cardView;
 
-        public FeedViewHolder(CardView v) {
+        public CommentViewHolder(CardView v) {
             super(v);
             cardView = v;
 
         }
     }
 
-    public FeedAdapter(Activity activity, ArrayList<PostInfo> myDataset) {
+    // 생성자
+    public CommentAdapter(Activity activity, ArrayList<CommentInfo> myDataset) {
         this.mDataset = myDataset;
         this.activity = activity;
     }
@@ -81,28 +84,23 @@ class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder> {
         return position;
     }
 
+
+    // 어댑터 클래스 상속시 구현해야할 함수 3가지 : onCreateViewHolder, onBindViewHolder, getItemCount
+    // 리사이클러뷰에 들어갈 뷰 홀더를 할당하는 함수, 뷰 홀더는 실제 레이아웃 파일과 매핑되어야하며, extends의 Adater<>에서 <>안에들어가는 타입을 따른다.
     @NonNull
     @Override
-    public FeedAdapter.FeedViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        CardView cardView = (CardView) LayoutInflater.from(parent.getContext()).inflate(R.layout.item_post, parent, false);
+    public CommentAdapter.CommentViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        CardView cardView = (CardView) LayoutInflater.from(parent.getContext()).inflate(R.layout.item_comment, parent, false);
 
-        final FeedViewHolder feedViewHolder = new FeedViewHolder(cardView);
-        cardView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(activity, Post.class);
-                intent.putExtra("postInfo", mDataset.get(feedViewHolder.getAdapterPosition()));
-                activity.startActivity(intent);
-            }
-        });
+        final CommentViewHolder commentViewHolder = new CommentViewHolder(cardView);
 
-        postmenu = cardView.findViewById(R.id.btn_postmenu);
-        postmenu.setOnClickListener(new View.OnClickListener() {
+        commentmenu = cardView.findViewById(R.id.btn_commentmenu);
+        commentmenu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Log.e("메뉴버튼 ", parent + v.toString());
                 switch (v.getId()) {
-                    case R.id.btn_postmenu:
+                    case R.id.btn_commentmenu:
                         BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(
                                 activity, R.style.BottomSheetDialogTheme
                         );
@@ -120,7 +118,7 @@ class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder> {
                                 switch (v.getId()) {
                                     case R.id.LL_PostEdit:
                                         bottomSheetDialog.dismiss();
-                                        onPostListener.onEdit(feedViewHolder.getAdapterPosition());
+                                        onPostListener.onEdit(commentViewHolder.getAdapterPosition());
                                         Log.e("게시물 수정 ", "클릭" + v);
                                         break;
                                 }
@@ -132,7 +130,7 @@ class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder> {
                                 switch (v.getId()) {
                                     case R.id.LL_PostDelete:
                                         bottomSheetDialog.dismiss();
-                                        onPostListener.onDelete(feedViewHolder.getAdapterPosition());
+                                        onPostListener.onDelete(commentViewHolder.getAdapterPosition());
                                         Log.e("게시물 삭제", "클릭" + v);
                                         break;
                                 }
@@ -148,28 +146,25 @@ class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder> {
             }
         });
 
-        return feedViewHolder;
+        return commentViewHolder;
     }
 
+
+    // 실제 각 뷰 홀더에 데이터를 연결해주는 함수
     @Override
-    public void onBindViewHolder(final FeedViewHolder holder, int position) {
+    public void onBindViewHolder(final CommentViewHolder holder, int position) {
         CardView cardView = holder.cardView;
-        boolean isLiked = false;
-        boolean isBookmarked = false;
 
         btn_comment = holder.cardView.findViewById(R.id.btn_comment);
-        like = holder.cardView.findViewById(R.id.btn_nolike);
-        bookmark = holder.cardView.findViewById(R.id.btn_bookmark);
-        tv_like = holder.cardView.findViewById(R.id.tv_like);
 
         CircleImageView iv_profileImage = holder.cardView.findViewById(R.id.iv_profileimage);
-        TextView titleTextView = holder.cardView.findViewById(R.id.titleTextView);
+        TextView titleTextView = holder.cardView.findViewById(R.id.tv_comment);
         titleTextView.setText(mDataset.get(position).getTitle());
-        TextView tv_feedname = holder.cardView.findViewById(R.id.tv_feedname);
-        tv_feedname.setText(mDataset.get(position).getPublisherName());
-        Log.e("1차 feedname","설정");
+        TextView tv_commentname = holder.cardView.findViewById(R.id.tv_commentname);
+        tv_commentname.setText(mDataset.get(position).getPublisherName());
+        Log.e("1차 commentname","설정");
         Glide.with(activity).load(mDataset.get(position).getPhotoUrl()).circleCrop().into(iv_profileImage);
-        Log.e("1차 프사","설정");
+        Log.e("1차 댓글 프사","설정");
         TextView createdAtTextView = cardView.findViewById(R.id.createdAtTextView);
 
         DocumentReference documentReference = FirebaseFirestore.getInstance().collection("users").document(mDataset.get(position).getPublisher());
@@ -178,8 +173,8 @@ class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder> {
                 DocumentSnapshot document = task.getResult();
                 if(document != null){
                     if(document.exists()){
-                        tv_feedname.setText(document.getData().get("name").toString());
-                        Log.e("2차 feedname","설정");
+                        tv_commentname.setText(document.getData().get("name").toString());
+                        Log.e("2차 commentname","설정");
                         if(document.getData().get("photoUrl") != null){
                             FirebaseStorage storage = FirebaseStorage.getInstance();
                             StorageReference storageRef = storage.getReference();
@@ -190,7 +185,7 @@ class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder> {
                                     //이미지 로드 성공시
 
                                     Glide.with(activity).load(uri).circleCrop().into(iv_profileImage);
-                                    Log.e("2차 프사","설정");
+                                    Log.e("2차 댓글 프사","설정");
                                 }
                             }).addOnFailureListener(new OnFailureListener() {
                                 @Override
@@ -206,51 +201,7 @@ class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder> {
             }
         }));
 
-        btn_comment.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(activity, Post.class);
-                intent.putExtra("postInfo", mDataset.get(position));
-                activity.startActivity(intent);
-                Log.e("comment : ", "클릭");
-            }
-        });
-        like.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (!isLiked) {
-                    like.setImageResource(R.drawable.ic_like_red);
-                    Log.e("like : ", "클릭");
-                } else {
-                    like.setImageResource(R.drawable.ic_like_gray);
-                    Log.e("like : ", "클릭");
-                }
-            }
-        });
-        tv_like.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (!isLiked) {
-                    like.setImageResource(R.drawable.ic_like_red);
-                    Log.e("tv_like : ", "클릭");
-                } else {
-                    like.setImageResource(R.drawable.ic_like_gray);
-                    Log.e("tv_like : ", "클릭");
-                }
-            }
-        });
-        bookmark.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (!isBookmarked) {
-                    like.setImageResource(R.drawable.ic_bookmark);
-                    Log.e("bookmark : ", "클릭");
-                } else {
-                    like.setImageResource(R.drawable.ic_nobookmark);
-                    Log.e("bookmark : ", "클릭");
-                }
-            }
-        });
+
 
 
 
@@ -378,35 +329,11 @@ class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder> {
             e.printStackTrace();
         }
 
-        LinearLayout contentsLayout = cardView.findViewById(R.id.contentsLayout);
-        ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        ArrayList<String> contentList = mDataset.get(position).getContents();
-
-        if (contentsLayout.getTag() == null || !contentsLayout.getTag().equals(contentList)) {
-            contentsLayout.setTag(contentList);
-            contentsLayout.removeAllViews();
-            for (int i = 0; i < contentList.size(); i++) {
-                String contents = contentList.get(i);
-                if (isStorageUrl(contents)) {
-                    ImageView imageView = new ImageView(activity);
-                    imageView.setLayoutParams(layoutParams);
-                    imageView.setAdjustViewBounds(true);
-                    imageView.setScaleType(ImageView.ScaleType.FIT_XY);
-                    contentsLayout.addView(imageView);
-                    Glide.with(activity).load(contents).override(1000).thumbnail(0.1f).into(imageView);
-                } else {
-                    TextView textView = new TextView(activity);
-                    textView.setLayoutParams(layoutParams);
-                    textView.setText(contents);
-                    contentsLayout.addView(textView);
-                }
-            }
-        }
-
         Log.e("로그: ", "데이터: " + mDataset.get(position).getTitle());
         //Log.e("글이 올라온 시간 : ",Locale.getDefault().format(mDataset.get(position).getCreatedAt()));
     }
 
+    // iOS의 numberOfRows, 리사이클러뷰안에 들어갈 뷰 홀더의 개수
     @Override
     public int getItemCount() {
         return mDataset.size();
