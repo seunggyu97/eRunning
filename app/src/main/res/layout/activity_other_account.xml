@@ -57,14 +57,31 @@
             android:layout_marginRight="10dp"
             android:layout_toRightOf="@id/cv_userProfile"
             android:text="팔로우"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+
+            />
+
+        <Button
+            android:id="@+id/account_btn_unfollow"
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:layout_alignParentBottom="true"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_toRightOf="@id/cv_userProfile"
+            android:backgroundTint="#D2C3ED"
+            android:textColor="#5C5A5A"
+            android:text="팔로잉"
+            android:textStyle="bold"
+            android:visibility="gone"/>
 
         <LinearLayout
             android:gravity="center"
             android:layout_toRightOf="@id/cv_userProfile"
             android:layout_above="@id/account_btn_follow"
+            android:layout_marginTop="10dp"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="wrap_content">
             <!-- 게시글 -->
             <LinearLayout
                 android:layout_weight="1"
@@ -134,7 +151,7 @@
             android:layout_height="match_parent"
             android:layout_marginLeft="15dp"
             android:gravity="left"
-            android:text="name"
+            android:text="이름"
             android:textColor="#000000"
             android:textSize="18sp"
             android:textStyle="bold"
@@ -151,7 +168,7 @@
             android:layout_height="30dp"
             android:layout_marginLeft="15dp"
             android:layout_marginRight="15dp"
-            android:text=""
+            android:text="프로필 상태메세지를 입력하새요."
             android:textColor="#000000"
             android:maxLines="1"
             android:textSize="13sp" />

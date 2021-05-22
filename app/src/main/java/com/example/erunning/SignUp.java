@@ -24,6 +24,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 
 import static com.example.erunning.Utillity.showToast;
@@ -37,6 +38,7 @@ public class SignUp extends BasicActivity {
     private int birthyear = 0;
     private int birthmonth = 0;
     private int birthday = 0;
+    private ArrayList<String> followerlist = null;
     private RelativeLayout loaderLayout;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -158,7 +160,8 @@ public class SignUp extends BasicActivity {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         String name = ((EditText) findViewById(R.id.nameEditText)).getText().toString();
 
-        UserInfo userinfo = new UserInfo(name, birthyear, birthmonth, birthday);
+        UserInfo userinfo = new UserInfo(name, birthyear, birthmonth, birthday,followerlist);
+
         db.collection("users").document(user.getUid()).set(userinfo)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override

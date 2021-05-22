@@ -33,7 +33,6 @@ public class PostInfo implements Serializable {
         //this.formats = formats;
         this.publisher = publisher;
         this.createdAt = createdAt;
-
         this.publisherName = publisherName;
         this.photoUrl = photoUrl;
     }

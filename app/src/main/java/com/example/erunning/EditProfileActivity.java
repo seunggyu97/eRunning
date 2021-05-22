@@ -82,9 +82,6 @@ public class EditProfileActivity extends AppCompatActivity {
         });
     }
     private void updateProfile() {
-        /*HashMap<String, Object> map = new HashMap<>();
-        map.put("username", username.getText().toString());
-        map.put("bio", bio.getText().toString());*/
         Log.e("updateProfile","실행");
         final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         FirebaseFirestore db = FirebaseFirestore.getInstance();

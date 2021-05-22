@@ -1,5 +1,7 @@
 package com.example.erunning;
 
+import java.util.ArrayList;
+
 public class UserInfo {
     private String item_id;
     private String name;
@@ -8,16 +10,38 @@ public class UserInfo {
     private int birthday;
     private String photoUrl;
     private String bio;
+    private int post;
+    private int follower;
+    private int following;
+    private ArrayList<String> followerlist;
 
     private UserInfo() {}
-    public UserInfo(String name, int birthyear, int birthmonth, int birthday){
+    public UserInfo(String name, int birthyear, int birthmonth, int birthday,ArrayList<String> followerlist){
         this.name = name;
         this.birthyear = birthyear;
         this.birthmonth = birthmonth;
         this.birthday = birthday;
         this.photoUrl = null;
         this.bio = null;
+        this.post = 0;
+        this.follower = 0;
+        this.following = 0;
+        this.followerlist = followerlist;
+
     }
+//    public UserInfo(String name, int birthyear, int birthmonth, int birthday){
+//        this.name = name;
+//        this.birthyear = birthyear;
+//        this.birthmonth = birthmonth;
+//        this.birthday = birthday;
+//        this.photoUrl = null;
+//        this.bio = null;
+//        this.post = 0;
+//        this.follower = 0;
+//        this.following = 0;
+//
+//    }
+
     /*
     public UserInfo(String name, int birthyear, int birthmonth, int birthday,String photoUrl){
         this.name = name;
@@ -70,4 +94,16 @@ public class UserInfo {
     public void setItem_id(String item_id) {
         this.item_id = item_id;
     }
+
+    public int getPost() {return this.post; }
+    public void setPost(int post) {this.post = post; }
+
+    public int getFollower() {return this.follower; }
+    public void setFollower(int follower) {this.follower = follower; }
+
+    public int getFollowing() {return this.following; }
+    public void setFollowing(int following) {this.following = following; }
+
+    public ArrayList<String> getFollowerlist(){ return this.followerlist; }
+    public void setFollowerlist(ArrayList<String> followerlist){ this.followerlist = followerlist; }
 }
