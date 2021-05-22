@@ -59,6 +59,8 @@ public class Account extends Fragment {
     private TextView account_tv_follower_count;
     private TextView account_tv_following_count;
     private String following;
+    private String follower;
+    private String post;
     private CircleImageView iv_userProfile; // 프로필 이미지뷰
     private String user_name;
     private String bio_msg;
@@ -312,6 +314,31 @@ public class Account extends Fragment {
         btn_profile_edit = view.findViewById(R.id.user_profile_edit_btn);
         iv_profileImage = view.findViewById(R.id.iv_profileimage);
 
+        Button btn_post = (Button)view.findViewById(R.id.btn_post);
+        Button btn_save = (Button)view.findViewById(R.id.btn_save);
+
+        btn_post.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                LinearLayout post_box = (LinearLayout) getActivity().findViewById(R.id.post_box);
+                post_box.setVisibility(View.VISIBLE);
+
+                LinearLayout save_box = (LinearLayout) getActivity().findViewById(R.id.save_box);
+                save_box.setVisibility(View.INVISIBLE);
+            }
+        });
+
+        btn_save.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                LinearLayout post_box = (LinearLayout) getActivity().findViewById(R.id.post_box);
+                post_box.setVisibility(View.INVISIBLE);
+
+                LinearLayout save_box = (LinearLayout) getActivity().findViewById(R.id.save_box);
+                save_box.setVisibility(View.VISIBLE);
+            }
+        });
+
 
         btn_opt = view.findViewById(R.id.btn_opt);
 
@@ -387,10 +414,15 @@ public class Account extends Fragment {
                 if(document != null){
                     if(document.exists()){
                         following = document.getData().get("following").toString();
+                        follower = document.getData().get("follower").toString();
+                        post = document.getData().get("post").toString();
                         Log.e("folloing","folloing : " + following);
                         documentReference.collection("users").document(document.getId()).update("following",following);
+                        documentReference.collection("users").document(document.getId()).update("follower",follower);
+                        documentReference.collection("users").document(document.getId()).update("post",post);
                         account_tv_following_count.setText(document.getData().get("following").toString());
                         account_tv_follower_count.setText(document.getData().get("follower").toString());
+                        account_tv_post_count.setText(document.getData().get("post").toString());
                         tv_userName.setText(document.getData().get("name").toString());
                         user_name = document.getData().get("name").toString();
                         if(document.getData().get("bio") != null) {

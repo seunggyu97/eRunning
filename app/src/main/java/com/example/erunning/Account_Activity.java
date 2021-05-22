@@ -4,7 +4,6 @@ import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 
-import androidx.fragment.app.Fragment;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.android.material.tabs.TabLayout;
@@ -32,15 +31,15 @@ public class Account_Activity extends BasicActivity  {
         code = "";
         Log.e( TAG, code );
 
-        Fragment frag1 = new Fragpictures().newInstance(code);
-        Fragment frag2 = new Fragbookmark().newInstance(code);
+//        Fragment frag1 = new Fragpictures().newInstance(code);
+//        Fragment frag2 = new Fragbookmark().newInstance(code);
 
 //        mViewPager = findViewById(R.id.viewPager2_container);
 //        tabLayout = findViewById(R.id.tabLayout);
 
         myPagerAdapter = new Account_ViewPageAdapter(this);
-        myPagerAdapter.addFrag(frag1);
-        myPagerAdapter.addFrag(frag2);
+//        myPagerAdapter.addFrag(frag1);
+//        myPagerAdapter.addFrag(frag2);
 
 
         mViewPager.setAdapter(myPagerAdapter);

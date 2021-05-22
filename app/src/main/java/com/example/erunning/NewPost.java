@@ -6,10 +6,8 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
-import android.text.InputType;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -19,7 +17,6 @@ import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
-import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -41,10 +38,10 @@ import java.util.Date;
 
 import static com.example.erunning.Utillity.isStorageUrl;
 import static com.example.erunning.Utillity.showToast;
-import static com.example.erunning.Utillity.storageUrlToName;
 
 public class NewPost extends BasicActivity {
     private FirebaseUser user;
+    private String post;
     private StorageReference storageRef;
     private static final String TAG = "NewPost";
     private ArrayList<String> pathList = new ArrayList<>();
@@ -232,6 +229,7 @@ public class NewPost extends BasicActivity {
                                 final DocumentReference documentReference = postInfo == null ? firebaseFirestore.collection("posts").document() : firebaseFirestore.collection("posts").document(postInfo.getId());
                                 final Date date = postInfo == null ? new Date() : postInfo.getCreatedAt();
 
+
                                 for (int i = 0; i < parent.getChildCount(); i++) {
                                     LinearLayout linearLayout = (LinearLayout) parent.getChildAt(i);
                                     //getChildAt 시작은 내용입력 LinearLayout 부터
@@ -384,6 +382,25 @@ public class NewPost extends BasicActivity {
                         Log.d(TAG, "DB 저장 성공!");
                         loaderLayout.setVisibility(View.GONE);
                         showToast(NewPost.this, "게시글을 작성했습니다.");
+                        final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                        FirebaseFirestore db = FirebaseFirestore.getInstance();
+                        DocumentReference documentReference = db.collection("users").document(user.getUid());
+                        documentReference.get().addOnCompleteListener((task -> {
+                                    if (task.isSuccessful()) {
+                                        DocumentSnapshot document = task.getResult();
+                                        if (document != null) {
+                                            if (document.exists()) {
+                                                // post +1 코드
+                                                post = document.getData().get("post").toString();
+                                                int post_num = Integer.parseInt(post);
+                                                post_num += 1;
+                                                post = String.valueOf(post_num);
+                                                Log.e("게시글 post  ", "post : " + post_num + user.getUid());
+                                                db.collection("users").document(user.getUid()).update("post", Integer.parseInt(post));
+                                            }
+                                        }
+                                    }
+                                }));
                         finish();
                     }
                 })

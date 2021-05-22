@@ -83,6 +83,7 @@ public class UserSearch extends BasicActivity implements FirestoreAdapter.OnList
         String following = snapshot.getData().get("following").toString();
         String UID = snapshot.getId();
         ArrayList<String> followerlist = (ArrayList<String>) snapshot.getData().get("followerlist");
+        ArrayList<String> followinglist = (ArrayList<String>) snapshot.getData().get("followinglist");
 
 
         Intent intent = new Intent(getApplicationContext(), OtherAccount.class);
@@ -102,6 +103,7 @@ public class UserSearch extends BasicActivity implements FirestoreAdapter.OnList
         intent.putExtra("following",following);
         intent.putExtra("UID",UID);
         intent.putStringArrayListExtra("followerlist",followerlist);
+        intent.putStringArrayListExtra("followinglist",followinglist);
 
         startActivity(intent);
         Log.e("ITEM_CLICK", "Clicked an item" + position + " and the ID :" + snapshot.getId() + " and count : " + snapshot.getData().get("count"));
