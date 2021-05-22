@@ -100,6 +100,6 @@ public class UserSearch extends BasicActivity implements FirestoreAdapter.OnList
         intent.putExtra("UID",UID);
 
         startActivity(intent);
-        Log.e("ITEM_CLICK", "Clicked an item" + position + " and the ID :" + snapshot.getId() + " and username : " + snapshot.getData().get("follower"));
+        Log.e("ITEM_CLICK", "Clicked an item" + position + " and the ID :" + snapshot.getId() + " and username : " + snapshot.getData().get("username"));
     }
 }

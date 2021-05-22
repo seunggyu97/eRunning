@@ -38,7 +38,7 @@ public class SignUp extends BasicActivity {
     private int birthyear = 0;
     private int birthmonth = 0;
     private int birthday = 0;
-    private ArrayList<String> followerlist = null;
+    private ArrayList<String> followerlist = new ArrayList<>();
     private RelativeLayout loaderLayout;
     @Override
     protected void onCreate(Bundle savedInstanceState) {

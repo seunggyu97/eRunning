@@ -15,7 +15,7 @@ public class UserInfo {
     private int following;
     private ArrayList<String> followerlist;
 
-    private UserInfo() {}
+
     public UserInfo(String name, int birthyear, int birthmonth, int birthday,ArrayList<String> followerlist){
         this.name = name;
         this.birthyear = birthyear;
@@ -29,6 +29,10 @@ public class UserInfo {
         this.followerlist = followerlist;
 
     }
+
+    public UserInfo() { }
+
+
 //    public UserInfo(String name, int birthyear, int birthmonth, int birthday){
 //        this.name = name;
 //        this.birthyear = birthyear;

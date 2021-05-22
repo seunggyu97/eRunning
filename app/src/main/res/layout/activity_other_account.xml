@@ -93,11 +93,13 @@
                     android:text="게시글"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
+
                 <TextView
-                    android:text= "0"
-                    android:id="@+id/account_tv_post_count"
+                    android:text="0"
+                    android:id="@+id/account_tv_other_post_count"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="wrap_content"
+                     />
 
             </LinearLayout> <!-- text에 @string/count_0 으로해야하는데 아직 잘 모르겠습나ㅣ다 퓨ㅠ -->
             <!-- 팔로워 -->
@@ -111,11 +113,13 @@
                     android:text="팔로워"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
+
                 <TextView
-                    android:text= "0"
-                    android:id="@+id/account_tv_follower_count"
+                    android:text="0"
+                    android:id="@+id/account_tv_other_follower_count"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="wrap_content"
+                     />
             </LinearLayout>
             <!-- 팔로잉 -->
             <LinearLayout
@@ -130,7 +134,7 @@
                     android:layout_height="wrap_content"/>
                 <TextView
                     android:text= "0"
-                    android:id="@+id/account_tv_following_count"
+                    android:id="@+id/account_tv_other_following_count"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
             </LinearLayout>
@@ -146,7 +150,7 @@
         android:layout_marginTop="10dp">
 
         <TextView
-            android:id="@+id/tv_otheruserName"
+            android:id="@+id/tv_other_userName"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginLeft="15dp"
@@ -163,7 +167,7 @@
         android:layout_height="wrap_content">
 
         <TextView
-            android:id="@+id/tv_otheruserInfo"
+            android:id="@+id/tv_other_userInfo"
             android:layout_width="match_parent"
             android:layout_height="30dp"
             android:layout_marginLeft="15dp"

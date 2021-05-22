@@ -10,9 +10,11 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -56,6 +58,7 @@ public class Account extends Fragment {
     private TextView account_tv_post_count;
     private TextView account_tv_follower_count;
     private TextView account_tv_following_count;
+    private String following;
     private CircleImageView iv_userProfile; // 프로필 이미지뷰
     private String user_name;
     private String bio_msg;
@@ -70,6 +73,9 @@ public class Account extends Fragment {
     private CircleImageView iv_profileImage;
     private CircleImageView profileImageView;
     private String profilePath;
+    private ImageButton btn_opt;
+    private View LL_accountEdit;
+    private View LL_accountDelete;
     //private static final int REQUEST_CAMERA = 1;
 
     FirebaseUser firebaseUser;
@@ -77,6 +83,59 @@ public class Account extends Fragment {
     public static Account newinstance(){
         Account account = new Account();
         return account;
+    }
+
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        int curId = item.getItemId();
+        switch (curId){
+            case 1:
+                btn_logout.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        switch (v.getId()){
+                            case R.id.logout_btn:
+                                //user_logout();
+                                AuthUI.getInstance()
+                                        .signOut(getActivity())
+                                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                            public void onComplete(@NonNull Task<Void> task) {
+                                                getActivity().finish();
+                                                startActivity(new Intent(getActivity(), Login.class));
+                                                showToast(getActivity(), "정상적으로 로그아웃 되었습니다.");
+
+                                            }
+                                        });
+                                Log.e("로그아웃","버튼입력");
+                                break;
+                        }
+                    }
+                });
+            case 2:
+                btn_accountDelete.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        switch (v.getId()){
+                            case R.id.delete_btn:
+                                //user_delete();
+                                AuthUI.getInstance()
+                                        .delete(getActivity())
+                                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<Void> task) {
+                                                Toast.makeText(getActivity(), "회원탈퇴가 정상적으로 처리되었습니다.", Toast.LENGTH_LONG).show();
+                                                getActivity().finish();
+                                                startActivity(new Intent(getActivity(), Login.class));
+                                            }
+                                        });
+                                Log.e("회원탈퇴","버튼입력");
+                                break;
+                        }
+                    }
+                });
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -253,12 +312,85 @@ public class Account extends Fragment {
         btn_profile_edit = view.findViewById(R.id.user_profile_edit_btn);
         iv_profileImage = view.findViewById(R.id.iv_profileimage);
 
+
+        btn_opt = view.findViewById(R.id.btn_opt);
+
+        btn_opt.setOnClickListener(new View.OnClickListener() {
+               @Override
+               public void onClick(View v) {
+                   switch (v.getId()) {
+                       case R.id.btn_opt:
+                           BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(
+                                   getActivity(), R.style.BottomSheetDialogTheme
+                           );
+                           View bottomSheetView = LayoutInflater.from(getActivity().getApplicationContext())
+                                   .inflate(
+                                           R.layout.myaccount_bottom_sheet,
+                                           (LinearLayout) view.findViewById(R.id.myaccountbottomSheetContainer)
+                                   );
+                           LL_accountEdit = bottomSheetView.findViewById(R.id.LL_accountEdit);
+                           LL_accountDelete = bottomSheetView.findViewById(R.id.LL_accountDelete);
+
+                           LL_accountEdit.setOnClickListener(new View.OnClickListener() {
+                               @Override
+                               public void onClick(View v) {
+                                   switch (v.getId()) {
+                                       case R.id.LL_accountEdit:
+                                           bottomSheetDialog.dismiss();
+                                           AuthUI.getInstance()
+                                                   .signOut(getActivity())
+                                                   .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                       public void onComplete(@NonNull Task<Void> task) {
+                                                           getActivity().finish();
+                                                           startActivity(new Intent(getActivity(), Login.class));
+                                                           showToast(getActivity(), "정상적으로 로그아웃 되었습니다.");
+
+                                                       }
+                                                   });
+                                           Log.e("로그아웃","버튼입력");
+                                           break;
+                                   }
+                               }
+                           });
+                           LL_accountDelete.setOnClickListener(new View.OnClickListener() {
+                               @Override
+                               public void onClick(View v) {
+                                   switch (v.getId()) {
+                                       case R.id.LL_accountDelete:
+                                           bottomSheetDialog.dismiss();
+                                           AuthUI.getInstance()
+                                                   .delete(getActivity())
+                                                   .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                       @Override
+                                                       public void onComplete(@NonNull Task<Void> task) {
+                                                           Toast.makeText(getActivity(), "회원탈퇴가 정상적으로 처리되었습니다.", Toast.LENGTH_LONG).show();
+                                                           getActivity().finish();
+                                                           startActivity(new Intent(getActivity(), Login.class));
+                                                       }
+                                                   });
+                                           Log.e("회원탈퇴","버튼입력");
+                                           break;
+                                   }
+                               }
+                           });
+                           bottomSheetDialog.setContentView(bottomSheetView);
+                           bottomSheetDialog.show();
+                           break;
+                   }
+               }
+           });
+
         DocumentReference documentReference = FirebaseFirestore.getInstance().collection("users").document(FirebaseAuth.getInstance().getCurrentUser().getUid());
         documentReference.get().addOnCompleteListener((task -> {
             if(task.isSuccessful()){
                 DocumentSnapshot document = task.getResult();
                 if(document != null){
                     if(document.exists()){
+                        following = document.getData().get("following").toString();
+                        Log.e("folloing","folloing : " + following);
+                        documentReference.collection("users").document(document.getId()).update("following",following);
+                        account_tv_following_count.setText(document.getData().get("following").toString());
+                        account_tv_follower_count.setText(document.getData().get("follower").toString());
                         tv_userName.setText(document.getData().get("name").toString());
                         user_name = document.getData().get("name").toString();
                         if(document.getData().get("bio") != null) {
@@ -299,6 +431,7 @@ public class Account extends Fragment {
             route_file = getArguments().getString("profile");
             Glide.with(this).load(route_file).circleCrop().into(iv_profileImage); //프로필 url을 이미지 뷰에 세팅
         }
+
         profileImageView = view.findViewById(R.id.iv_profileimage);
         profileImageView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -415,27 +548,7 @@ public class Account extends Fragment {
             }
         });
 
-        btn_logout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                switch (v.getId()){
-                    case R.id.logout_btn:
-                        //user_logout();
-                        AuthUI.getInstance()
-                                .signOut(getActivity())
-                                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                    public void onComplete(@NonNull Task<Void> task) {
-                                        getActivity().finish();
-                                        startActivity(new Intent(getActivity(), Login.class));
-                                        showToast(getActivity(), "정상적으로 로그아웃 되었습니다.");
 
-                                    }
-                                });
-                        Log.e("로그아웃","버튼입력");
-                        break;
-                }
-            }
-        });
         btn_profile_edit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -449,27 +562,11 @@ public class Account extends Fragment {
             }
         });
 
-        btn_accountDelete.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                switch (v.getId()){
-                    case R.id.delete_btn:
-                        //user_delete();
-                        AuthUI.getInstance()
-                                .delete(getActivity())
-                                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                    @Override
-                                    public void onComplete(@NonNull Task<Void> task) {
-                                        Toast.makeText(getActivity(), "회원탈퇴가 정상적으로 처리되었습니다.", Toast.LENGTH_LONG).show();
-                                        getActivity().finish();
-                                        startActivity(new Intent(getActivity(), Login.class));
-                                    }
-                                });
-                        Log.e("회원탈퇴","버튼입력");
-                        break;
-                }
-            }
-        });
+
+
+
+
+
 
         /*profileImageView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -487,6 +584,8 @@ public class Account extends Fragment {
 
         return view;
     }
+
+
     /*private void user_logout(){
         FirebaseAuth.getInstance().signOut();
         getActivity().finish();

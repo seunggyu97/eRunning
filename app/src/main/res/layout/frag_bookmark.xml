@@ -6,10 +6,9 @@
     tools:context=".Fragbookmark">
 
     <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <androidx.recyclerview.widget.RecyclerView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="북마크"
-        android:textSize="200dp"/>
+        android:layout_height="wrap_content"
+        android:id="@+id/recycle_view_save"/>
 
 </FrameLayout>
