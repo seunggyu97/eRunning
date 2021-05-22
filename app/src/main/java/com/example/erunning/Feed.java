@@ -42,6 +42,7 @@ import static com.example.erunning.Utillity.storageUrlToName;
 
 public class Feed extends Fragment {
     private View view;
+    private String post;
     private ImageButton btn_user_search;
     private FloatingActionButton btn_add;
     private FirebaseUser firebaseUser;
@@ -165,6 +166,7 @@ public class Feed extends Fragment {
             ArrayList<String> contentList = postList.get(position).getContents();
             for (int i = 0; i < contentList.size(); i++) {
                 String contents = contentList.get(i);
+
                 if (Patterns.WEB_URL.matcher(contents).matches() && contents.contains("https://firebasestorage.googleapis.com/v0/b/e-running-735bb.appspot.com/o/post")) {
 
                     successCount++;
@@ -247,6 +249,29 @@ public class Feed extends Fragment {
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
+                        final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                        FirebaseFirestore db = FirebaseFirestore.getInstance();
+                        DocumentReference documentReference = db.collection("users").document(user.getUid());
+                        documentReference.get().addOnCompleteListener((task -> {
+                            if (task.isSuccessful()) {
+                                DocumentSnapshot document = task.getResult();
+                                if (document != null) {
+                                    if (document.exists()) {
+                                        // post -1 코드
+                                        post = document.getData().get("post").toString();
+                                        int post_num = Integer.parseInt(post);
+                                        if (post_num > 0) {
+                                            post_num -= 1;
+                                            post = String.valueOf(post_num);
+                                            Log.e("게시글 post  ", "post : " + post_num + user.getUid());
+                                            db.collection("users").document(user.getUid()).update("post", Integer.parseInt(post));
+                                        }
+                                        else
+                                            showToast(getActivity(), "게시글 post -1 에러 !!!!! 계정을 삭제했다가 다시 만드세요 !!.");
+                                    }
+                                }
+                            }
+                        }));
                         showToast(getActivity(), "게시글을 삭제하였습니다.");
                         postUpdate();
                     }

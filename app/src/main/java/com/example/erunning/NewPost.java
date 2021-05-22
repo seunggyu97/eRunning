@@ -187,6 +187,7 @@ public class NewPost extends BasicActivity {
                             pathList.remove(parent.indexOfChild(selectedView) - 1);
                             parent.removeView(selectedView);
                             buttonsBackgroundLayout.setVisibility(View.GONE);
+
                         }
                     }).addOnFailureListener(new OnFailureListener() {
                         @Override
