@@ -40,6 +40,7 @@ public class Gallery extends BasicActivity {
         int column_index_data;
         String PathOfImage = null;
         String[] projection;
+        String sortOrder = MediaStore.Images.ImageColumns._ID + " DESC";
 
         Intent intent = getIntent();
         if (intent.getStringExtra("media").equals("video")) {
@@ -51,7 +52,7 @@ public class Gallery extends BasicActivity {
             projection = new String[] { MediaStore.MediaColumns.DATA,MediaStore.Images.Media.BUCKET_DISPLAY_NAME};
         }
 
-        cursor = activity.getContentResolver().query(uri, projection,null,null,null);
+        cursor = activity.getContentResolver().query(uri, projection,null,null,sortOrder);
 
         column_index_data = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA);
 

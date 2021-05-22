@@ -291,6 +291,69 @@ public class NewPost extends BasicActivity {
                                     StoreUpload(documentReference, new PostInfo(title, contentsList, user.getUid(), date, PublisherName,profilePhotoUrl));
                                 }
 
+                            }else{
+                                String profilePhotoUrl = null;
+                                final DocumentReference documentReference = postInfo == null ? firebaseFirestore.collection("posts").document() : firebaseFirestore.collection("posts").document(postInfo.getId());
+                                final Date date = postInfo == null ? new Date() : postInfo.getCreatedAt();
+
+                                for (int i = 0; i < parent.getChildCount(); i++) {
+                                    LinearLayout linearLayout = (LinearLayout) parent.getChildAt(i);
+                                    //getChildAt 시작은 내용입력 LinearLayout 부터
+                                    //getChildCount : 해당 LinearLayout에 포함되어있는 LinearLayout의 수
+                                    Log.e("parent.getChildAt(", +i + ") = " + parent.getChildAt(i));
+                                    Log.e("getChildCount()", " = " + linearLayout.getChildCount());
+                                    for (int ii = 0; ii < linearLayout.getChildCount(); ii++) {
+                                        View view = linearLayout.getChildAt(ii);
+                                        if (view instanceof EditText) {
+                                            String text = ((EditText) view).getText().toString();
+                                            if (text.length() > 0) {
+                                                contentsList.add(text);
+                                            }
+                                        } else if (!isStorageUrl(pathList.get(pathCount))) {
+
+                                            contentsList.add(pathList.get(pathCount));
+                                            String[] pathArray = pathList.get(pathCount).split("\\.");
+                                            final StorageReference mountainImageRef = storageRef.child("posts/" + documentReference.getId() + "/" + pathCount + "." + pathArray[pathArray.length - 1]);
+                                            try {
+                                                InputStream stream = new FileInputStream(new File(pathList.get(pathCount)));
+                                                StorageMetadata metadata = new StorageMetadata.Builder().setCustomMetadata("index", "" + (contentsList.size() - 1)).build();
+                                                UploadTask uploadTask = mountainImageRef.putStream(stream, metadata);
+                                                uploadTask.addOnFailureListener(new OnFailureListener() {
+                                                    @Override
+                                                    public void onFailure(@NonNull Exception e) {
+                                                        // 실패
+                                                    }
+                                                }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                                                    @Override
+                                                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                                                        final int index = Integer.parseInt(taskSnapshot.getMetadata().getCustomMetadata("index"));
+                                                        mountainImageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                                            @Override
+                                                            public void onSuccess(Uri uri) {
+                                                                contentsList.set(index, uri.toString());
+                                                                successCount++;
+                                                                if (pathList.size() == successCount) {
+                                                                    //완료
+                                                                    PostInfo postInfo = new PostInfo(title, contentsList, user.getUid(), date, PublisherName,profilePhotoUrl);
+                                                                    Log.e("title : ", title + "  //contentsList : " + contentsList + "  //user.getUid() : " + user.getUid() + "  //Date : " + new Date() + "PublisherName : " + PublisherName + "profilePhotoUrl : " + profilePhotoUrl);
+                                                                    StoreUpload(documentReference, postInfo);
+                                                                }
+
+                                                            }
+                                                        });
+                                                    }
+                                                });
+                                            } catch (FileNotFoundException e) {
+                                                loaderLayout.setVisibility(View.GONE);
+                                                Log.e("로그", "에러" + e.toString());
+                                            }
+                                            pathCount++;
+                                        }
+                                    }
+                                }
+                                if (pathList.size() == 0) {
+                                    StoreUpload(documentReference, new PostInfo(title, contentsList, user.getUid(), date, PublisherName,profilePhotoUrl));
+                                }
                             }
                         }
                     }

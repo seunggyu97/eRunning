@@ -6,20 +6,16 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-public class PostInfo implements Serializable {
+public class CommentInfo implements Serializable {
     private String title;
-    private ArrayList<String> contents;
-    private ArrayList<String> formats;
     private String publisher;
     private Date createdAt;
     private String id;
     private String publisherName;
     private String photoUrl;
 
-    public PostInfo(String title, ArrayList<String> contents, String publisher, Date createdAt, String id,String publisherName, String photoUrl){
+    public CommentInfo(String title, String publisher, Date createdAt, String id,String publisherName, String photoUrl){
         this.title = title;
-        this.contents = contents;
-        //this.formats = formats;
         this.publisher = publisher;
         this.createdAt = createdAt;
         this.id = id;
@@ -27,34 +23,26 @@ public class PostInfo implements Serializable {
         this.photoUrl = photoUrl;
     }
 
-    public PostInfo(String title, ArrayList<String> contents, String publisher, Date createdAt, String publisherName, String photoUrl){
+    public CommentInfo(String title, String publisher, Date createdAt, String publisherName, String photoUrl){
         this.title = title;
-        this.contents = contents;
-        //this.formats = formats;
         this.publisher = publisher;
         this.createdAt = createdAt;
         this.publisherName = publisherName;
         this.photoUrl = photoUrl;
     }
 
-    public PostInfo(String title, ArrayList<String> contents,String id, String publisher, Date createdAt, String publisherName){
+    public CommentInfo(String title, String publisher, Date createdAt, String publisherName){
         this.title = title;
-        this.contents = contents;
-        //this.formats = formats;
-        this.id = id;
         this.publisher = publisher;
         this.createdAt = createdAt;
         this.publisherName = publisherName;
     }
 
-    public Map<String, Object> getPostInfo(){
+    public Map<String, Object> getCommentInfo(){
         Map<String, Object> docData = new HashMap<>();
         docData.put("title",title);
-        docData.put("contents",contents);
-        //docData.put("formats",formats);
         docData.put("publisher",publisher);
         docData.put("createdAt",createdAt);
-
         docData.put("publisherName",publisherName);
         docData.put("photoUrl",photoUrl);
         return  docData;
@@ -62,12 +50,6 @@ public class PostInfo implements Serializable {
 
     public String getTitle(){ return this.title; }
     public void setTitle(String title){ this.title = title; }
-
-    public ArrayList<String> getContents(){ return this.contents; }
-    public void setContents(ArrayList<String> contents){ this.contents = contents; }
-
-    /*public ArrayList<String> getFormats(){ return this.formats; }
-    public void setFormats(ArrayList<String> formats){ this.formats = formats; }*/
 
     public String getPublisher(){ return this.publisher; }
     public void setPublisher(String publisher){ this.publisher = publisher; }

@@ -15,6 +15,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -54,6 +55,8 @@ public class Feed extends Fragment {
     private Utillity util;
     private int successCount;
 
+    SwipeRefreshLayout refreshLayout;
+
     public static Feed newinstance() {
         Feed feed = new Feed();
         return feed;
@@ -67,6 +70,17 @@ public class Feed extends Fragment {
         btn_user_search = view.findViewById(R.id.btn_user_search);
         btn_add = view.findViewById(R.id.btn_add);
         loaderLayout = view.findViewById(R.id.loaderLayout);
+        refreshLayout = view.findViewById(R.id.srl_feed);
+
+        refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                onResume();
+
+                refreshLayout.setRefreshing(false);
+            }
+        });
+
 
         btn_user_search.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -190,16 +204,26 @@ public class Feed extends Fragment {
                                 postList.clear();
                                 for (QueryDocumentSnapshot document : task.getResult()) {
                                     Log.d(TAG, document.getId() + " => " + document.getData());
-                                    postList.add(new PostInfo(
-                                            document.getData().get("title").toString(),
-                                            (ArrayList<String>) document.getData().get("contents"),
-                                            document.getData().get("publisher").toString(),
-                                            new Date(document.getDate("createdAt").getTime()),
-                                            document.getId(),
+                                    if(document.getData().get("photoUrl") != null) {
+                                        postList.add(new PostInfo(
+                                                document.getData().get("title").toString(),
+                                                (ArrayList<String>) document.getData().get("contents"),
+                                                document.getData().get("publisher").toString(),
+                                                new Date(document.getDate("createdAt").getTime()),
+                                                document.getId(),
 
-                                            document.getData().get("publisherName").toString(),
-                                            document.getData().get("photoUrl").toString()));
-
+                                                document.getData().get("publisherName").toString(),
+                                                document.getData().get("photoUrl").toString()));
+                                    }
+                                    else {
+                                        postList.add(new PostInfo(
+                                                document.getData().get("title").toString(),
+                                                (ArrayList<String>) document.getData().get("contents"),
+                                                document.getId(),
+                                                document.getData().get("publisher").toString(),
+                                                new Date(document.getDate("createdAt").getTime()),
+                                                document.getData().get("publisherName").toString()));
+                                    }
                                 }
                                 feedAdapter.notifyDataSetChanged();
                             } else {
