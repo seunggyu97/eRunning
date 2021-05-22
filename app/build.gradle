@@ -95,6 +95,9 @@ dependencies {
     implementation "androidx.paging:paging-rxjava2:$paging_version" // use -ktx for Kotlin
 
     implementation 'com.google.android.material:material:1.4.0-alpha02' // BottomSheetDialogFragment를 위한 머티리얼 디자인 종속성 추가
+
+    implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0"
+
 }
 
 
