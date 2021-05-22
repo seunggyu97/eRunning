@@ -16,6 +16,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
@@ -25,20 +26,23 @@ public class OtherAccount extends AppCompatActivity {
     private String othername;
     private String otherbio;
     private String otherprofile;
-    private int j = 0;
 
     private String otherfollower;
     private String otherfollowing; //팔로잉을 한사람
     private String following; //팔로앙을 당한사람
     private String otherpost;
     private String otherUID;
+    private ArrayList<String> otherfollowerlist = new ArrayList<>();
     private ArrayList<String> followerlist = new ArrayList<>();
+
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_other_account);
+
+        Log.e("followlist","followlist!!!! :"+ followerlist.size());
 
         TextView username = findViewById(R.id.tv_other_userName);
         TextView userbio = findViewById(R.id.tv_other_userInfo);
@@ -57,6 +61,8 @@ public class OtherAccount extends AppCompatActivity {
         otherfollowing = intent.getStringExtra("following");
         otherUID = intent.getStringExtra("UID");
 
+        otherfollowerlist = intent.getStringArrayListExtra("followerlist");
+
 
         username.setText(othername);
         if (otherbio != null)
@@ -72,6 +78,29 @@ public class OtherAccount extends AppCompatActivity {
         ImageButton btn_back = (ImageButton) findViewById(R.id.btn_back2);
         Button btn_follow = findViewById(R.id.account_btn_follow);
         Button btn_unfollow = findViewById(R.id.account_btn_unfollow);
+
+        final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        FirebaseFirestore otherdb = FirebaseFirestore.getInstance();
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        DocumentReference documentReference = otherdb.collection("users").document(otherUID);
+        DocumentReference documentReference2 = db.collection("users").document(user.getUid());
+        documentReference.get().addOnCompleteListener((task -> {
+            if (task.isSuccessful()) {
+                DocumentSnapshot document = task.getResult();
+                if (document != null) {
+                    if (document.exists()) {
+                        String FUL = document.getData().get("followerlist").toString();
+                        String ID = user.getUid();
+                        Log.e("dd","dd" + FUL+otherfollowerlist+otherfollowerlist.contains(FUL));
+                        if (otherfollowerlist.contains(ID)) {
+                            btn_follow.setVisibility(View.GONE);
+                            btn_unfollow.setVisibility(View.VISIBLE);
+                            Log.e("ff","젤중요하다아앙아ㅏㅏ " + user.getUid()+ " == " + FUL);
+                        }
+                    }
+                }
+            }
+        }));
 
 
         btn_follow.setOnClickListener(new View.OnClickListener() {
@@ -99,47 +128,19 @@ public class OtherAccount extends AppCompatActivity {
                                         following = String.valueOf(following_num);
 
                                         db.collection("users").document(document.getId()).update("following", Integer.parseInt(following)); // 팔로윙을 한 사람 팔로잉을 +1
-//                                        ArrayList<String> followerlist = new ArrayList<>();
-//                                        String FUID = document.getId();
-//                                        followerlist.add("FUID");
-//                                        Map<String, Object> map = new HashMap<>();
-//                                        map.put("followerlist", document.getId());
-//                                        Log.e("dd","ee" + map);
-//                                        otherdb.collection("users").document(otherUID).update(map); // 팔로우 당한사람의 followerlist에 넣는다 !!
+                                        String FUID = document.getId();
 
-
-                                        Log.e("follow id", "팔로우 id :" + document.getId() + "list : ");
+                                        otherdb.collection("users").document(otherUID).update(
+                                                "followerlist", FieldValue.arrayUnion(FUID)
+                                        ); // 팔로우 당한사람의 followerlist에 넣는다 !!
                                     }
                                 }
                             }
                         }));
 
 
-
-//                DocumentReference documentReference2 = FirebaseFirestore.getInstance().collection("users").document(user.getUid());
-//                documentReference2.get().addOnCompleteListener((task -> {
-//                    if (task.isSuccessful()) {
-//                        DocumentSnapshot document = task.getResult();
-//                        if (document != null) {
-//                            if (document.exists()) {
-//                                String id = document.getId();
-//                                followerlist.add(id);
-//                                Log.e("follow id", "팔로우 id :" + id);
-//                            }
-//                        }
-//                    }
-//                }));
-
-
                 btn_follow.setVisibility(v.GONE);
                 btn_unfollow.setVisibility(v.VISIBLE);
-
-//                UserInfo userInfo = new UserInfo(null, 0, 0, 0, followerlist);
-//                followerlist = userInfo.getFollowerlist();
-//                followerlist.add("uid");
-
-
-//                Log.e("asdf","user get id : " + FirebaseFirestore.getInstance().collection("users").document(user.getUid()).toString());
 
             }
 
@@ -155,6 +156,7 @@ public class OtherAccount extends AppCompatActivity {
                 FirebaseFirestore db = FirebaseFirestore.getInstance();
                 db.collection("users").document(otherUID).update("follower", Integer.parseInt(otherfollower));
 
+                FirebaseFirestore otherdb = FirebaseFirestore.getInstance(); //팔로우 당한사람 otherdb
                 final FirebaseUser user2 = FirebaseAuth.getInstance().getCurrentUser();
                 FirebaseFirestore db2 = FirebaseFirestore.getInstance();
                 DocumentReference documentReference = db2.collection("users").document(user2.getUid());
@@ -168,7 +170,10 @@ public class OtherAccount extends AppCompatActivity {
                                 following = String.valueOf(following_num);
 
                                 db.collection("users").document(document.getId()).update("following", Integer.parseInt(following)); // 팔로윙을 한 사람 팔로잉을 +1
-//                              // followerlist.remove();...
+                                String FUID = document.getId();
+                                otherdb.collection("users").document(otherUID).update(
+                                        "followerlist", FieldValue.arrayRemove(FUID)
+                                );
                             }
                         }
                     }
@@ -191,6 +196,7 @@ public class OtherAccount extends AppCompatActivity {
 
             }
         });
+
     }
 }
 

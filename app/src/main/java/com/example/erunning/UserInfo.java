@@ -110,4 +110,5 @@ public class UserInfo {
 
     public ArrayList<String> getFollowerlist(){ return this.followerlist; }
     public void setFollowerlist(ArrayList<String> followerlist){ this.followerlist = followerlist; }
+
 }

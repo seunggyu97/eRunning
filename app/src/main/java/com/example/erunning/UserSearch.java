@@ -14,6 +14,8 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 
+import java.util.ArrayList;
+
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class UserSearch extends BasicActivity implements FirestoreAdapter.OnListItemClick {
@@ -80,6 +82,7 @@ public class UserSearch extends BasicActivity implements FirestoreAdapter.OnList
         String follower = snapshot.getData().get("follower").toString();
         String following = snapshot.getData().get("following").toString();
         String UID = snapshot.getId();
+        ArrayList<String> followerlist = (ArrayList<String>) snapshot.getData().get("followerlist");
 
 
         Intent intent = new Intent(getApplicationContext(), OtherAccount.class);
@@ -98,8 +101,9 @@ public class UserSearch extends BasicActivity implements FirestoreAdapter.OnList
         intent.putExtra("follower",follower);
         intent.putExtra("following",following);
         intent.putExtra("UID",UID);
+        intent.putStringArrayListExtra("followerlist",followerlist);
 
         startActivity(intent);
-        Log.e("ITEM_CLICK", "Clicked an item" + position + " and the ID :" + snapshot.getId() + " and username : " + snapshot.getData().get("username"));
+        Log.e("ITEM_CLICK", "Clicked an item" + position + " and the ID :" + snapshot.getId() + " and count : " + snapshot.getData().get("count"));
     }
 }
