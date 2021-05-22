@@ -163,7 +163,9 @@ class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentViewHold
         TextView tv_commentname = holder.cardView.findViewById(R.id.tv_commentname);
         tv_commentname.setText(mDataset.get(position).getPublisherName());
         Log.e("1차 commentname","설정");
-        Glide.with(activity).load(mDataset.get(position).getPhotoUrl()).circleCrop().into(iv_profileImage);
+        if(mDataset.get(position).getPhotoUrl() != null) {
+            Glide.with(activity).load(mDataset.get(position).getPhotoUrl()).circleCrop().into(iv_profileImage);
+        }
         Log.e("1차 댓글 프사","설정");
         TextView createdAtTextView = cardView.findViewById(R.id.createdAtTextView);
 
@@ -195,6 +197,8 @@ class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentViewHold
                                 }
                             });
 
+                        }else{
+                            iv_profileImage.setImageResource(R.drawable.ic_account);
                         }
                     }
                 }

@@ -31,6 +31,13 @@ public class CommentInfo implements Serializable {
         this.photoUrl = photoUrl;
     }
 
+    public CommentInfo(String title, String publisher, Date createdAt, String publisherName){
+        this.title = title;
+        this.publisher = publisher;
+        this.createdAt = createdAt;
+        this.publisherName = publisherName;
+    }
+
     public Map<String, Object> getCommentInfo(){
         Map<String, Object> docData = new HashMap<>();
         docData.put("title",title);

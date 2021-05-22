@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -60,10 +61,11 @@ public class Post extends BasicActivity{
     private ImageButton like;
     private ImageButton bookmark;
     private TextView tv_like;
+    private EditText et_writecomment;
     private CommentInfo commentInfo;
     private Utillity util;
     private RelativeLayout loaderLayout;
-
+    private InputMethodManager imm;
     private static final String TAG = "Post";
 
     private ArrayList<CommentInfo> commentList;
@@ -86,6 +88,9 @@ public class Post extends BasicActivity{
         bookmark = findViewById(R.id.btn_bookmark);
         tv_like = findViewById(R.id.tv_like);
         loaderLayout = findViewById(R.id.loaderLayout);
+        et_writecomment = findViewById(R.id.et_writecomment);
+
+        imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE); // 키보드
 
         CircleImageView iv_profileImage = findViewById(R.id.iv_profileimage);
         PostInfo postInfo = (PostInfo) getIntent().getSerializableExtra("postInfo");
@@ -95,7 +100,9 @@ public class Post extends BasicActivity{
         TextView tv_feedname = findViewById(R.id.tv_feedname);
         tv_feedname.setText(postInfo.getPublisherName());
         Log.e("1차 feedname","설정");
-        Glide.with(getApplication()).load(postInfo.getPhotoUrl()).circleCrop().into(iv_profileImage);
+        if(postdata.getPhotoUrl() != null) {
+            Glide.with(this).load(postdata.getPhotoUrl()).circleCrop().into(iv_profileImage);
+        }
         Log.e("1차 프사","설정");
         TextView createdAtTextView = findViewById(R.id.createdAtTextView);
 
@@ -338,15 +345,15 @@ public class Post extends BasicActivity{
     }
 
     private void CommentUpload() {
-        final String title = ((EditText) findViewById(R.id.et_writecomment)).getText().toString();
+        final String title = et_writecomment.getText().toString();
 
         if (title.length() > 0) {
 
             loaderLayout.setVisibility(View.VISIBLE);
 
             firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-            FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
-            DocumentReference documentReference2= FirebaseFirestore.getInstance().collection("users").document(firebaseUser.getUid());
+            firebaseFirestore = FirebaseFirestore.getInstance();
+            DocumentReference documentReference2= firebaseFirestore.collection("users").document(firebaseUser.getUid());
             documentReference2.get().addOnCompleteListener((task -> {
                 if(task.isSuccessful()){
                     DocumentSnapshot document = task.getResult();
@@ -360,6 +367,14 @@ public class Post extends BasicActivity{
                                 final Date date = commentInfo == null ? new Date() : commentInfo.getCreatedAt();
 
                                 StoreUpload(documentReference, new CommentInfo(title, firebaseUser.getUid(), date, PublisherName,profilePhotoUrl));
+
+                            }
+                            else{
+                                String profilePhotoUrl = null;
+                                final DocumentReference documentReference = commentInfo == null ? firebaseFirestore.collection("posts").document(postdata.getId()).collection("comments").document() : firebaseFirestore.collection("comments").document(postdata.getId()).collection("comments").document(commentInfo.getId());
+                                final Date date = commentInfo == null ? new Date() : commentInfo.getCreatedAt();
+
+                                StoreUpload(documentReference, new CommentInfo(title, firebaseUser.getUid(), date, PublisherName));
                             }
                         }
                     }
@@ -378,6 +393,9 @@ public class Post extends BasicActivity{
                         loaderLayout.setVisibility(View.GONE);
                         showToast(Post.this, "댓글을 작성하였습니다.");
                         commentAdapter.notifyDataSetChanged();
+                        et_writecomment.getText().clear();
+                        imm.hideSoftInputFromWindow(et_writecomment.getWindowToken(), 0); // 키보드를 내린다.
+                        onResume();
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
@@ -396,7 +414,7 @@ public class Post extends BasicActivity{
     private void commentUpdate() {
         if (firebaseUser != null) {
             FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
-            CollectionReference collectionReference = firebaseFirestore.collection("posts").document("postdata.getId()").collection("comments");
+            CollectionReference collectionReference = firebaseFirestore.collection("posts").document(postdata.getId()).collection("comments");
             collectionReference.orderBy("createdAt", Query.Direction.ASCENDING).get()
                     .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                         @Override
@@ -406,15 +424,25 @@ public class Post extends BasicActivity{
                                 commentList.clear();
                                 for (QueryDocumentSnapshot document : task.getResult()) {
                                     Log.d(TAG, document.getId() + " => " + document.getData());
-                                    commentList.add(new CommentInfo(
-                                            document.getData().get("title").toString(),
-                                            document.getData().get("publisher").toString(),
-                                            new Date(document.getDate("createdAt").getTime()),
-                                            document.getId(),
+                                    if (document.getData().get("photoUrl") != null) {
+                                        commentList.add(new CommentInfo(
+                                                document.getData().get("title").toString(),
+                                                document.getData().get("publisher").toString(),
+                                                new Date(document.getDate("createdAt").getTime()),
+                                                document.getId(),
 
-                                            document.getData().get("publisherName").toString(),
-                                            document.getData().get("photoUrl").toString()));
+                                                document.getData().get("publisherName").toString(),
+                                                document.getData().get("photoUrl").toString()));
 
+                                    }
+                                    else{
+                                        commentList.add(new CommentInfo(
+                                                document.getData().get("title").toString(),
+                                                document.getData().get("publisher").toString(),
+                                                new Date(document.getDate("createdAt").getTime()),
+                                                document.getId(),
+                                                document.getData().get("publisherName").toString()));
+                                    }
                                 }
                                 commentAdapter.notifyDataSetChanged();
                             } else {

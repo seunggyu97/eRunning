@@ -2,6 +2,7 @@ package com.example.erunning;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -53,7 +54,7 @@ class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder> {
     private ImageView postmenu;
     private View LL_PostEdit;
     private View LL_PostDelete;
-
+    private Drawable drawable;
     private OnPostListener onPostListener;
 
     public static class FeedViewHolder extends RecyclerView.ViewHolder {
@@ -168,7 +169,9 @@ class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder> {
         TextView tv_feedname = holder.cardView.findViewById(R.id.tv_feedname);
         tv_feedname.setText(mDataset.get(position).getPublisherName());
         Log.e("1차 feedname","설정");
-        Glide.with(activity).load(mDataset.get(position).getPhotoUrl()).circleCrop().into(iv_profileImage);
+        if(mDataset.get(position).getPhotoUrl() != null) {
+            Glide.with(activity).load(mDataset.get(position).getPhotoUrl()).circleCrop().into(iv_profileImage);
+        }
         Log.e("1차 프사","설정");
         TextView createdAtTextView = cardView.findViewById(R.id.createdAtTextView);
 
@@ -200,6 +203,8 @@ class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder> {
                                 }
                             });
 
+                        }else{
+                            iv_profileImage.setImageResource(R.drawable.ic_account);
                         }
                     }
                 }

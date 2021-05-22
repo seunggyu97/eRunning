@@ -190,16 +190,26 @@ public class Feed extends Fragment {
                                 postList.clear();
                                 for (QueryDocumentSnapshot document : task.getResult()) {
                                     Log.d(TAG, document.getId() + " => " + document.getData());
-                                    postList.add(new PostInfo(
-                                            document.getData().get("title").toString(),
-                                            (ArrayList<String>) document.getData().get("contents"),
-                                            document.getData().get("publisher").toString(),
-                                            new Date(document.getDate("createdAt").getTime()),
-                                            document.getId(),
+                                    if(document.getData().get("photoUrl") != null) {
+                                        postList.add(new PostInfo(
+                                                document.getData().get("title").toString(),
+                                                (ArrayList<String>) document.getData().get("contents"),
+                                                document.getData().get("publisher").toString(),
+                                                new Date(document.getDate("createdAt").getTime()),
+                                                document.getId(),
 
-                                            document.getData().get("publisherName").toString(),
-                                            document.getData().get("photoUrl").toString()));
-
+                                                document.getData().get("publisherName").toString(),
+                                                document.getData().get("photoUrl").toString()));
+                                    }
+                                    else {
+                                        postList.add(new PostInfo(
+                                                document.getData().get("title").toString(),
+                                                (ArrayList<String>) document.getData().get("contents"),
+                                                document.getId(),
+                                                document.getData().get("publisher").toString(),
+                                                new Date(document.getDate("createdAt").getTime()),
+                                                document.getData().get("publisherName").toString()));
+                                    }
                                 }
                                 feedAdapter.notifyDataSetChanged();
                             } else {

@@ -37,6 +37,16 @@ public class PostInfo implements Serializable {
         this.photoUrl = photoUrl;
     }
 
+    public PostInfo(String title, ArrayList<String> contents,String id, String publisher, Date createdAt, String publisherName){
+        this.title = title;
+        this.contents = contents;
+        //this.formats = formats;
+        this.id = id;
+        this.publisher = publisher;
+        this.createdAt = createdAt;
+        this.publisherName = publisherName;
+    }
+
     public Map<String, Object> getPostInfo(){
         Map<String, Object> docData = new HashMap<>();
         docData.put("title",title);
