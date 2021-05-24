@@ -95,43 +95,8 @@ public class Post extends BasicActivity{
         CircleImageView iv_profileImage = findViewById(R.id.iv_profileimage);
         PostInfo postInfo = (PostInfo) getIntent().getSerializableExtra("postInfo");
         postdata = postInfo;
-        if(!postdata.getLike().equals("0")){
-            tv_like_upside.setVisibility(View.VISIBLE);
-            tv_like_upside.setText("좋아요 " + postdata.getLike() + "개");
-        }
-        else{
-            tv_like_upside.setVisibility(View.GONE);
-        }
-        FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
-        DocumentReference documentReference2 = firebaseFirestore.collection("posts").document(postdata.getId());
-        documentReference2.get().addOnCompleteListener((task -> {
-            if (task.isSuccessful()) {
-                DocumentSnapshot document = task.getResult();
-                if (document != null) {
-                    if (document.exists()) {
-                        String userId= firebaseUser.getUid();
-                        ArrayList<String> likerList = (ArrayList<String>)document.getData().get("liker");
-                        if(likerList != null) {
-                            if (likerList.contains(userId)) {// 좋아요가 눌러진 상태일 경우
-                                String getLike = document.getData().get("like").toString();
-                                btn_like.setImageResource(R.drawable.ic_like_red);
-                                tv_like.setText(getLike);
-                                tv_like.setTextColor(Color.parseColor("#ff3300"));
-                            } else {
-                                btn_like.setImageResource(R.drawable.ic_like_gray);
-                                tv_like.setText("좋아요");
-                                tv_like.setTextColor(Color.parseColor("#000000"));
-                            }
-                        }
-                        else{
-                            btn_like.setImageResource(R.drawable.ic_like_gray);
-                            tv_like.setText("좋아요");
-                            tv_like.setTextColor(Color.parseColor("#000000"));
-                        }
-                    }
-                }
-            }
-        }));
+        setImageChange(postdata);
+
 
         TextView titleTextView = findViewById(R.id.titleTextView);
         titleTextView.setText(postInfo.getTitle());
@@ -162,6 +127,7 @@ public class Post extends BasicActivity{
                                         postdata.setLike(Integer.toString(fLike));
                                         documentReference.update("like", Integer.toString(fLike)); // 파베 저장
                                         documentReference.update("liker", FieldValue.arrayRemove(userId));//좋아요 리스트에서 자신 삭제
+                                        setImageChange(postdata);
                                         onResume();
                                     } else {// 좋아요가 눌러지지 않은 상태일 경우
                                         int fLike = Integer.parseInt(document.getData().get("like").toString());
@@ -169,6 +135,7 @@ public class Post extends BasicActivity{
                                         postdata.setLike(Integer.toString(fLike));
                                         documentReference.update("like", Integer.toString(fLike)); // 파베 저장
                                         documentReference.update("liker", FieldValue.arrayUnion(userId));// 좋아요 리스트에 자신 추가
+                                        setImageChange(postdata);
                                         onResume();
                                     }
                                 }
@@ -179,6 +146,7 @@ public class Post extends BasicActivity{
                                     documentReference.update("like", Integer.toString(fLike)); // 파베 저장
 
                                     documentReference.update("liker", FieldValue.arrayUnion(userId));// 좋아요 리스트에 자신 추가
+                                    setImageChange(postdata);
                                     onResume();
                                 }
                             }
@@ -207,6 +175,7 @@ public class Post extends BasicActivity{
                                         postdata.setLike(Integer.toString(fLike));
                                         documentReference.update("like", Integer.toString(fLike)); // 파베 저장
                                         documentReference.update("liker", FieldValue.arrayRemove(userId));//좋아요 리스트에서 자신 삭제
+                                        setImageChange(postdata);
                                         onResume();
                                     } else {// 좋아요가 눌러지지 않은 상태일 경우
                                         int fLike = Integer.parseInt(document.getData().get("like").toString());
@@ -214,6 +183,7 @@ public class Post extends BasicActivity{
                                         postdata.setLike(Integer.toString(fLike));
                                         documentReference.update("like", Integer.toString(fLike)); // 파베 저장
                                         documentReference.update("liker", FieldValue.arrayUnion(userId));// 좋아요 리스트에 자신 추가
+                                        setImageChange(postdata);
                                         onResume();
                                     }
                                 }
@@ -224,6 +194,7 @@ public class Post extends BasicActivity{
                                     documentReference.update("like", Integer.toString(fLike)); // 파베 저장
 
                                     documentReference.update("liker", FieldValue.arrayUnion(userId));// 좋아요 리스트에 자신 추가
+                                    setImageChange(postdata);
                                     onResume();
                                 }
                             }
@@ -462,7 +433,45 @@ public class Post extends BasicActivity{
 
 
     }
-
+    private void setImageChange(PostInfo postdata){
+        if(!postdata.getLike().equals("0")){
+            tv_like_upside.setVisibility(View.VISIBLE);
+            tv_like_upside.setText("좋아요 " + postdata.getLike() + "개");
+        }
+        else{
+            tv_like_upside.setVisibility(View.GONE);
+        }
+        FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
+        DocumentReference documentReference2 = firebaseFirestore.collection("posts").document(postdata.getId());
+        documentReference2.get().addOnCompleteListener((task -> {
+            if (task.isSuccessful()) {
+                DocumentSnapshot document = task.getResult();
+                if (document != null) {
+                    if (document.exists()) {
+                        String userId= firebaseUser.getUid();
+                        ArrayList<String> likerList = (ArrayList<String>)document.getData().get("liker");
+                        if(likerList != null) {
+                            if (likerList.contains(userId)) {// 좋아요가 눌러진 상태일 경우
+                                String getLike = document.getData().get("like").toString();
+                                btn_like.setImageResource(R.drawable.ic_like_red);
+                                tv_like.setText(getLike);
+                                tv_like.setTextColor(Color.parseColor("#ff3300"));
+                            } else {
+                                btn_like.setImageResource(R.drawable.ic_like_gray);
+                                tv_like.setText("좋아요");
+                                tv_like.setTextColor(Color.parseColor("#000000"));
+                            }
+                        }
+                        else{
+                            btn_like.setImageResource(R.drawable.ic_like_gray);
+                            tv_like.setText("좋아요");
+                            tv_like.setTextColor(Color.parseColor("#000000"));
+                        }
+                    }
+                }
+            }
+        }));
+    }
     private void CommentUpload() {
         final String title = et_writecomment.getText().toString();
 
