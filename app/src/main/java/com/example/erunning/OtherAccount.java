@@ -94,7 +94,7 @@ public class OtherAccount extends AppCompatActivity {
                     if (document.exists()) {
                         String FUL = document.getData().get("followerlist").toString();
                         String ID = user.getUid();
-                        if (otherfollowerlist.contains(ID)) { //팔로잉을 당하는 유저 팔로워리스트에 팔로우하는사람의 ID가면 배열에 있으
+                        if (otherfollowerlist.contains(ID)) { //팔로잉을 당하는 유저 팔로워리스트에 팔로우하는사람의 ID가면 배열에 있으면
                            btn_follow.setVisibility(View.GONE);
                            btn_unfollow.setVisibility(View.VISIBLE);
                         }
@@ -129,7 +129,8 @@ public class OtherAccount extends AppCompatActivity {
                                         following = String.valueOf(following_num);
 
                                         String FUID = document.getId();
-                                        db.collection("users").document(document.getId()).update("following", Integer.parseInt(following)); // 팔로윙을 한 사람 팔로잉을 +1
+                                        db.collection("users").document(document.getId())
+                                                .update("following", Integer.parseInt(following)); // 팔로윙을 한 사람 팔로잉을 +1
                                         db.collection("users").document(document.getId()).update(
                                                 "followinglist", FieldValue.arrayUnion(otherUID)); //팔로우 당한사람의 ID를 팔로우 건사람의 followinglist에 넣
 
@@ -171,7 +172,8 @@ public class OtherAccount extends AppCompatActivity {
                                 int following_num = Integer.parseInt(following); following_num -= 1;
                                 following = String.valueOf(following_num);
 
-                                db.collection("users").document(document.getId()).update("following", Integer.parseInt(following)); // 팔로윙을 한 사람 팔로잉을 +1
+                                db.collection("users").document(document.getId())
+                                        .update("following", Integer.parseInt(following)); // 팔로윙을 한 사람 팔로잉을 -1
                                 String FUID = document.getId();
                                 db.collection("users").document(document.getId()).update(
                                         "followinglist", FieldValue.arrayRemove(otherUID));
@@ -183,6 +185,7 @@ public class OtherAccount extends AppCompatActivity {
                     }
                 }));
                 btn_unfollow.setVisibility(v.GONE);
+
                 btn_follow.setVisibility(v.VISIBLE);
             }
         });

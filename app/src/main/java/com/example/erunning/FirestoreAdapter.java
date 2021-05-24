@@ -84,15 +84,6 @@ public class FirestoreAdapter extends FirestorePagingAdapter<UserInfo, Firestore
         @Override
         public void onClick(View v) {
             onListItemClick.onItemClick(getItem(getAdapterPosition()), getAdapterPosition());
-//            int pos = getAdapterPosition();
-//            if(pos != RecyclerView.NO_POSITION){
-//                Intent intent = new Intent(mContext, OtherAccount.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//                intent.putExtra("username", username.toString());
-//                intent.putExtra("bio", bio.toString());
-//                intent.putExtra("profileURL", image_profile.toString());
-//
-//                 mContext.startActivity(intent);
-//            }
         }
     }
     public interface OnListItemClick {

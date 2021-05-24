@@ -2,8 +2,11 @@ package com.example.erunning;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
+import android.widget.EditText;
 
 import androidx.paging.PagedList;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -23,10 +26,11 @@ public class UserSearch extends BasicActivity implements FirestoreAdapter.OnList
     private RecyclerView recyclerView;
     private FirestoreAdapter adapter;
     private FirebaseFirestore firebaseFirestore;
+    private ArrayList<String> itemlist = new ArrayList<>();
     private CircleImageView nullProfile;
 
-
-
+    EditText search_bar;
+    EditText preText;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,7 +44,8 @@ public class UserSearch extends BasicActivity implements FirestoreAdapter.OnList
 
 
         //Query
-        Query query = firebaseFirestore.collection("users").orderBy("name"); // 데이터 정렬 orderBy
+        Query query = firebaseFirestore.collection("users")
+                .orderBy("name", Query.Direction.ASCENDING);// 데이터 정렬 orderBy
 
         PagedList.Config config = new PagedList.Config.Builder()
                 .setInitialLoadSizeHint(10)
@@ -53,15 +58,47 @@ public class UserSearch extends BasicActivity implements FirestoreAdapter.OnList
                 .setQuery(query, config, UserInfo.class)
                 .build();
 
-        adapter = new FirestoreAdapter(options, this);
+        adapter = new FirestoreAdapter(options, this); //musers = this
 
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
+        Log.e("dd","로그확인 : " + options + " "+ query+" "+adapter+" "+recyclerView);
+
+        search_bar = findViewById(R.id.search_bar);
+        search_bar.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (s.toString().isEmpty()){
+                    Query query = firebaseFirestore.collection("users")
+                            .orderBy("name", Query.Direction.ASCENDING);// 데이터 정렬 orderBy
+                    FirestorePagingOptions<UserInfo> options = new FirestorePagingOptions.Builder<UserInfo>()
+                            .setQuery(query, config, UserInfo.class)
+                            .build();
+                }
+                Query query = firebaseFirestore.collection("users")
+                        .whereEqualTo("name", s.toString())
+                        .orderBy("name", Query.Direction.ASCENDING);// 데이터 정렬 orderBy
+
+                FirestorePagingOptions<UserInfo> options = new FirestorePagingOptions.Builder<UserInfo>()
+                        .setQuery(query, config, UserInfo.class)
+                        .build();
+
+                adapter.notifyDataSetChanged(); //리사이클러 뷰 갱신
+            }
+        });
+
     }
-
-
-
 
 
     View.OnClickListener onClickListener = (v) -> {

@@ -25,6 +25,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.recyclerview.widget.GridLayoutManager;
 
 import com.bumptech.glide.Glide;
 import com.firebase.ui.auth.AuthUI;
@@ -316,6 +317,8 @@ public class Account extends Fragment {
 
         Button btn_post = (Button)view.findViewById(R.id.btn_post);
         Button btn_save = (Button)view.findViewById(R.id.btn_save);
+
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(getActivity(),2);
 
         btn_post.setOnClickListener(new View.OnClickListener() {
             @Override

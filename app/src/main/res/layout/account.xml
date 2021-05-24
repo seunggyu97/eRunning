@@ -203,11 +203,10 @@
             android:layout_height="match_parent"
             android:id="@+id/post_box">
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:text="포스터 게시물"
-                android:gravity="center" />
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/post_recycle_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
 
         </LinearLayout>
 
@@ -218,11 +217,10 @@
             android:id="@+id/save_box"
             android:visibility="gone">
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:text="북마크 게시물"
-                android:gravity="center" />
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/bookmark_recycle_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
 
         </LinearLayout>
     </RelativeLayout>
