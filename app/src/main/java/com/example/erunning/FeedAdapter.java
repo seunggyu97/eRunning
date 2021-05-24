@@ -528,17 +528,25 @@ class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder> {
         FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
         DocumentReference documentReference2 = firebaseFirestore.collection("posts").document(postdata.getId());
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if(postdata.getLiker().contains(user.getUid())) {                   //postdata liker 리스트에 본인 uid 가 포함되어있으면
-            String getLike = postdata.getLike();
-            btn_like.setImageResource(R.drawable.ic_like_red);              // btn_like의 리소스를 빨간하트로 바꾼다.
-            tv_like.setText(getLike);                                       // tv_like의 텍스트를 postdata의 Like로 변경한다.
-            tv_like.setTextColor(Color.parseColor("#ff3300"));   // tv_like의 텍스트 색상을 빨강으로 바꾼다.
+        if(postdata.getLiker() != null){
+            if(postdata.getLiker().contains(user.getUid())) {                   //postdata liker 리스트에 본인 uid 가 포함되어있으면
+                String getLike = postdata.getLike();
+                btn_like.setImageResource(R.drawable.ic_like_red);              // btn_like의 리소스를 빨간하트로 바꾼다.
+                tv_like.setText(getLike);                                       // tv_like의 텍스트를 postdata의 Like로 변경한다.
+                tv_like.setTextColor(Color.parseColor("#ff3300"));   // tv_like의 텍스트 색상을 빨강으로 바꾼다.
+            }
+            else {
+                btn_like.setImageResource(R.drawable.ic_like_gray);
+                tv_like.setText("좋아요");
+                tv_like.setTextColor(Color.parseColor("#000000"));
+            }
         }
-        else {
+        else{
             btn_like.setImageResource(R.drawable.ic_like_gray);
             tv_like.setText("좋아요");
             tv_like.setTextColor(Color.parseColor("#000000"));
         }
+
                         /*if(likerList != null) {
                             if (likerList.contains(userId)) {// 좋아요가 눌러진 상태일 경우
                                 String getLike = document.getData().get("like").toString();
@@ -595,11 +603,12 @@ class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder> {
                             }
                         }
                         else{
+                            ArrayList<String> likerListNull = new ArrayList<String>();
                             int fLike = Integer.parseInt(document.getData().get("like").toString());
                             fLike++;
                             postdata.setLike(Integer.toString(fLike));
-                            likerList.add(userId);
-                            postdata.setLiker(likerList);
+                            likerListNull.add(userId);
+                            postdata.setLiker(likerListNull);
                             setImageChange(postdata);
                             notifyDataSetChanged();
                             mDataset.get(position).setLike(Integer.toString(fLike));
