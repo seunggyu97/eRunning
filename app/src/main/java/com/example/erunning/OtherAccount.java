@@ -2,7 +2,6 @@ package com.example.erunning;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -34,6 +33,8 @@ public class OtherAccount extends AppCompatActivity {
     private String otherUID;
     private ArrayList<String> otherfollowerlist = new ArrayList<>();
     private ArrayList<String> followerlist = new ArrayList<>();
+    private ArrayList<String> otherfollowinglist = new ArrayList<>();
+    private ArrayList<String> followinglist = new ArrayList<>();
 
 
 
@@ -42,8 +43,6 @@ public class OtherAccount extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_other_account);
 
-        Log.e("followlist","followlist!!!! :"+ followerlist.size());
-
         TextView username = findViewById(R.id.tv_other_userName);
         TextView userbio = findViewById(R.id.tv_other_userInfo);
         ImageView userprofile = findViewById(R.id.iv_otherprofileimage);
@@ -51,6 +50,10 @@ public class OtherAccount extends AppCompatActivity {
         TextView tv_otherfollower = findViewById(R.id.account_tv_other_follower_count);
         TextView tv_otherfollowing = findViewById(R.id.account_tv_other_following_count);
         TextView tv_following = findViewById(R.id.account_tv_following_count);
+        Button btn_follow = findViewById(R.id.account_btn_follow);
+        Button btn_unfollow = findViewById(R.id.account_btn_unfollow);
+        ImageButton btn_back = (ImageButton) findViewById(R.id.btn_back2);
+
         Intent intent = getIntent();
 
         othername = intent.getStringExtra("username");
@@ -62,6 +65,8 @@ public class OtherAccount extends AppCompatActivity {
         otherUID = intent.getStringExtra("UID");
 
         otherfollowerlist = intent.getStringArrayListExtra("followerlist");
+        otherfollowinglist = intent.getStringArrayListExtra("followinglist");
+
 
 
         username.setText(othername);
@@ -75,9 +80,7 @@ public class OtherAccount extends AppCompatActivity {
         tv_otherfollowing.setText(otherfollowing);
 
 
-        ImageButton btn_back = (ImageButton) findViewById(R.id.btn_back2);
-        Button btn_follow = findViewById(R.id.account_btn_follow);
-        Button btn_unfollow = findViewById(R.id.account_btn_unfollow);
+
 
         final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         FirebaseFirestore otherdb = FirebaseFirestore.getInstance();
@@ -91,11 +94,9 @@ public class OtherAccount extends AppCompatActivity {
                     if (document.exists()) {
                         String FUL = document.getData().get("followerlist").toString();
                         String ID = user.getUid();
-                        Log.e("dd","dd" + FUL+otherfollowerlist+otherfollowerlist.contains(FUL));
-                        if (otherfollowerlist.contains(ID)) {
-                            btn_follow.setVisibility(View.GONE);
-                            btn_unfollow.setVisibility(View.VISIBLE);
-                            Log.e("ff","젤중요하다아앙아ㅏㅏ " + user.getUid()+ " == " + FUL);
+                        if (otherfollowerlist.contains(ID)) { //팔로잉을 당하는 유저 팔로워리스트에 팔로우하는사람의 ID가면 배열에 있으
+                           btn_follow.setVisibility(View.GONE);
+                           btn_unfollow.setVisibility(View.VISIBLE);
                         }
                     }
                 }
@@ -127,12 +128,13 @@ public class OtherAccount extends AppCompatActivity {
                                         int following_num = Integer.parseInt(following); following_num += 1;
                                         following = String.valueOf(following_num);
 
-                                        db.collection("users").document(document.getId()).update("following", Integer.parseInt(following)); // 팔로윙을 한 사람 팔로잉을 +1
                                         String FUID = document.getId();
+                                        db.collection("users").document(document.getId()).update("following", Integer.parseInt(following)); // 팔로윙을 한 사람 팔로잉을 +1
+                                        db.collection("users").document(document.getId()).update(
+                                                "followinglist", FieldValue.arrayUnion(otherUID)); //팔로우 당한사람의 ID를 팔로우 건사람의 followinglist에 넣
 
                                         otherdb.collection("users").document(otherUID).update(
-                                                "followerlist", FieldValue.arrayUnion(FUID)
-                                        ); // 팔로우 당한사람의 followerlist에 넣는다 !!
+                                                "followerlist", FieldValue.arrayUnion(FUID)); // 팔로우기 한사람의 ID를 팔로우 당한사람의 followerlist에 넣는다 !!
                                     }
                                 }
                             }
@@ -171,6 +173,8 @@ public class OtherAccount extends AppCompatActivity {
 
                                 db.collection("users").document(document.getId()).update("following", Integer.parseInt(following)); // 팔로윙을 한 사람 팔로잉을 +1
                                 String FUID = document.getId();
+                                db.collection("users").document(document.getId()).update(
+                                        "followinglist", FieldValue.arrayRemove(otherUID));
                                 otherdb.collection("users").document(otherUID).update(
                                         "followerlist", FieldValue.arrayRemove(FUID)
                                 );
@@ -178,8 +182,6 @@ public class OtherAccount extends AppCompatActivity {
                         }
                     }
                 }));
-
-
                 btn_unfollow.setVisibility(v.GONE);
                 btn_follow.setVisibility(v.VISIBLE);
             }

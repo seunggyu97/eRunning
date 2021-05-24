@@ -39,6 +39,7 @@ public class SignUp extends BasicActivity {
     private int birthmonth = 0;
     private int birthday = 0;
     private ArrayList followerlist = new ArrayList<>();
+    private ArrayList followinglist = new ArrayList<>();
     private RelativeLayout loaderLayout;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -160,7 +161,7 @@ public class SignUp extends BasicActivity {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         String name = ((EditText) findViewById(R.id.nameEditText)).getText().toString();
 
-        UserInfo userinfo = new UserInfo(name, birthyear, birthmonth, birthday,followerlist);
+        UserInfo userinfo = new UserInfo(name, birthyear, birthmonth, birthday,followerlist,followinglist);
 
         db.collection("users").document(user.getUid()).set(userinfo)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {

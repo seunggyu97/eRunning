@@ -4,14 +4,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.fragment.app.FragmentTransaction;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -25,6 +24,8 @@ import java.util.ArrayList;
 
 public class MainActivity extends BasicActivity {
 
+
+    private Button btn_post,btn_save;
     private BottomNavigationView bottomNavigationView; // 바텀 네비게이션 뷰
     private FragmentManager fm;
     private FragmentTransaction ft;
@@ -126,6 +127,8 @@ public class MainActivity extends BasicActivity {
         bundle.putString("profile", route_profile);
 
 
+
+
         ViewPager viewPager = findViewById(R.id.viewPager);
         fragmentPagerAdapter = new ViewPageAdapter(getSupportFragmentManager());
 
@@ -140,6 +143,7 @@ public class MainActivity extends BasicActivity {
         checkPermissions(); //권한 체크 메소드 호출
 
     }
+
 
     private void checkPermissions() {
         if (Build.VERSION.SDK_INT >= 23) { // 마시멜로(안드로이드 6.0) 이상 권한 체크
@@ -173,6 +177,7 @@ public class MainActivity extends BasicActivity {
         getSupportFragmentManager().beginTransaction()
                 .remove(recordResult).commit();
     }
+
 
     private void initView() {
 

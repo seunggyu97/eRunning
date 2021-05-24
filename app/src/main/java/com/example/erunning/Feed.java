@@ -52,7 +52,6 @@ public class Feed extends Fragment {
     private ArrayList<PostInfo> postList;
     private RelativeLayout loaderLayout;
 
-
     private Utillity util;
     private int successCount;
 
@@ -162,51 +161,34 @@ public class Feed extends Fragment {
         @Override
         public void onDelete(int position) {
             final String id = postList.get(position).getId();
-            final String Publisher = postList.get(position).getPublisher();
-            final String UserId = firebaseUser.getUid();
             Log.e("게시글삭제", "삭제삭제삭제삭제삭제삭제삭제삭제" + id);
-            Log.e("Publisher : ",Publisher);
-            Log.e("UserId : ",UserId);
             ArrayList<String> contentList = postList.get(position).getContents();
-            if(Publisher.equals(UserId)){
-                for (int i = 0; i < contentList.size(); i++) {
-                    String contents = contentList.get(i);
-                    if (Patterns.WEB_URL.matcher(contents).matches() && contents.contains("https://firebasestorage.googleapis.com/v0/b/e-running-735bb.appspot.com/o/post")) {
+            for (int i = 0; i < contentList.size(); i++) {
+                String contents = contentList.get(i);
+                if (Patterns.WEB_URL.matcher(contents).matches() && contents.contains("https://firebasestorage.googleapis.com/v0/b/e-running-735bb.appspot.com/o/post")) {
 
-                        successCount++;
-                        StorageReference desertRef = storageRef.child("posts/" + id + "/" + storageUrlToName(contents));
-                        desertRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
-                            @Override
-                            public void onSuccess(Void aVoid) {
-                                successCount--;
-                                storeUploader(id);
-                            }
-                        }).addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception exception) {
-                                // Uh-oh, an error occurred!
-                            }
-                        });
-                    }
+                    successCount++;
+                    StorageReference desertRef = storageRef.child("posts/" + id + "/" + storageUrlToName(contents));
+                    desertRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            successCount--;
+                            storeUploader(id);
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception exception) {
+                            // Uh-oh, an error occurred!
+                        }
+                    });
                 }
-                storeUploader(id);
             }
-            else{
-                showToast(getActivity(),"게시글을 삭제할 권한이 없습니다.");
-            }
-
+            storeUploader(id);
         }
 
         @Override
         public void onEdit(int position) {
-            final String Publisher = postList.get(position).getPublisher();
-            final String UserId = firebaseUser.getUid();
-            if(Publisher.equals(UserId)){
-                myStartActivity(NewPost.class, postList.get(position));
-            }
-            else{
-                showToast(getActivity(),"게시글을 수정할 권한이 없습니다.");
-            }
+            myStartActivity(NewPost.class, postList.get(position));
         }
     };
 
@@ -231,10 +213,7 @@ public class Feed extends Fragment {
                                                 document.getId(),
 
                                                 document.getData().get("publisherName").toString(),
-                                                document.getData().get("photoUrl").toString(),
-                                                document.getData().get("like").toString(),
-                                                document.getData().get("comment").toString(),
-                                                (ArrayList<String>) document.getData().get("liker")));
+                                                document.getData().get("photoUrl").toString()));
                                     }
                                     else {
                                         postList.add(new PostInfo(
@@ -243,10 +222,7 @@ public class Feed extends Fragment {
                                                 document.getId(),
                                                 document.getData().get("publisher").toString(),
                                                 new Date(document.getDate("createdAt").getTime()),
-                                                document.getData().get("publisherName").toString(),
-                                                document.getData().get("like").toString(),
-                                                document.getData().get("comment").toString(),
-                                                (ArrayList<String>) document.getData().get("liker")));
+                                                document.getData().get("publisherName").toString()));
                                     }
                                 }
                                 feedAdapter.notifyDataSetChanged();
