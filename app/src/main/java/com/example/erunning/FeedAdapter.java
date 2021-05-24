@@ -2,6 +2,7 @@ package com.example.erunning;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.util.Log;
@@ -23,8 +24,12 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -45,12 +50,12 @@ class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder> {
     ArrayList<PostInfo> mDataset;
     Activity activity;
 
-    private ImageView like;
-    private ImageView nolike;
-    private ImageView bookmark;
-    private ImageView nobookmark;
+    private ImageView btn_like;
+    private ImageView btn_bookmark;
     private Button btn_comment;
     private TextView tv_like;
+    private TextView tv_comment;
+    private TextView tv_like_upside;
     private ImageView postmenu;
     private View LL_PostEdit;
     private View LL_PostDelete;
@@ -155,20 +160,46 @@ class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder> {
     @Override
     public void onBindViewHolder(final FeedViewHolder holder, int position) {
         CardView cardView = holder.cardView;
-        boolean isLiked = false;
-        boolean isBookmarked = false;
-
+        Log.e("ref ::::",FirebaseDatabase.getInstance().getReference().child("posts").toString());
         btn_comment = holder.cardView.findViewById(R.id.btn_comment);
-        like = holder.cardView.findViewById(R.id.btn_nolike);
-        bookmark = holder.cardView.findViewById(R.id.btn_bookmark);
+        btn_like = holder.cardView.findViewById(R.id.btn_like);
+        btn_bookmark = holder.cardView.findViewById(R.id.btn_bookmark);
         tv_like = holder.cardView.findViewById(R.id.tv_like);
-
+        tv_like_upside = holder.cardView.findViewById(R.id.tv_like_upside);
+        tv_comment = holder.cardView.findViewById(R.id.tv_comment_upside);
         CircleImageView iv_profileImage = holder.cardView.findViewById(R.id.iv_profileimage);
         TextView titleTextView = holder.cardView.findViewById(R.id.titleTextView);
         titleTextView.setText(mDataset.get(position).getTitle());
         TextView tv_feedname = holder.cardView.findViewById(R.id.tv_feedname);
+        TextView tv_like_upside = holder.cardView.findViewById(R.id.tv_like_upside);
+
+
+        /*if(mDataset.get(position).getLike().equals("0")){
+            tv_like_upside.setVisibility(View.GONE);
+            tv_like.setVisibility(View.VISIBLE);
+
+            tv_like.setText("좋아요");
+            tv_like.setTextColor(Color.parseColor("#000000"));
+        }else{
+            String SetLike = "좋아요 "+ mDataset.get(position).getLike()+"개";
+
+            tv_like_upside.setVisibility(View.VISIBLE);
+            tv_like_upside.setText(SetLike);;
+            tv_like.setTextColor(Color.parseColor("#ff3300"));
+        }*/
+        /*if(mDataset.get(position).getComment().equals("0")){
+            tv_comment_upside.setVisibility(View.GONE);
+
+        }else{
+            String SetComment = "댓글 "+ mDataset.get(position).getComment()+"개";
+
+            tv_comment_upside.setVisibility(View.VISIBLE);
+            tv_comment_upside.setText(SetComment);
+        }*/
         tv_feedname.setText(mDataset.get(position).getPublisherName());
         Log.e("1차 feedname","설정");
+        Log.e("댓글 수 : ",FirebaseFirestore.getInstance().collection("posts").document(mDataset.get(position).getComment()).toString());
+        Log.e("좋아요 수 : ", FirebaseFirestore.getInstance().collection("posts").document(mDataset.get(position).getLike()).toString());
         if(mDataset.get(position).getPhotoUrl() != null) {
             Glide.with(activity).load(mDataset.get(position).getPhotoUrl()).circleCrop().into(iv_profileImage);
         }
@@ -211,6 +242,18 @@ class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder> {
             }
         }));
 
+        btn_like.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                Like(position);
+            }
+        });
+        tv_like.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                Like(position);
+            }
+        });
         btn_comment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -220,31 +263,9 @@ class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder> {
                 Log.e("comment : ", "클릭");
             }
         });
-        like.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (!isLiked) {
-                    like.setImageResource(R.drawable.ic_like_red);
-                    Log.e("like : ", "클릭");
-                } else {
-                    like.setImageResource(R.drawable.ic_like_gray);
-                    Log.e("like : ", "클릭");
-                }
-            }
-        });
-        tv_like.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (!isLiked) {
-                    like.setImageResource(R.drawable.ic_like_red);
-                    Log.e("tv_like : ", "클릭");
-                } else {
-                    like.setImageResource(R.drawable.ic_like_gray);
-                    Log.e("tv_like : ", "클릭");
-                }
-            }
-        });
-        bookmark.setOnClickListener(new View.OnClickListener() {
+
+
+        /*bookmark.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (!isBookmarked) {
@@ -255,8 +276,48 @@ class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder> {
                     Log.e("bookmark : ", "클릭");
                 }
             }
-        });
+        });*/
+        DocumentReference documentReference1 = FirebaseFirestore.getInstance().collection("posts").document(mDataset.get(position).getId());
+        documentReference1.get().addOnCompleteListener((task -> {
+            if (task.isSuccessful()) {
+                DocumentSnapshot document = task.getResult();
+                if (document != null) {
+                    if (document.exists()) {
+                        String getComment = document.getData().get("comment").toString();
+                        if(getComment.equals("0")){
+                            Log.e("tv_comment","setVisibility(View.GONE);");
+                            tv_comment.setVisibility(View.GONE);
+                        }
+                        else{
+                            tv_comment.setVisibility(View.VISIBLE);
+                            String SetCommentUpside = "댓글 " + getComment+"개";
+                            tv_comment.setText(SetCommentUpside);
+                            Log.e("tv_comment","setVisibility(View.VISIBLE);");
+                            Log.e("tv_comment",SetCommentUpside);
+                        }
+                        String getLike = document.getData().get("like").toString();
+                        if(getLike.equals("0")){
 
+                            btn_like.setImageResource(R.drawable.ic_like_gray);
+                            tv_like_upside.setVisibility(View.GONE);
+                            tv_like.setVisibility(View.VISIBLE);
+                            tv_like.setText("좋아요");
+                            tv_like.setTextColor(Color.parseColor("#000000"));
+                            Log.e("tv_like,btn","setVisibility(View.GONE),setImageResource(R.drawable.ic_like_gray);");
+                        }else{
+                            String SetLike = "좋아요 "+ getLike+"개";
+                            btn_like.setImageResource(R.drawable.ic_like_red);
+                            tv_like_upside.setVisibility(View.VISIBLE);
+                            tv_like_upside.setText(SetLike);;
+                            tv_like.setText(getLike);
+                            tv_like.setTextColor(Color.parseColor("#ff3300"));
+                            Log.e("tv_like,btn","setVisibility(View.VISIBLE),setImageResource(R.drawable.ic_like_red);");
+                        }
+
+                    }
+                }
+            }
+        }));
 
 
         long now = System.currentTimeMillis(); // 현재 시간 변수 생성
@@ -286,48 +347,107 @@ class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder> {
             } else if (min == 8) {
                 createdAtTextView.setText("7분 전");
             } else if (min == 9) {
-                createdAtTextView.setText("10분 전");
+                createdAtTextView.setText("8분 전");
             } else if (min == 10) {
-                createdAtTextView.setText("11분 전");
+                createdAtTextView.setText("9분 전");
             } else if (min == 11) {
-                createdAtTextView.setText("12분 전");
+                createdAtTextView.setText("10분 전");
             } else if (min == 12) {
-                createdAtTextView.setText("13분 전");
+                createdAtTextView.setText("11분 전");
             } else if (min == 13) {
-                createdAtTextView.setText("14분 전");
+                createdAtTextView.setText("12분 전");
             } else if (min == 14) {
-                createdAtTextView.setText("15분 전");
+                createdAtTextView.setText("13분 전");
             } else if (min == 15) {
-                createdAtTextView.setText("16분 전");
+                createdAtTextView.setText("14분 전");
             } else if (min == 16) {
-                createdAtTextView.setText("17분 전");
+                createdAtTextView.setText("15분 전");
             } else if (min == 17) {
-                createdAtTextView.setText("18분 전");
+                createdAtTextView.setText("16분 전");
             } else if (min == 18) {
-                createdAtTextView.setText("19분 전");
+                createdAtTextView.setText("17분 전");
             } else if (min == 19) {
-                createdAtTextView.setText("20분 전");
+                createdAtTextView.setText("18분 전");
             } else if (min == 20) {
-                createdAtTextView.setText("21분 전");
+                createdAtTextView.setText("19분 전");
             } else if (min == 21) {
-                createdAtTextView.setText("22분 전");
+                createdAtTextView.setText("20분 전");
             } else if (min == 22) {
-                createdAtTextView.setText("23분 전");
+                createdAtTextView.setText("21분 전");
             } else if (min == 23) {
-                createdAtTextView.setText("24분 전");
+                createdAtTextView.setText("22분 전");
             } else if (min == 24) {
-                createdAtTextView.setText("25분 전");
+                createdAtTextView.setText("23분 전");
             } else if (min == 25) {
-                createdAtTextView.setText("26분 전");
+                createdAtTextView.setText("24분 전");
             } else if (min == 26) {
-                createdAtTextView.setText("28분 전");
+                createdAtTextView.setText("25분 전");
             } else if (min == 27) {
-                createdAtTextView.setText("29분 전");
+                createdAtTextView.setText("26분 전");
             } else if (min == 28) {
-                createdAtTextView.setText("30분 전");
-            }//
-            else if (min >= 29 && min <= 59) {
-                createdAtTextView.setText("+ 30분");
+                createdAtTextView.setText("27분 전");
+            } else if (min == 29) {
+                createdAtTextView.setText("28분 전");
+            } else if (min == 30) {
+                createdAtTextView.setText("31분 전");
+            } else if (min == 31) {
+                createdAtTextView.setText("32분 전");
+            } else if (min == 32) {
+                createdAtTextView.setText("33분 전");
+            } else if (min == 33) {
+                createdAtTextView.setText("34분 전");
+            } else if (min == 34) {
+                createdAtTextView.setText("35분 전");
+            } else if (min == 35) {
+                createdAtTextView.setText("36분 전");
+            } else if (min == 36) {
+                createdAtTextView.setText("37분 전");
+            } else if (min == 37) {
+                createdAtTextView.setText("38분 전");
+            } else if (min == 38) {
+                createdAtTextView.setText("39분 전");
+            } else if (min == 39) {
+                createdAtTextView.setText("40분 전");
+            } else if (min == 40) {
+                createdAtTextView.setText("41분 전");
+            } else if (min == 41) {
+                createdAtTextView.setText("42분 전");
+            } else if (min == 42) {
+                createdAtTextView.setText("43분 전");
+            } else if (min == 43) {
+                createdAtTextView.setText("44분 전");
+            } else if (min == 44) {
+                createdAtTextView.setText("45분 전");
+            } else if (min == 45) {
+                createdAtTextView.setText("46분 전");
+            } else if (min == 46) {
+                createdAtTextView.setText("47분 전");
+            } else if (min == 47) {
+                createdAtTextView.setText("48분 전");
+            } else if (min == 48) {
+                createdAtTextView.setText("49분 전");
+            } else if (min == 49) {
+                createdAtTextView.setText("50분 전");
+            } else if (min == 50) {
+                createdAtTextView.setText("51분 전");
+            } else if (min == 51) {
+                createdAtTextView.setText("52분 전");
+            } else if (min == 52) {
+                createdAtTextView.setText("53분 전");
+            } else if (min == 53) {
+                createdAtTextView.setText("54분 전");
+            } else if (min == 54) {
+                createdAtTextView.setText("55분 전");
+            } else if (min == 55) {
+                createdAtTextView.setText("56분 전");
+            } else if (min == 56) {
+                createdAtTextView.setText("57분 전");
+            } else if (min == 57) {
+                createdAtTextView.setText("58분 전");
+            } else if (min == 58) {
+                createdAtTextView.setText("59분 전");
+            } else if (min == 59) {
+                createdAtTextView.setText("1시간 전");
             } else if (min >= 60 && min <= 119) {
                 createdAtTextView.setText("+ 1시간");
             } else if (min >= 120 && min <= 179) {
@@ -407,10 +527,49 @@ class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder> {
                 }
             }
         }
-
         Log.e("로그: ", "데이터: " + mDataset.get(position).getTitle());
         //Log.e("글이 올라온 시간 : ",Locale.getDefault().format(mDataset.get(position).getCreatedAt()));
     }
+
+    private void Like(int position){
+        final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
+        DocumentReference documentReference = firebaseFirestore.collection("posts").document(mDataset.get(position).getId());
+        documentReference.get().addOnCompleteListener((task -> {
+            if (task.isSuccessful()) {
+                DocumentSnapshot document = task.getResult();
+                if (document != null) {
+                    if (document.exists()) {
+                        String userId= user.getUid();
+                        ArrayList<String> likerList = (ArrayList<String>)document.getData().get("liker");
+                        if(likerList != null) {
+                            if (likerList.contains(userId)) {// 좋아요가 눌러진 상태일 경우
+                                int fLike = Integer.parseInt(document.getData().get("like").toString());
+                                fLike--;
+                                documentReference.update("like", Integer.toString(fLike)); // 파베 저장
+                                documentReference.update("liker", FieldValue.arrayRemove(userId));//좋아요 리스트에서 자신 삭제
+
+                            } else {// 좋아요가 눌러지지 않은 상태일 경우
+                                int fLike = Integer.parseInt(document.getData().get("like").toString());
+                                fLike++;
+                                documentReference.update("like", Integer.toString(fLike)); // 파베 저장
+
+                                documentReference.update("liker", FieldValue.arrayUnion(userId));// 좋아요 리스트에 자신 추가
+                            }
+                        }
+                        else{
+                            int fLike = Integer.parseInt(document.getData().get("like").toString());
+                            fLike++;
+                            documentReference.update("like", Integer.toString(fLike)); // 파베 저장
+
+                            documentReference.update("liker", FieldValue.arrayUnion(userId));// 좋아요 리스트에 자신 추가
+                        }
+                    }
+                }
+            }
+        }));
+    }
+
 
     @Override
     public int getItemCount() {

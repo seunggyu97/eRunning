@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.util.Log;
+import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,6 +40,8 @@ import java.util.Locale;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 import static com.example.erunning.Utillity.isStorageUrl;
+import static com.example.erunning.Utillity.showToast;
+import static com.example.erunning.Utillity.storageUrlToName;
 
 //import static com.example.erunning.Util.INTENT_PATH;
 
@@ -51,8 +54,7 @@ class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentViewHold
 
     private ImageButton btn_comment;
     private ImageView commentmenu;
-    private View LL_PostEdit;
-    private View LL_PostDelete;
+    private View LL_CommentDelete;
 
     private CommentInfo commentInfo;
     private OnPostListener onPostListener;
@@ -106,29 +108,16 @@ class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentViewHold
                         );
                         View bottomSheetView = LayoutInflater.from(activity.getApplicationContext())
                                 .inflate(
-                                        R.layout.post_bottom_sheet,
-                                        (LinearLayout) cardView.findViewById(R.id.PostbottomSheetContainer)
+                                        R.layout.comment_bottom_sheet,
+                                        (LinearLayout) cardView.findViewById(R.id.CommentbottomSheetContainer)
                                 );
-                        LL_PostEdit = bottomSheetView.findViewById(R.id.LL_PostEdit);
-                        LL_PostDelete = bottomSheetView.findViewById(R.id.LL_PostDelete);
+                        LL_CommentDelete = bottomSheetView.findViewById(R.id.LL_CommentDelete);
 
-                        LL_PostEdit.setOnClickListener(new View.OnClickListener() {
+                        LL_CommentDelete.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
                                 switch (v.getId()) {
-                                    case R.id.LL_PostEdit:
-                                        bottomSheetDialog.dismiss();
-                                        onPostListener.onEdit(commentViewHolder.getAdapterPosition());
-                                        Log.e("게시물 수정 ", "클릭" + v);
-                                        break;
-                                }
-                            }
-                        });
-                        LL_PostDelete.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                switch (v.getId()) {
-                                    case R.id.LL_PostDelete:
+                                    case R.id.LL_CommentDelete:
                                         bottomSheetDialog.dismiss();
                                         onPostListener.onDelete(commentViewHolder.getAdapterPosition());
                                         Log.e("게시물 삭제", "클릭" + v);
@@ -236,48 +225,107 @@ class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentViewHold
             } else if (min == 8) {
                 createdAtTextView.setText("7분 전");
             } else if (min == 9) {
-                createdAtTextView.setText("10분 전");
+                createdAtTextView.setText("8분 전");
             } else if (min == 10) {
-                createdAtTextView.setText("11분 전");
+                createdAtTextView.setText("9분 전");
             } else if (min == 11) {
-                createdAtTextView.setText("12분 전");
+                createdAtTextView.setText("10분 전");
             } else if (min == 12) {
-                createdAtTextView.setText("13분 전");
+                createdAtTextView.setText("11분 전");
             } else if (min == 13) {
-                createdAtTextView.setText("14분 전");
+                createdAtTextView.setText("12분 전");
             } else if (min == 14) {
-                createdAtTextView.setText("15분 전");
+                createdAtTextView.setText("13분 전");
             } else if (min == 15) {
-                createdAtTextView.setText("16분 전");
+                createdAtTextView.setText("14분 전");
             } else if (min == 16) {
-                createdAtTextView.setText("17분 전");
+                createdAtTextView.setText("15분 전");
             } else if (min == 17) {
-                createdAtTextView.setText("18분 전");
+                createdAtTextView.setText("16분 전");
             } else if (min == 18) {
-                createdAtTextView.setText("19분 전");
+                createdAtTextView.setText("17분 전");
             } else if (min == 19) {
-                createdAtTextView.setText("20분 전");
+                createdAtTextView.setText("18분 전");
             } else if (min == 20) {
-                createdAtTextView.setText("21분 전");
+                createdAtTextView.setText("19분 전");
             } else if (min == 21) {
-                createdAtTextView.setText("22분 전");
+                createdAtTextView.setText("20분 전");
             } else if (min == 22) {
-                createdAtTextView.setText("23분 전");
+                createdAtTextView.setText("21분 전");
             } else if (min == 23) {
-                createdAtTextView.setText("24분 전");
+                createdAtTextView.setText("22분 전");
             } else if (min == 24) {
-                createdAtTextView.setText("25분 전");
+                createdAtTextView.setText("23분 전");
             } else if (min == 25) {
-                createdAtTextView.setText("26분 전");
+                createdAtTextView.setText("24분 전");
             } else if (min == 26) {
-                createdAtTextView.setText("28분 전");
+                createdAtTextView.setText("25분 전");
             } else if (min == 27) {
-                createdAtTextView.setText("29분 전");
+                createdAtTextView.setText("26분 전");
             } else if (min == 28) {
-                createdAtTextView.setText("30분 전");
-            }//
-            else if (min >= 29 && min <= 59) {
-                createdAtTextView.setText("+ 30분");
+                createdAtTextView.setText("27분 전");
+            } else if (min == 29) {
+                createdAtTextView.setText("28분 전");
+            } else if (min == 30) {
+                createdAtTextView.setText("31분 전");
+            } else if (min == 31) {
+                createdAtTextView.setText("32분 전");
+            } else if (min == 32) {
+                createdAtTextView.setText("33분 전");
+            } else if (min == 33) {
+                createdAtTextView.setText("34분 전");
+            } else if (min == 34) {
+                createdAtTextView.setText("35분 전");
+            } else if (min == 35) {
+                createdAtTextView.setText("36분 전");
+            } else if (min == 36) {
+                createdAtTextView.setText("37분 전");
+            } else if (min == 37) {
+                createdAtTextView.setText("38분 전");
+            } else if (min == 38) {
+                createdAtTextView.setText("39분 전");
+            } else if (min == 39) {
+                createdAtTextView.setText("40분 전");
+            } else if (min == 40) {
+                createdAtTextView.setText("41분 전");
+            } else if (min == 41) {
+                createdAtTextView.setText("42분 전");
+            } else if (min == 42) {
+                createdAtTextView.setText("43분 전");
+            } else if (min == 43) {
+                createdAtTextView.setText("44분 전");
+            } else if (min == 44) {
+                createdAtTextView.setText("45분 전");
+            } else if (min == 45) {
+                createdAtTextView.setText("46분 전");
+            } else if (min == 46) {
+                createdAtTextView.setText("47분 전");
+            } else if (min == 47) {
+                createdAtTextView.setText("48분 전");
+            } else if (min == 48) {
+                createdAtTextView.setText("49분 전");
+            } else if (min == 49) {
+                createdAtTextView.setText("50분 전");
+            } else if (min == 50) {
+                createdAtTextView.setText("51분 전");
+            } else if (min == 51) {
+                createdAtTextView.setText("52분 전");
+            } else if (min == 52) {
+                createdAtTextView.setText("53분 전");
+            } else if (min == 53) {
+                createdAtTextView.setText("54분 전");
+            } else if (min == 54) {
+                createdAtTextView.setText("55분 전");
+            } else if (min == 55) {
+                createdAtTextView.setText("56분 전");
+            } else if (min == 56) {
+                createdAtTextView.setText("57분 전");
+            } else if (min == 57) {
+                createdAtTextView.setText("58분 전");
+            } else if (min == 58) {
+                createdAtTextView.setText("59분 전");
+            } else if (min == 59) {
+                createdAtTextView.setText("1시간 전");
             } else if (min >= 60 && min <= 119) {
                 createdAtTextView.setText("+ 1시간");
             } else if (min >= 120 && min <= 179) {
@@ -342,4 +390,6 @@ class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentViewHold
     public int getItemCount() {
         return mDataset.size();
     }
+
+
 }

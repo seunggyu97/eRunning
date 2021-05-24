@@ -40,10 +40,10 @@
             android:id="@+id/btn_postmenu"
             android:layout_width="40dp"
             android:layout_height="30dp"
+            android:backgroundTint="#FFFFFF"
             android:clickable="true"
             android:focusable="true"
-            android:backgroundTint="#FFFFFF"
-            app:srcCompat="@drawable/ic_baseline_more_horiz_24"/>
+            app:srcCompat="@drawable/ic_baseline_more_horiz_24" />
 
     </LinearLayout>
 
@@ -74,6 +74,22 @@
         android:textColor="#000000"
         android:textSize="20sp" />
 
+    <TextView
+        android:id="@+id/tv_like_upside"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="15dp"
+        android:text="좋아요 "
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/tv_comment_upside"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="15dp"
+        android:text="댓글 "
+        android:visibility="gone" />
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="1dp"
@@ -90,7 +106,7 @@
         android:orientation="horizontal">
 
         <ImageButton
-            android:id="@+id/btn_nolike"
+            android:id="@+id/btn_like"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
