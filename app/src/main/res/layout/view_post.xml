@@ -115,14 +115,16 @@
             android:clickable="true"
             app:srcCompat="@drawable/ic_like_gray" />
 
-        <TextView
+        <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/tv_like"
+            style="@style/Widget.AppCompat.Button.Borderless"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_weight="1"
+            android:layout_weight="0"
             android:text="좋아요"
             android:textColor="#000000" />
+
+
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btn_comment"

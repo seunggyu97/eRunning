@@ -53,7 +53,7 @@ class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder> {
     private ImageView btn_like;
     private ImageView btn_bookmark;
     private Button btn_comment;
-    private TextView tv_like;
+    private Button tv_like;
     private TextView tv_comment;
     private TextView tv_like_upside;
     private ImageView postmenu;

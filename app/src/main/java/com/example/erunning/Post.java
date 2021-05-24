@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -54,7 +55,7 @@ public class Post extends BasicActivity{
     private ImageButton btn_like;
     private ImageButton bookmark;
     private ImageButton postmenu;
-    private TextView tv_like;
+    private Button tv_like;
     private TextView tv_like_upside;
     private TextView tv_comment;
     private EditText et_writecomment;
