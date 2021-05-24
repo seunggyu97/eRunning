@@ -21,6 +21,7 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -213,6 +214,7 @@ public class NewPost extends BasicActivity {
             loaderLayout.setVisibility(View.VISIBLE);
 
             final ArrayList<String> contentsList = new ArrayList<>();
+            final ArrayList<String> liker = new ArrayList<>();
             user = FirebaseAuth.getInstance().getCurrentUser();
             FirebaseStorage storage = FirebaseStorage.getInstance();
             StorageReference storageRef = storage.getReference();
@@ -224,10 +226,10 @@ public class NewPost extends BasicActivity {
                     if(document != null){
                         if(document.exists()){
                             String PublisherName = document.getData().get("name").toString();
-
                             if(document.getData().get("photoUrl") != null){
                                 String profilePhotoUrl = document.getData().get("photoUrl").toString();
                                 final DocumentReference documentReference = postInfo == null ? firebaseFirestore.collection("posts").document() : firebaseFirestore.collection("posts").document(postInfo.getId());
+
                                 final Date date = postInfo == null ? new Date() : postInfo.getCreatedAt();
 
 
@@ -269,7 +271,7 @@ public class NewPost extends BasicActivity {
                                                                 successCount++;
                                                                 if (pathList.size() == successCount) {
                                                                     //완료
-                                                                    PostInfo postInfo = new PostInfo(title, contentsList, user.getUid(), date, PublisherName,profilePhotoUrl);
+                                                                    PostInfo postInfo = new PostInfo(title, contentsList, user.getUid(), date, PublisherName,profilePhotoUrl,"0","0", liker);
                                                                     Log.e("title : ", title + "  //contentsList : " + contentsList + "  //user.getUid() : " + user.getUid() + "  //Date : " + new Date() + "PublisherName : " + PublisherName + "profilePhotoUrl : " + profilePhotoUrl);
                                                                     StoreUpload(documentReference, postInfo);
                                                                 }
@@ -287,7 +289,7 @@ public class NewPost extends BasicActivity {
                                     }
                                 }
                                 if (pathList.size() == 0) {
-                                    StoreUpload(documentReference, new PostInfo(title, contentsList, user.getUid(), date, PublisherName,profilePhotoUrl));
+                                    StoreUpload(documentReference, new PostInfo(title, contentsList, user.getUid(), date, PublisherName,profilePhotoUrl,"0","0",liker));
                                 }
 
                             }else{
@@ -333,7 +335,7 @@ public class NewPost extends BasicActivity {
                                                                 successCount++;
                                                                 if (pathList.size() == successCount) {
                                                                     //완료
-                                                                    PostInfo postInfo = new PostInfo(title, contentsList, user.getUid(), date, PublisherName,profilePhotoUrl);
+                                                                    PostInfo postInfo = new PostInfo(title, contentsList, user.getUid(), date, PublisherName,profilePhotoUrl,"0","0",liker);
                                                                     Log.e("title : ", title + "  //contentsList : " + contentsList + "  //user.getUid() : " + user.getUid() + "  //Date : " + new Date() + "PublisherName : " + PublisherName + "profilePhotoUrl : " + profilePhotoUrl);
                                                                     StoreUpload(documentReference, postInfo);
                                                                 }
@@ -351,7 +353,7 @@ public class NewPost extends BasicActivity {
                                     }
                                 }
                                 if (pathList.size() == 0) {
-                                    StoreUpload(documentReference, new PostInfo(title, contentsList, user.getUid(), date, PublisherName,profilePhotoUrl));
+                                    StoreUpload(documentReference, new PostInfo(title, contentsList, user.getUid(), date, PublisherName,profilePhotoUrl,"0","0",liker));
                                 }
                             }
                         }

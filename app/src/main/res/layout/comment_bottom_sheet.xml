@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/CommentbottomSheetContainer"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginTop="10dp"
+    android:background="@drawable/bottom_sheet_background"
+    android:orientation="vertical"
+    >
+
+    <TextView
+        android:layout_marginTop="10dp"
+        android:layout_width="80dp"
+        android:layout_height="5dp"
+        android:layout_gravity="center"
+        android:background="@drawable/round_btn_dark"
+        android:shadowColor="#FFFFFF" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
+        android:background="@color/colorDivider"/>
+
+    <LinearLayout
+        android:id="@+id/LL_CommentDelete"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?android:attr/selectableItemBackground"
+        android:clickable="true"
+        android:focusable="true"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:padding="12dp">
+
+        <ImageView
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:layout_marginStart="10dp"
+            android:contentDescription="@string/app_name"
+            app:srcCompat="@drawable/ic_baseline_delete_outline_24" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="15dp"
+            android:layout_marginEnd="25dp"
+            android:gravity="center"
+            android:text="댓글 삭제"
+            android:textColor="@color/error"
+            android:textSize="18sp" />
+
+    </LinearLayout>
+</LinearLayout>

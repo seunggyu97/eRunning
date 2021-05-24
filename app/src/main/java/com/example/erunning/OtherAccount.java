@@ -193,11 +193,11 @@ public class OtherAccount extends AppCompatActivity {
         btn_back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(getApplicationContext(), UserSearch.class);
+                /*Intent intent = new Intent(getApplicationContext(), UserSearch.class);
 //                setResult(Activity.RESULT_OK, intent);
 //                finish();
-                startActivity(intent);
-
+                startActivity(intent);*/
+                finish();
 
             }
         });

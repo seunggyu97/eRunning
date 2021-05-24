@@ -62,7 +62,8 @@
                 android:backgroundTint="#FFFFFF"
                 android:clickable="true"
                 android:focusable="true"
-                app:srcCompat="@drawable/ic_baseline_more_horiz_24" />
+                app:srcCompat="@drawable/ic_baseline_more_horiz_24"
+                />
 
 
         </LinearLayout>

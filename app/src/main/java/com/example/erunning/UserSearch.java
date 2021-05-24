@@ -104,8 +104,9 @@ public class UserSearch extends BasicActivity implements FirestoreAdapter.OnList
     View.OnClickListener onClickListener = (v) -> {
         switch (v.getId()){
             case R.id.btn_back:
-                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                startActivity(intent);
+                /*Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                startActivity(intent);*/
+                finish();
                 break;
         }
     };

@@ -9,42 +9,50 @@ import java.util.Map;
 public class PostInfo implements Serializable {
     private String title;
     private ArrayList<String> contents;
-    private ArrayList<String> formats;
+    private ArrayList<String> liker;
     private String publisher;
     private Date createdAt;
     private String id;
     private String publisherName;
     private String photoUrl;
+    private String like;
+    private String comment;
 
-    public PostInfo(String title, ArrayList<String> contents, String publisher, Date createdAt, String id,String publisherName, String photoUrl){
+    public PostInfo(String title, ArrayList<String> contents, String publisher, Date createdAt, String id,String publisherName, String photoUrl, String like, String comment, ArrayList<String> liker){
         this.title = title;
         this.contents = contents;
-        //this.formats = formats;
+        this.liker = liker;
         this.publisher = publisher;
         this.createdAt = createdAt;
         this.id = id;
         this.publisherName = publisherName;
         this.photoUrl = photoUrl;
+        this.like = like;
+        this.comment = comment;
     }
 
-    public PostInfo(String title, ArrayList<String> contents, String publisher, Date createdAt, String publisherName, String photoUrl){
+    public PostInfo(String title, ArrayList<String> contents, String publisher, Date createdAt, String publisherName, String photoUrl, String like, String comment, ArrayList<String> liker){
         this.title = title;
         this.contents = contents;
-        //this.formats = formats;
+        this.liker = liker;
         this.publisher = publisher;
         this.createdAt = createdAt;
         this.publisherName = publisherName;
         this.photoUrl = photoUrl;
+        this.like = like;
+        this.comment = comment;
     }
 
-    public PostInfo(String title, ArrayList<String> contents,String id, String publisher, Date createdAt, String publisherName){
+    public PostInfo(String title, ArrayList<String> contents,String id, String publisher, Date createdAt, String publisherName, String like, String comment, ArrayList<String> liker){
         this.title = title;
         this.contents = contents;
-        //this.formats = formats;
+        this.liker = liker;
         this.id = id;
         this.publisher = publisher;
         this.createdAt = createdAt;
         this.publisherName = publisherName;
+        this.like = like;
+        this.comment = comment;
     }
 
     public Map<String, Object> getPostInfo(){
@@ -57,6 +65,8 @@ public class PostInfo implements Serializable {
 
         docData.put("publisherName",publisherName);
         docData.put("photoUrl",photoUrl);
+        docData.put("like",like);
+        docData.put("comment",comment);
         return  docData;
     }
 
@@ -83,5 +93,14 @@ public class PostInfo implements Serializable {
 
     public String getPhotoUrl(){ return this.photoUrl; }
     public void setPhotoUrl(String photoUrl){ this.photoUrl = photoUrl; }
+
+    public String getLike(){ return this.like; }
+    public void setLike(String like){ this.like = like; }
+
+    public String getComment(){ return this.comment; }
+    public void setComment(String comment){ this.comment = comment; }
+
+    public ArrayList<String> getLiker(){ return this.liker; }
+    public void setLiker(ArrayList<String> liker){ this.liker = liker; }
 
 }

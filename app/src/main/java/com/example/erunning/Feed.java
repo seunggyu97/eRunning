@@ -42,7 +42,6 @@ import static com.example.erunning.Utillity.storageUrlToName;
 
 public class Feed extends Fragment {
     private View view;
-    private String post;
     private ImageButton btn_user_search;
     private FloatingActionButton btn_add;
     private FirebaseUser firebaseUser;
@@ -52,6 +51,7 @@ public class Feed extends Fragment {
     private FeedAdapter feedAdapter;
     private ArrayList<PostInfo> postList;
     private RelativeLayout loaderLayout;
+
 
     private Utillity util;
     private int successCount;
@@ -162,35 +162,51 @@ public class Feed extends Fragment {
         @Override
         public void onDelete(int position) {
             final String id = postList.get(position).getId();
+            final String Publisher = postList.get(position).getPublisher();
+            final String UserId = firebaseUser.getUid();
             Log.e("게시글삭제", "삭제삭제삭제삭제삭제삭제삭제삭제" + id);
+            Log.e("Publisher : ",Publisher);
+            Log.e("UserId : ",UserId);
             ArrayList<String> contentList = postList.get(position).getContents();
-            for (int i = 0; i < contentList.size(); i++) {
-                String contents = contentList.get(i);
+            if(Publisher.equals(UserId)){
+                for (int i = 0; i < contentList.size(); i++) {
+                    String contents = contentList.get(i);
+                    if (Patterns.WEB_URL.matcher(contents).matches() && contents.contains("https://firebasestorage.googleapis.com/v0/b/e-running-735bb.appspot.com/o/post")) {
 
-                if (Patterns.WEB_URL.matcher(contents).matches() && contents.contains("https://firebasestorage.googleapis.com/v0/b/e-running-735bb.appspot.com/o/post")) {
-
-                    successCount++;
-                    StorageReference desertRef = storageRef.child("posts/" + id + "/" + storageUrlToName(contents));
-                    desertRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
-                        @Override
-                        public void onSuccess(Void aVoid) {
-                            successCount--;
-                            storeUploader(id);
-                        }
-                    }).addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception exception) {
-                            // Uh-oh, an error occurred!
-                        }
-                    });
+                        successCount++;
+                        StorageReference desertRef = storageRef.child("posts/" + id + "/" + storageUrlToName(contents));
+                        desertRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                                successCount--;
+                                storeUploader(id);
+                            }
+                        }).addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception exception) {
+                                // Uh-oh, an error occurred!
+                            }
+                        });
+                    }
                 }
+                storeUploader(id);
             }
-            storeUploader(id);
+            else{
+                showToast(getActivity(),"게시글을 삭제할 권한이 없습니다.");
+            }
+
         }
 
         @Override
         public void onEdit(int position) {
-            myStartActivity(NewPost.class, postList.get(position));
+            final String Publisher = postList.get(position).getPublisher();
+            final String UserId = firebaseUser.getUid();
+            if(Publisher.equals(UserId)){
+                myStartActivity(NewPost.class, postList.get(position));
+            }
+            else{
+                showToast(getActivity(),"게시글을 수정할 권한이 없습니다.");
+            }
         }
     };
 
@@ -215,7 +231,10 @@ public class Feed extends Fragment {
                                                 document.getId(),
 
                                                 document.getData().get("publisherName").toString(),
-                                                document.getData().get("photoUrl").toString()));
+                                                document.getData().get("photoUrl").toString(),
+                                                document.getData().get("like").toString(),
+                                                document.getData().get("comment").toString(),
+                                                (ArrayList<String>) document.getData().get("liker")));
                                     }
                                     else {
                                         postList.add(new PostInfo(
@@ -224,7 +243,10 @@ public class Feed extends Fragment {
                                                 document.getId(),
                                                 document.getData().get("publisher").toString(),
                                                 new Date(document.getDate("createdAt").getTime()),
-                                                document.getData().get("publisherName").toString()));
+                                                document.getData().get("publisherName").toString(),
+                                                document.getData().get("like").toString(),
+                                                document.getData().get("comment").toString(),
+                                                (ArrayList<String>) document.getData().get("liker")));
                                     }
                                 }
                                 feedAdapter.notifyDataSetChanged();
@@ -249,29 +271,6 @@ public class Feed extends Fragment {
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
-                        final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                        FirebaseFirestore db = FirebaseFirestore.getInstance();
-                        DocumentReference documentReference = db.collection("users").document(user.getUid());
-                        documentReference.get().addOnCompleteListener((task -> {
-                            if (task.isSuccessful()) {
-                                DocumentSnapshot document = task.getResult();
-                                if (document != null) {
-                                    if (document.exists()) {
-                                        // post -1 코드
-                                        post = document.getData().get("post").toString();
-                                        int post_num = Integer.parseInt(post);
-                                        if (post_num > 0) {
-                                            post_num -= 1;
-                                            post = String.valueOf(post_num);
-                                            Log.e("게시글 post  ", "post : " + post_num + user.getUid());
-                                            db.collection("users").document(user.getUid()).update("post", Integer.parseInt(post));
-                                        }
-                                        else
-                                            showToast(getActivity(), "게시글 post -1 에러 !!!!! 계정을 삭제했다가 다시 만드세요 !!.");
-                                    }
-                                }
-                            }
-                        }));
                         showToast(getActivity(), "게시글을 삭제하였습니다.");
                         postUpdate();
                     }
