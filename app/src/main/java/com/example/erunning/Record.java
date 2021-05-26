@@ -30,10 +30,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
-import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
@@ -47,6 +46,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
@@ -123,12 +123,12 @@ public class Record extends Fragment implements OnMapReadyCallback, SensorEventL
 
    private String featuretext; // 특징 글
 
-   private FirebaseFirestore db = FirebaseFirestore.getInstance(); //Cloud FireStore 인스턴스 초기화
-
    ArrayList<MarkerOptions> ftmarkerOptions = new ArrayList<>(); //전체 특징 마커옵션 리스트
    ArrayList<LatLng> latlngList = new ArrayList<>(); //전체 경로 위도, 경도값 리스트
+   ArrayList<PolylineOptions> polyOptions = new ArrayList<>(); // 폴리라인 옵션 리스트
 
    MainActivity mainActivity;
+   private RecordResult recordResult; // 운동 경로 결과 객체
 
    public static Record newinstance(){
       Record record = new Record();
@@ -211,10 +211,27 @@ public class Record extends Fragment implements OnMapReadyCallback, SensorEventL
       btnFinish.setOnClickListener(new View.OnClickListener() {
          @Override
          public void onClick(View view) {
-            mainActivity.changeToResult();
+            Bundle args = new Bundle();
+            args.putParcelableArrayList("latlnglist", latlngList); // RecordResult.java로 데이터 전달
+            args.putParcelableArrayList("ftmarkeroptions", ftmarkerOptions);
+            args.putParcelableArrayList("polyoptions", polyOptions);
+
+            args.putString("rstime", String.valueOf(textTime.getText()));
+            args.putString("rsdistance", String.valueOf(textDistance.getText()));
+            args.putString("rsstep", String.valueOf(textStep.getText()));
+            args.putString("rscalories", String.valueOf(textCalories.getText()));
+
+            recordResult = RecordResult.getInstance();
+            recordResult.setArguments(args);
+
+            //mapView.onDestroy();
+            //mainActivity.removeResult();
+            //mMap=null;
+
+            mainActivity.changeToResult(recordResult);
+
          }
       });
-
 
       return view;
    }
@@ -246,6 +263,7 @@ public class Record extends Fragment implements OnMapReadyCallback, SensorEventL
    public void onSaveInstanceState(Bundle outState) {
       super.onSaveInstanceState(outState);
       mapView.onSaveInstanceState(outState);
+
    }
 
    @Override
@@ -368,7 +386,6 @@ public class Record extends Fragment implements OnMapReadyCallback, SensorEventL
       if (currentMarker != null) currentMarker.remove();
 
       LatLng currentLatLng = new LatLng(latitude, longtitude);
-      latlngList.add(currentLatLng); //위도, 경도 값 저장 리스트에 추가
 
       MarkerOptions markerOptions = new MarkerOptions();
       markerOptions.position(currentLatLng);
@@ -384,6 +401,7 @@ public class Record extends Fragment implements OnMapReadyCallback, SensorEventL
       mMap.moveCamera(cameraUpdate);
       if(walkState){                        //걸음 시작 버튼이 눌렸을 때
          endLatLng = new LatLng(latitude, longtitude);        //현재 위치를 끝점으로 설정
+         latlngList.add(endLatLng); //위도, 경도 값 저장 리스트에 추가
          drawPath();                                            //polyline 그리기
          startLatLng = new LatLng(latitude, longtitude);        //시작점을 끝점으로 다시 설정
       }
@@ -391,10 +409,10 @@ public class Record extends Fragment implements OnMapReadyCallback, SensorEventL
       btnPin.setOnClickListener(new View.OnClickListener() {
          @Override
          public void onClick(View view) { //핀 버튼 클릭 시
-            tempMarker = mMap.addMarker(markerOptions);
+            //tempMarker = mMap.addMarker(markerOptions);
 
-            BottomSheetDialog bottomSheetDialog = BottomSheetDialog.getInstance();
-            bottomSheetDialog.show(getFragmentManager(),"bottomSheet"); // 다이얼로그 호출
+            InputFeature inputFeature = InputFeature.getInstance();
+            inputFeature.show(getFragmentManager(),"inputFeature"); // 다이얼로그 호출
             
             /*if (getArguments() != null)
             {
@@ -404,7 +422,7 @@ public class Record extends Fragment implements OnMapReadyCallback, SensorEventL
                Toast.makeText(getContext(),"전달됨",Toast.LENGTH_SHORT).show();
             }*/
 
-            bottomSheetDialog.setDialogResult(new BottomSheetDialog.OnMyDialogResult() {
+            inputFeature.setDialogResult(new InputFeature.OnMyDialogResult() {
                @Override
                public void finish(String result) {
                   // result에 dialog에서 보낸값이 저장되어 돌아옵니다. 값을 가지고 원하는 동작을 하면됩니다.
@@ -416,9 +434,11 @@ public class Record extends Fragment implements OnMapReadyCallback, SensorEventL
                }
             });
 
-            tempMarker.remove();
          }
       });
+
+      //정보창 클릭 리스너
+      mMap.setOnInfoWindowClickListener(infoWindowClickListener);
 
    }
 
@@ -434,6 +454,7 @@ public class Record extends Fragment implements OnMapReadyCallback, SensorEventL
             handler.postDelayed(runnable, 0);
 
             startLatLng = new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());        //현재 위치를 시작점으로 설정
+            latlngList.add(startLatLng); //위도, 경도 값 저장 리스트에 추가
             btnStart.setText("정지");
       }else{
          Toast.makeText(mContext.getApplicationContext(), "기록 일시정지", Toast.LENGTH_SHORT).show();
@@ -448,6 +469,7 @@ public class Record extends Fragment implements OnMapReadyCallback, SensorEventL
 
    private void drawPath(){        //polyline을 그려주는 메소드
       PolylineOptions options = new PolylineOptions().add(startLatLng).add(endLatLng).width(8).color(Color.RED).geodesic(true);
+      polyOptions.add(options); //폴리라인 옵션 값 리스트에 추가
       polylines.add(mMap.addPolyline(options));
       mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(startLatLng, 15));
       //Polyline polyline = polylines.get(polylines.size() - 1);
@@ -557,6 +579,7 @@ public class Record extends Fragment implements OnMapReadyCallback, SensorEventL
          Log.d(TAG, "onDestroyView : removeLocationUpdates");
          mFusedLocationProviderClient.removeLocationUpdates(locationCallback);
       }
+      //mapView.onDestroy();
    }
 
    @Override
@@ -612,9 +635,21 @@ public class Record extends Fragment implements OnMapReadyCallback, SensorEventL
 
    @Override
    public boolean onMarkerClick(Marker marker) {
-
       return false;
    }
+
+   //정보창 클릭 리스너
+   GoogleMap.OnInfoWindowClickListener infoWindowClickListener = new GoogleMap.OnInfoWindowClickListener() {
+      @Override
+      public void onInfoWindowClick(Marker marker) {
+         // String markerId = marker.getId();
+         Bundle args = new Bundle();
+         args.putString("showfeaturetext", marker.getSnippet()); // 다이얼로그로 데이터 전달
+         ShowFeature showFeature = ShowFeature.getInstance();
+         showFeature.setArguments(args);
+         showFeature.show(getFragmentManager(),"showFeature"); // 다이얼로그 호출
+      }
+   };
 
 }
 

@@ -165,17 +165,23 @@ public class MainActivity extends BasicActivity {
     }
 
 
-
     // 기록 결과 화면으로 전환 메소드
-    public void changeToResult() {
+    public void changeToResult(Fragment fragment) {
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.record_layout, recordResult).commit();
+                .replace(R.id.record_layout, fragment).commit();
+    }
+
+    public void changeToRecord(Fragment fragment) {
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.record_result_layout, fragment).commit();
     }
 
     // 기록 결과 화면 제거 메소드
-    public void removeResult() {
-        getSupportFragmentManager().beginTransaction()
-                .remove(recordResult).commit();
+    public void removeResult(Fragment fragment) {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager.beginTransaction()
+                .remove(fragment).commit();
+        fragmentManager.popBackStack(); //이전 스택 가져옴
     }
 
 

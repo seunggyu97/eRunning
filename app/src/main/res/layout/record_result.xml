@@ -56,12 +56,8 @@
         android:layout_height="0dp"
         android:layout_weight="3.5">
 
-        <com.google.android.gms.maps.MapView
-            android:id="@+id/rsmap"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:name="com.google.android.gms.maps.MapFragment"
-            />
+        <include layout="@layout/google_map" />
+
     </LinearLayout>
 
     <!--운동 정보 표시 바-->
@@ -150,8 +146,23 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="3.5">
+        android:layout_weight="3.5"
+        android:orientation="vertical">
 
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:id="@+id/rsTextFeature"
+            android:text="특징 글이 없습니다."
+            android:textSize="18dp">
+
+        </TextView>
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/rsImageFeature">
+
+        </ImageView>
 
     </LinearLayout>
 

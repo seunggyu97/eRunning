@@ -53,7 +53,7 @@ class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder> {
     private ImageView btn_like;
     private ImageView btn_bookmark;
     private Button btn_comment;
-    private TextView tv_like;
+    private Button tv_like;
     private TextView tv_comment;
     private TextView tv_like_upside;
     private ImageView postmenu;
@@ -172,7 +172,7 @@ class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder> {
         titleTextView.setText(mDataset.get(position).getTitle());
         TextView tv_feedname = holder.cardView.findViewById(R.id.tv_feedname);
         TextView tv_like_upside = holder.cardView.findViewById(R.id.tv_like_upside);
-
+        PostInfo postdata = mDataset.get(position);
 
         /*if(mDataset.get(position).getLike().equals("0")){
             tv_like_upside.setVisibility(View.GONE);
@@ -187,26 +187,25 @@ class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder> {
             tv_like_upside.setText(SetLike);;
             tv_like.setTextColor(Color.parseColor("#ff3300"));
         }*/
-        /*if(mDataset.get(position).getComment().equals("0")){
-            tv_comment_upside.setVisibility(View.GONE);
+        setImageChange(postdata);
+        if(postdata.getComment().equals("0")){
+            tv_comment.setVisibility(View.GONE);
 
         }else{
-            String SetComment = "댓글 "+ mDataset.get(position).getComment()+"개";
+            String SetComment = "댓글 "+ postdata.getComment()+"개";
 
-            tv_comment_upside.setVisibility(View.VISIBLE);
-            tv_comment_upside.setText(SetComment);
-        }*/
-        tv_feedname.setText(mDataset.get(position).getPublisherName());
+            tv_comment.setVisibility(View.VISIBLE);
+            tv_comment.setText(SetComment);
+        }
+        tv_feedname.setText(postdata.getPublisherName());
         Log.e("1차 feedname","설정");
-        Log.e("댓글 수 : ",FirebaseFirestore.getInstance().collection("posts").document(mDataset.get(position).getComment()).toString());
-        Log.e("좋아요 수 : ", FirebaseFirestore.getInstance().collection("posts").document(mDataset.get(position).getLike()).toString());
-        if(mDataset.get(position).getPhotoUrl() != null) {
-            Glide.with(activity).load(mDataset.get(position).getPhotoUrl()).circleCrop().into(iv_profileImage);
+        if(postdata.getPhotoUrl() != null) {
+            Glide.with(activity).load(postdata.getPhotoUrl()).circleCrop().into(iv_profileImage);
         }
         Log.e("1차 프사","설정");
         TextView createdAtTextView = cardView.findViewById(R.id.createdAtTextView);
 
-        DocumentReference documentReference = FirebaseFirestore.getInstance().collection("users").document(mDataset.get(position).getPublisher());
+        DocumentReference documentReference = FirebaseFirestore.getInstance().collection("users").document(postdata.getPublisher());
         documentReference.get().addOnCompleteListener((task -> {
             if(task.isSuccessful()){
                 DocumentSnapshot document = task.getResult();
@@ -218,7 +217,7 @@ class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder> {
                             FirebaseStorage storage = FirebaseStorage.getInstance();
                             StorageReference storageRef = storage.getReference();
 
-                            storageRef.child("users/" +mDataset.get(position).getPublisher()+"/profile_image.jpg").getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                            storageRef.child("users/" +postdata.getPublisher()+"/profile_image.jpg").getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                                 @Override
                                 public void onSuccess(Uri uri) {
                                     //이미지 로드 성공시
@@ -277,24 +276,12 @@ class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder> {
                 }
             }
         });*/
-        DocumentReference documentReference1 = FirebaseFirestore.getInstance().collection("posts").document(mDataset.get(position).getId());
+        /*DocumentReference documentReference1 = FirebaseFirestore.getInstance().collection("posts").document(mDataset.get(position).getId());
         documentReference1.get().addOnCompleteListener((task -> {
             if (task.isSuccessful()) {
                 DocumentSnapshot document = task.getResult();
                 if (document != null) {
                     if (document.exists()) {
-                        String getComment = document.getData().get("comment").toString();
-                        if(getComment.equals("0")){
-                            Log.e("tv_comment","setVisibility(View.GONE);");
-                            tv_comment.setVisibility(View.GONE);
-                        }
-                        else{
-                            tv_comment.setVisibility(View.VISIBLE);
-                            String SetCommentUpside = "댓글 " + getComment+"개";
-                            tv_comment.setText(SetCommentUpside);
-                            Log.e("tv_comment","setVisibility(View.VISIBLE);");
-                            Log.e("tv_comment",SetCommentUpside);
-                        }
                         String getLike = document.getData().get("like").toString();
                         if(getLike.equals("0")){
 
@@ -317,7 +304,7 @@ class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder> {
                     }
                 }
             }
-        }));
+        }));*/
 
 
         long now = System.currentTimeMillis(); // 현재 시간 변수 생성
@@ -530,7 +517,54 @@ class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder> {
         Log.e("로그: ", "데이터: " + mDataset.get(position).getTitle());
         //Log.e("글이 올라온 시간 : ",Locale.getDefault().format(mDataset.get(position).getCreatedAt()));
     }
+    private void setImageChange(PostInfo postdata){
+        if(!postdata.getLike().equals("0")){
+            tv_like_upside.setVisibility(View.VISIBLE);
+            tv_like_upside.setText("좋아요 " + postdata.getLike() + "개");
+        }
+        else{
+            tv_like_upside.setVisibility(View.GONE);
+        }
+        FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
+        DocumentReference documentReference2 = firebaseFirestore.collection("posts").document(postdata.getId());
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if(postdata.getLiker() != null){
+            if(postdata.getLiker().contains(user.getUid())) {                   //postdata liker 리스트에 본인 uid 가 포함되어있으면
+                String getLike = postdata.getLike();
+                btn_like.setImageResource(R.drawable.ic_like_red);              // btn_like의 리소스를 빨간하트로 바꾼다.
+                tv_like.setText(getLike);                                       // tv_like의 텍스트를 postdata의 Like로 변경한다.
+                tv_like.setTextColor(Color.parseColor("#ff3300"));   // tv_like의 텍스트 색상을 빨강으로 바꾼다.
+            }
+            else {
+                btn_like.setImageResource(R.drawable.ic_like_gray);
+                tv_like.setText("좋아요");
+                tv_like.setTextColor(Color.parseColor("#000000"));
+            }
+        }
+        else{
+            btn_like.setImageResource(R.drawable.ic_like_gray);
+            tv_like.setText("좋아요");
+            tv_like.setTextColor(Color.parseColor("#000000"));
+        }
 
+                        /*if(likerList != null) {
+                            if (likerList.contains(userId)) {// 좋아요가 눌러진 상태일 경우
+                                String getLike = document.getData().get("like").toString();
+                                btn_like.setImageResource(R.drawable.ic_like_red);
+                                tv_like.setText(getLike);
+                                tv_like.setTextColor(Color.parseColor("#ff3300"));
+                            } else {
+                                btn_like.setImageResource(R.drawable.ic_like_gray);
+                                tv_like.setText("좋아요");
+                                tv_like.setTextColor(Color.parseColor("#000000"));
+                            }
+                        }
+                        else{
+                            btn_like.setImageResource(R.drawable.ic_like_gray);
+                            tv_like.setText("좋아요");
+                            tv_like.setTextColor(Color.parseColor("#000000"));
+                        }*/
+    }
     private void Like(int position){
         final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
@@ -541,27 +575,44 @@ class FeedAdapter extends RecyclerView.Adapter<FeedAdapter.FeedViewHolder> {
                 if (document != null) {
                     if (document.exists()) {
                         String userId= user.getUid();
+                        PostInfo postdata = mDataset.get(position);
                         ArrayList<String> likerList = (ArrayList<String>)document.getData().get("liker");
                         if(likerList != null) {
                             if (likerList.contains(userId)) {// 좋아요가 눌러진 상태일 경우
                                 int fLike = Integer.parseInt(document.getData().get("like").toString());
                                 fLike--;
+                                likerList.remove(userId);
+                                postdata.setLiker(likerList);
+                                postdata.setLike(Integer.toString(fLike));
+                                setImageChange(postdata);
+                                notifyDataSetChanged();
                                 documentReference.update("like", Integer.toString(fLike)); // 파베 저장
                                 documentReference.update("liker", FieldValue.arrayRemove(userId));//좋아요 리스트에서 자신 삭제
 
                             } else {// 좋아요가 눌러지지 않은 상태일 경우
                                 int fLike = Integer.parseInt(document.getData().get("like").toString());
                                 fLike++;
+                                postdata.setLike(Integer.toString(fLike));
+                                likerList.add(userId);
+                                postdata.setLiker(likerList);
+                                setImageChange(postdata);
+                                notifyDataSetChanged();
+                                mDataset.get(position).setLike(Integer.toString(fLike));
                                 documentReference.update("like", Integer.toString(fLike)); // 파베 저장
-
                                 documentReference.update("liker", FieldValue.arrayUnion(userId));// 좋아요 리스트에 자신 추가
                             }
                         }
                         else{
+                            ArrayList<String> likerListNull = new ArrayList<String>();
                             int fLike = Integer.parseInt(document.getData().get("like").toString());
                             fLike++;
+                            postdata.setLike(Integer.toString(fLike));
+                            likerListNull.add(userId);
+                            postdata.setLiker(likerListNull);
+                            setImageChange(postdata);
+                            notifyDataSetChanged();
+                            mDataset.get(position).setLike(Integer.toString(fLike));
                             documentReference.update("like", Integer.toString(fLike)); // 파베 저장
-
                             documentReference.update("liker", FieldValue.arrayUnion(userId));// 좋아요 리스트에 자신 추가
                         }
                     }
