@@ -1,6 +1,5 @@
 package com.example.erunning;
 
-import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
@@ -26,7 +25,6 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -158,16 +156,17 @@ public class Post extends BasicActivity{
                                 if(likerList != null) {
                                     if (likerList.contains(userId)) {// 좋아요가 눌러진 상태일 경우
                                         int fLike = Integer.parseInt(document.getData().get("like").toString());
-                                        fLike--;
-                                        postdata.setLike(Integer.toString(fLike));
+                                        fLike -= 1;
                                         documentReference.update("like", Integer.toString(fLike)); // 파베 저장
+                                        //postdata.setLike(Integer.toString(fLike));
                                         documentReference.update("liker", FieldValue.arrayRemove(userId));//좋아요 리스트에서 자신 삭제
                                         onResume();
                                     } else {// 좋아요가 눌러지지 않은 상태일 경우
                                         int fLike = Integer.parseInt(document.getData().get("like").toString());
-                                        fLike++;
-                                        postdata.setLike(Integer.toString(fLike));
+                                        fLike+= 1;
+
                                         documentReference.update("like", Integer.toString(fLike)); // 파베 저장
+                                       // postdata.setLike(Integer.toString(fLike));
                                         documentReference.update("liker", FieldValue.arrayUnion(userId));// 좋아요 리스트에 자신 추가
                                         onResume();
                                     }
@@ -175,7 +174,8 @@ public class Post extends BasicActivity{
                                 else{
                                     int fLike = Integer.parseInt(document.getData().get("like").toString());
                                     fLike++;
-                                    postdata.setLike(Integer.toString(fLike));
+                                    //postdata.setLike(Integer.toString(fLike));
+
                                     documentReference.update("like", Integer.toString(fLike)); // 파베 저장
 
                                     documentReference.update("liker", FieldValue.arrayUnion(userId));// 좋아요 리스트에 자신 추가
