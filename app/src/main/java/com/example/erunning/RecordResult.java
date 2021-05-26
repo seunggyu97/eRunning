@@ -60,6 +60,7 @@ public class RecordResult extends Fragment implements OnMapReadyCallback {
     private GoogleMap mMap;
 
     private Location mCurrentLocation;
+    private final LatLng mDefaultLocation = new LatLng(37.56, 126.97);
 
     private static final String KEY_CAMERA_POSITION = "camera_position";
     private static final String KEY_LOCATION = "location";
@@ -238,10 +239,11 @@ public class RecordResult extends Fragment implements OnMapReadyCallback {
             mMap.addPolyline(options);
         }
 
-        if(latlngList != null) {
+        if((latlngList != null)&&(latlngList.size()!=0)) {
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latlngList.get(0), 15));
         }
         else{
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mDefaultLocation, 15));
             Toast. makeText( mContext, "저장된 경로가 없습니다.", Toast.LENGTH_SHORT ).show();
         }
 
