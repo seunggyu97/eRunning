@@ -34,12 +34,8 @@
         android:layout_height="0dp"
         android:layout_weight="5">
 
-        <com.google.android.gms.maps.MapView
-            android:id="@+id/map"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:name="com.google.android.gms.maps.MapFragment"
-            />
+        <include layout="@layout/google_map" />
+
     </LinearLayout>
 
     <!--운동 정보 표시 바-->

@@ -15,9 +15,9 @@ import androidx.fragment.app.Fragment;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
 
-public class BottomSheetDialog extends BottomSheetDialogFragment implements View.OnClickListener{
+public class InputFeature extends BottomSheetDialogFragment implements View.OnClickListener{
 
-    public static BottomSheetDialog getInstance() { return new BottomSheetDialog(); }
+    public static InputFeature getInstance() { return new InputFeature(); }
 
     OnMyDialogResult mDialogResult;
 
@@ -31,7 +31,7 @@ public class BottomSheetDialog extends BottomSheetDialogFragment implements View
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.feature_popup, container,false);
+        View view = inflater.inflate(R.layout.input_feature, container,false);
         editFeature = view.findViewById(R.id.editFeature);
         imageGallery = view.findViewById(R.id.imageGallery);
         btnPicture = view.findViewById(R.id.btnPicture);
@@ -55,7 +55,7 @@ public class BottomSheetDialog extends BottomSheetDialogFragment implements View
             }
         });*/
 
-        fragment = getActivity().getSupportFragmentManager().findFragmentByTag("bottomSheet");
+        fragment = getActivity().getSupportFragmentManager().findFragmentByTag("inputFeature");
 
         return view;
     }
