@@ -76,9 +76,6 @@ public class PostInfo implements Serializable {
     public ArrayList<String> getContents(){ return this.contents; }
     public void setContents(ArrayList<String> contents){ this.contents = contents; }
 
-    /*public ArrayList<String> getFormats(){ return this.formats; }
-    public void setFormats(ArrayList<String> formats){ this.formats = formats; }*/
-
     public String getPublisher(){ return this.publisher; }
     public void setPublisher(String publisher){ this.publisher = publisher; }
 

@@ -45,8 +45,11 @@
         <activity android:name=".BasicActivity" />
         <activity android:name=".NewPost" />
         <activity android:name=".UserSearch" />
+        <activity android:name=".NewFlag" />
+        <activity android:name=".FlagInter" />
         <activity android:name=".OtherAccount"></activity>
         <activity android:name=".Post" />
+        <activity android:name=".FlagNewmap" />
 
         <meta-data
             android:name="com.google.android.maps.v2.API_KEY"

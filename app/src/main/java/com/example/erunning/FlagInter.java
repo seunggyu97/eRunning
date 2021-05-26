@@ -50,7 +50,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 import static com.example.erunning.Utillity.isStorageUrl;
 import static com.example.erunning.Utillity.showToast;
 
-public class Post extends BasicActivity{
+public class FlagInter extends BasicActivity{
     private ImageButton btn_writecomment;
     private ImageButton btn_like;
     private ImageButton bookmark;
@@ -63,20 +63,23 @@ public class Post extends BasicActivity{
     private Utillity util;
     private RelativeLayout loaderLayout;
     private InputMethodManager imm;
-    private static final String TAG = "Post";
+    private static final String TAG = "Flag";
 
     private ArrayList<CommentInfo> commentList;
     private CommentAdapter commentAdapter;
     private FirebaseUser firebaseUser;
     private FirebaseFirestore firebaseFirestore;
-    private PostInfo postdata;
+    private FlagInfo flagdata;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_post);
+        setContentView(R.layout.flaginter);
 
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+
+        boolean isLiked = false;
+        boolean isBookmarked = false;
 
         btn_writecomment = findViewById(R.id.btn_writecomment);
         btn_like = findViewById(R.id.btn_like);
@@ -91,9 +94,9 @@ public class Post extends BasicActivity{
         tv_comment = findViewById(R.id.tv_comment_upside);
 
         CircleImageView iv_profileImage = findViewById(R.id.iv_profileimage);
-        PostInfo postInfo = (PostInfo) getIntent().getSerializableExtra("postInfo");
-        postdata = postInfo;
-        setImageChange(postdata);
+        FlagInfo postInfo = (FlagInfo) getIntent().getSerializableExtra("postInfo");
+        flagdata = postInfo;
+        setImageChange(flagdata);
 
 
         TextView titleTextView = findViewById(R.id.titleTextView);
@@ -101,8 +104,8 @@ public class Post extends BasicActivity{
         TextView tv_feedname = findViewById(R.id.tv_feedname);
         tv_feedname.setText(postInfo.getPublisherName());
         Log.e("1차 feedname","설정");
-        if(postdata.getPhotoUrl() != null) {
-            Glide.with(this).load(postdata.getPhotoUrl()).circleCrop().into(iv_profileImage);
+        if(flagdata.getPhotoUrl() != null) {
+            Glide.with(this).load(flagdata.getPhotoUrl()).circleCrop().into(iv_profileImage);
         }
         Log.e("1차 프사","설정");
         btn_like.setOnClickListener(new View.OnClickListener(){
@@ -110,7 +113,7 @@ public class Post extends BasicActivity{
             public void onClick(View v){
                 final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                 FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
-                DocumentReference documentReference = firebaseFirestore.collection("posts").document(postdata.getId());
+                DocumentReference documentReference = firebaseFirestore.collection("posts").document(flagdata.getId());
                 documentReference.get().addOnCompleteListener((task -> {
                     if (task.isSuccessful()) {
                         DocumentSnapshot document = task.getResult();
@@ -122,29 +125,29 @@ public class Post extends BasicActivity{
                                     if (likerList.contains(userId)) {// 좋아요가 눌러진 상태일 경우
                                         int fLike = Integer.parseInt(document.getData().get("like").toString());
                                         fLike--;
-                                        postdata.setLike(Integer.toString(fLike));
+                                        flagdata.setFlag(Integer.toString(fLike));
                                         documentReference.update("like", Integer.toString(fLike)); // 파베 저장
                                         documentReference.update("liker", FieldValue.arrayRemove(userId));//좋아요 리스트에서 자신 삭제
-                                        setImageChange(postdata);
+                                        setImageChange(flagdata);
                                         onResume();
                                     } else {// 좋아요가 눌러지지 않은 상태일 경우
                                         int fLike = Integer.parseInt(document.getData().get("like").toString());
                                         fLike++;
-                                        postdata.setLike(Integer.toString(fLike));
+                                        flagdata.setFlag(Integer.toString(fLike));
                                         documentReference.update("like", Integer.toString(fLike)); // 파베 저장
                                         documentReference.update("liker", FieldValue.arrayUnion(userId));// 좋아요 리스트에 자신 추가
-                                        setImageChange(postdata);
+                                        setImageChange(flagdata);
                                         onResume();
                                     }
                                 }
                                 else{
                                     int fLike = Integer.parseInt(document.getData().get("like").toString());
                                     fLike++;
-                                    postdata.setLike(Integer.toString(fLike));
+                                    flagdata.setFlag(Integer.toString(fLike));
                                     documentReference.update("like", Integer.toString(fLike)); // 파베 저장
 
                                     documentReference.update("liker", FieldValue.arrayUnion(userId));// 좋아요 리스트에 자신 추가
-                                    setImageChange(postdata);
+                                    setImageChange(flagdata);
                                     onResume();
                                 }
                             }
@@ -158,7 +161,7 @@ public class Post extends BasicActivity{
             public void onClick(View v){
                 final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                 FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
-                DocumentReference documentReference = firebaseFirestore.collection("posts").document(postdata.getId());
+                DocumentReference documentReference = firebaseFirestore.collection("posts").document(flagdata.getId());
                 documentReference.get().addOnCompleteListener((task -> {
                     if (task.isSuccessful()) {
                         DocumentSnapshot document = task.getResult();
@@ -170,29 +173,29 @@ public class Post extends BasicActivity{
                                     if (likerList.contains(userId)) {// 좋아요가 눌러진 상태일 경우
                                         int fLike = Integer.parseInt(document.getData().get("like").toString());
                                         fLike--;
-                                        postdata.setLike(Integer.toString(fLike));
+                                        flagdata.setFlag(Integer.toString(fLike));
                                         documentReference.update("like", Integer.toString(fLike)); // 파베 저장
                                         documentReference.update("liker", FieldValue.arrayRemove(userId));//좋아요 리스트에서 자신 삭제
-                                        setImageChange(postdata);
+                                        setImageChange(flagdata);
                                         onResume();
                                     } else {// 좋아요가 눌러지지 않은 상태일 경우
                                         int fLike = Integer.parseInt(document.getData().get("like").toString());
                                         fLike++;
-                                        postdata.setLike(Integer.toString(fLike));
+                                        flagdata.setFlag(Integer.toString(fLike));
                                         documentReference.update("like", Integer.toString(fLike)); // 파베 저장
                                         documentReference.update("liker", FieldValue.arrayUnion(userId));// 좋아요 리스트에 자신 추가
-                                        setImageChange(postdata);
+                                        setImageChange(flagdata);
                                         onResume();
                                     }
                                 }
                                 else{
                                     int fLike = Integer.parseInt(document.getData().get("like").toString());
                                     fLike++;
-                                    postdata.setLike(Integer.toString(fLike));
+                                    flagdata.setFlag(Integer.toString(fLike));
                                     documentReference.update("like", Integer.toString(fLike)); // 파베 저장
 
                                     documentReference.update("liker", FieldValue.arrayUnion(userId));// 좋아요 리스트에 자신 추가
-                                    setImageChange(postdata);
+                                    setImageChange(flagdata);
                                     onResume();
                                 }
                             }
@@ -211,7 +214,7 @@ public class Post extends BasicActivity{
                         String getComment = document.getData().get("comment").toString();
                         Log.e("getComment",getComment);
                         Log.e("postInfo ::::",postInfo.getComment());
-                        Log.e("postdata ::::",postdata.getComment());
+                        Log.e("flagdata ::::",flagdata.getComment());
                         if(getComment.equals("0")){
                             tv_comment.setVisibility(View.GONE);
                         }
@@ -431,16 +434,16 @@ public class Post extends BasicActivity{
 
 
     }
-    private void setImageChange(PostInfo postdata){
-        if(!postdata.getLike().equals("0")){
+    private void setImageChange(FlagInfo flagdata){
+        if(!flagdata.getFlag().equals("0")){
             tv_like_upside.setVisibility(View.VISIBLE);
-            tv_like_upside.setText("좋아요 " + postdata.getLike() + "개");
+            tv_like_upside.setText("좋아요 " + flagdata.getFlag() + "개");
         }
         else{
             tv_like_upside.setVisibility(View.GONE);
         }
         FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
-        DocumentReference documentReference2 = firebaseFirestore.collection("posts").document(postdata.getId());
+        DocumentReference documentReference2 = firebaseFirestore.collection("posts").document(flagdata.getId());
         documentReference2.get().addOnCompleteListener((task -> {
             if (task.isSuccessful()) {
                 DocumentSnapshot document = task.getResult();
@@ -450,9 +453,9 @@ public class Post extends BasicActivity{
                         ArrayList<String> likerList = (ArrayList<String>)document.getData().get("liker");
                         if(likerList != null) {
                             if (likerList.contains(userId)) {// 좋아요가 눌러진 상태일 경우
-                                String getLike = document.getData().get("like").toString();
+                                String getFlag = document.getData().get("like").toString();
                                 btn_like.setImageResource(R.drawable.ic_like_red);
-                                tv_like.setText(getLike);
+                                tv_like.setText(getFlag);
                                 tv_like.setTextColor(Color.parseColor("#ff3300"));
                             } else {
                                 btn_like.setImageResource(R.drawable.ic_like_gray);
@@ -490,7 +493,7 @@ public class Post extends BasicActivity{
 
                             if(document.getData().get("photoUrl") != null){
                                 String profilePhotoUrl = document.getData().get("photoUrl").toString();
-                                final DocumentReference documentReference = commentInfo == null ? firebaseFirestore.collection("posts").document(postdata.getId()).collection("comments").document() : firebaseFirestore.collection("comments").document(postdata.getId()).collection("comments").document(commentInfo.getId());
+                                final DocumentReference documentReference = commentInfo == null ? firebaseFirestore.collection("posts").document(flagdata.getId()).collection("comments").document() : firebaseFirestore.collection("comments").document(flagdata.getId()).collection("comments").document(commentInfo.getId());
                                 final Date date = commentInfo == null ? new Date() : commentInfo.getCreatedAt();
 
                                 StoreUpload(documentReference, new CommentInfo(title, firebaseUser.getUid(), date, PublisherName,profilePhotoUrl));
@@ -498,7 +501,7 @@ public class Post extends BasicActivity{
                             }
                             else{
                                 String profilePhotoUrl = "0";
-                                final DocumentReference documentReference = commentInfo == null ? firebaseFirestore.collection("posts").document(postdata.getId()).collection("comments").document() : firebaseFirestore.collection("comments").document(postdata.getId()).collection("comments").document(commentInfo.getId());
+                                final DocumentReference documentReference = commentInfo == null ? firebaseFirestore.collection("posts").document(flagdata.getId()).collection("comments").document() : firebaseFirestore.collection("comments").document(flagdata.getId()).collection("comments").document(commentInfo.getId());
                                 final Date date = commentInfo == null ? new Date() : commentInfo.getCreatedAt();
 
                                 StoreUpload(documentReference, new CommentInfo(title, firebaseUser.getUid(), date, PublisherName,profilePhotoUrl));
@@ -518,17 +521,17 @@ public class Post extends BasicActivity{
                     public void onSuccess(Void aVoid) {
                         Log.d("comment", "DB 저장 성공!");
                         loaderLayout.setVisibility(View.GONE);
-                        showToast(Post.this, "댓글을 작성하였습니다.");
+                        showToast(FlagInter.this, "댓글을 작성하였습니다.");
                         commentAdapter.notifyDataSetChanged();
                         et_writecomment.getText().clear();
                         imm.hideSoftInputFromWindow(et_writecomment.getWindowToken(), 0); // 키보드를 내린다.
-                        int fComment = Integer.parseInt(postdata.getComment());
+                        int fComment = Integer.parseInt(flagdata.getComment());
                         Log.e("fComment","========"+fComment);
                         fComment++;
                         Log.e("fComment","========"+fComment);
 
-                        postdata.setComment(Integer.toString(fComment));
-                        firebaseFirestore.collection("posts").document(postdata.getId()).update("comment", Integer.toString(fComment)); // 파베 저장
+                        flagdata.setComment(Integer.toString(fComment));
+                        firebaseFirestore.collection("posts").document(flagdata.getId()).update("comment", Integer.toString(fComment)); // 파베 저장
                         onResume();
                     }
                 })
@@ -554,13 +557,13 @@ public class Post extends BasicActivity{
             Log.e("댓글삭제", "삭제삭제삭제삭제삭제삭제삭제삭제" + id);
             Log.e("Publisher : ",Publisher);
             Log.e("UserId : ",UserId);
-            Log.e("postdata.getId : ",postdata.getId());
-            Log.e(".getPublisher : ",postdata.getPublisher());
+            Log.e("flagdata.getId : ",flagdata.getId());
+            Log.e(".getPublisher : ",flagdata.getPublisher());
             if(Publisher.equals(UserId)){
                 storeUploader(id);
             }
             else{
-                showToast(Post.this,"댓글을 삭제할 권한이 없습니다.");
+                showToast(FlagInter.this,"댓글을 삭제할 권한이 없습니다.");
             }
         }
         public void onEdit(int position){
@@ -570,7 +573,7 @@ public class Post extends BasicActivity{
     private void commentUpdate() {
         if (firebaseUser != null) {
             FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
-            CollectionReference collectionReference = firebaseFirestore.collection("posts").document(postdata.getId()).collection("comments");
+            CollectionReference collectionReference = firebaseFirestore.collection("posts").document(flagdata.getId()).collection("comments");
             collectionReference.orderBy("createdAt", Query.Direction.ASCENDING).get()
                     .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                         @Override
@@ -608,7 +611,7 @@ public class Post extends BasicActivity{
                         }
                     });
         }
-        DocumentReference documentReferenceComment = FirebaseFirestore.getInstance().collection("posts").document(postdata.getId());
+        DocumentReference documentReferenceComment = FirebaseFirestore.getInstance().collection("posts").document(flagdata.getId());
         documentReferenceComment.get().addOnCompleteListener((task ->{
             if(task.isSuccessful()){
                 DocumentSnapshot document = task.getResult();
@@ -616,8 +619,8 @@ public class Post extends BasicActivity{
                     if(document.exists()){
                         String getComment = document.getData().get("comment").toString();
                         Log.e("getComment",getComment);
-                        Log.e("postInfo ::::",postdata.getComment());
-                        Log.e("postdata ::::",postdata.getComment());
+                        Log.e("postInfo ::::",flagdata.getComment());
+                        Log.e("flagdata ::::",flagdata.getComment());
                         if(getComment.equals("0")){
                             tv_comment.setVisibility(View.GONE);
                         }
@@ -633,21 +636,21 @@ public class Post extends BasicActivity{
     }
 
     private void storeUploader(String id) {
-        DocumentReference documentReference = FirebaseFirestore.getInstance().collection("posts").document(postdata.getId()).collection("comments").document(id);
-                documentReference.delete()
+        DocumentReference documentReference = FirebaseFirestore.getInstance().collection("posts").document(flagdata.getId()).collection("comments").document(id);
+        documentReference.delete()
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
-                        showToast(Post.this, "댓글을 삭제하였습니다.");
-                        int fComment = Integer.parseInt(postdata.getComment());
+                        showToast(FlagInter.this, "댓글을 삭제하였습니다.");
+                        int fComment = Integer.parseInt(flagdata.getComment());
                         fComment--;
-                        postdata.setComment(Integer.toString(fComment));
+                        flagdata.setComment(Integer.toString(fComment));
                         Log.e("id ::::::",":::::::::::::::::"+id);//o
                         Log.e("fComment ::::::",":::::::::::::::::"+fComment);
-                        Log.e("postdata.getComment::",":::::::::::::::::"+postdata.getComment());
-                        Log.e("postdata.getId()::::",":::::::::::::::::"+postdata.getId());//o
+                        Log.e("flagdata.getComment::",":::::::::::::::::"+flagdata.getComment());
+                        Log.e("flagdata.getId()::::",":::::::::::::::::"+flagdata.getId());//o
                         if(FirebaseFirestore.getInstance().collection("posts") != null){
-                            FirebaseFirestore.getInstance().collection("posts").document(postdata.getId()).update("comment", Integer.toString(fComment)); // 파베 저장
+                            FirebaseFirestore.getInstance().collection("posts").document(flagdata.getId()).update("comment", Integer.toString(fComment)); // 파베 저장
                             commentUpdate();
                         }
                         else{
@@ -658,7 +661,7 @@ public class Post extends BasicActivity{
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        showToast(Post.this, "댓글 삭제를 실패하였습니다.");
+                        showToast(FlagInter.this, "댓글 삭제를 실패하였습니다.");
                     }
                 });
     }
