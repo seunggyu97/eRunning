@@ -293,7 +293,7 @@ public class NewPost extends BasicActivity {
                                 }
 
                             }else{
-                                String profilePhotoUrl = null;
+                                String profilePhotoUrl = "0";
                                 final DocumentReference documentReference = postInfo == null ? firebaseFirestore.collection("posts").document() : firebaseFirestore.collection("posts").document(postInfo.getId());
                                 final Date date = postInfo == null ? new Date() : postInfo.getCreatedAt();
 

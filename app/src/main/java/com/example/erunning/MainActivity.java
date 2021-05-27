@@ -49,6 +49,7 @@ public class MainActivity extends BasicActivity {
     static final int REQUEST_EDITPROFILE = 2000;
     static final int REQUEST_POST = 3000;
     static final int REQUEST_USER_SEARCH = 4000;
+    static final int REQUEST_FLAG_NEW_MAP = 1234;
 
     //private TextView user_name; // 이름 Text
     //public ImageView route_profile; // 이미지 뷰
