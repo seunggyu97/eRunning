@@ -22,10 +22,17 @@ public class FirestoreAdapter extends FirestorePagingAdapter<UserInfo, Firestore
     private  OnListItemClick onListItemClick;
 
 
+
     public FirestoreAdapter(@NonNull FirestorePagingOptions<UserInfo> options, OnListItemClick onListItemClick) {
         super(options);
         this.onListItemClick = onListItemClick;
     }
+
+    public FirestoreAdapter(@NonNull FirestorePagingOptions<UserInfo> options) {
+        super(options);
+        this.onListItemClick = null;
+    }
+
 
     @Override
     protected void onBindViewHolder(@NonNull UserInfoViewHolder productsViewHolder, int i, @NonNull UserInfo userInfo) {

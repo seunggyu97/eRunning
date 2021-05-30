@@ -21,9 +21,9 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageMetadata;
@@ -43,6 +43,7 @@ import static com.example.erunning.Utillity.showToast;
 public class NewPost extends BasicActivity {
     private FirebaseUser user;
     private String post;
+    public String posturl;
     private StorageReference storageRef;
     private static final String TAG = "NewPost";
     private ArrayList<String> pathList = new ArrayList<>();
@@ -52,9 +53,11 @@ public class NewPost extends BasicActivity {
     private EditText selectedEditText;
     private EditText contentsEditText;
     private PostInfo postInfo;
+    private UserInfo userInfo;
     private Utillity util;
     private int pathCount, successCount;
     private RelativeLayout loaderLayout;
+    Feed feed = new Feed();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -213,6 +216,9 @@ public class NewPost extends BasicActivity {
 
             loaderLayout.setVisibility(View.VISIBLE);
 
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+            ArrayList<String> mypostURL = new ArrayList<>();
             final ArrayList<String> contentsList = new ArrayList<>();
             final ArrayList<String> liker = new ArrayList<>();
             user = FirebaseAuth.getInstance().getCurrentUser();
@@ -274,6 +280,17 @@ public class NewPost extends BasicActivity {
                                                                     PostInfo postInfo = new PostInfo(title, contentsList, user.getUid(), date, PublisherName,profilePhotoUrl,"0","0", liker);
                                                                     Log.e("title : ", title + "  //contentsList : " + contentsList + "  //user.getUid() : " + user.getUid() + "  //Date : " + new Date() + "PublisherName : " + PublisherName + "profilePhotoUrl : " + profilePhotoUrl);
                                                                     StoreUpload(documentReference, postInfo);
+                                                                    documentReference2.get().addOnCompleteListener((task -> {
+                                                                        if (task.isSuccessful()) {
+                                                                            DocumentSnapshot document = task.getResult();
+                                                                            if (document != null) {
+                                                                                if (document.exists()) {
+                                                                                    if (contentsList.size() > 0)
+                                                                                        db.collection("users").document(user.getUid()).update("contents", FieldValue.arrayUnion(contentsList));
+                                                                                }
+                                                                            }
+                                                                        }
+                                                                    }));
                                                                 }
 
                                                             }
@@ -290,6 +307,17 @@ public class NewPost extends BasicActivity {
                                 }
                                 if (pathList.size() == 0) {
                                     StoreUpload(documentReference, new PostInfo(title, contentsList, user.getUid(), date, PublisherName,profilePhotoUrl,"0","0",liker));
+                                    documentReference2.get().addOnCompleteListener((task5 -> {
+                                        if (task5.isSuccessful()) {
+                                            DocumentSnapshot document5 = task5.getResult();
+                                            if (document5 != null) {
+                                                if (document5.exists()) {
+                                                    if (contentsList.size() > 0)
+                                                        db.collection("users").document(user.getUid()).update("contents", FieldValue.arrayUnion(contentsList));
+                                                }
+                                            }
+                                        }
+                                    }));
                                 }
 
                             }else{
@@ -335,9 +363,43 @@ public class NewPost extends BasicActivity {
                                                                 successCount++;
                                                                 if (pathList.size() == successCount) {
                                                                     //완료
-                                                                    PostInfo postInfo = new PostInfo(title, contentsList, user.getUid(), date, PublisherName,profilePhotoUrl,"0","0",liker);
+                                                                    PostInfo postInfo = new PostInfo(title, contentsList, user.getUid(),
+                                                                            date, PublisherName,profilePhotoUrl,"0","0",liker);
                                                                     Log.e("title : ", title + "  //contentsList : " + contentsList + "  //user.getUid() : " + user.getUid() + "  //Date : " + new Date() + "PublisherName : " + PublisherName + "profilePhotoUrl : " + profilePhotoUrl);
                                                                     StoreUpload(documentReference, postInfo);
+                                                                    if (contentsList.size() > 0){
+
+                                                                        switch (contentsList.size()-1) {
+                                                                            case 0:
+                                                                            case 1:
+                                                                                db.collection("users").document(user.getUid()).update("contents", FieldValue.arrayUnion(contentsList.get(0)));
+                                                                                posturl = contentsList.get(0);
+                                                                                break;
+                                                                            case 2:
+                                                                            case 3:
+                                                                                db.collection("users").document(user.getUid()).update("contents", FieldValue.arrayUnion(contentsList.get(0)));
+                                                                                db.collection("users").document(user.getUid()).update("contents", FieldValue.arrayUnion(contentsList.get(2)));
+                                                                                posturl = contentsList.get(0);
+                                                                                break;
+                                                                            case 4:
+                                                                            case 5:
+                                                                                db.collection("users").document(user.getUid()).update("contents", FieldValue.arrayUnion(contentsList.get(0)));
+                                                                                db.collection("users").document(user.getUid()).update("contents", FieldValue.arrayUnion(contentsList.get(2)));
+                                                                                db.collection("users").document(user.getUid()).update("contents", FieldValue.arrayUnion(contentsList.get(4)));
+                                                                                posturl = contentsList.get(0);
+                                                                                break;
+                                                                            case 6:
+                                                                            case 7:
+                                                                                db.collection("users").document(user.getUid()).update("contents", FieldValue.arrayUnion(contentsList.get(0)));
+                                                                                db.collection("users").document(user.getUid()).update("contents", FieldValue.arrayUnion(contentsList.get(2)));
+                                                                                db.collection("users").document(user.getUid()).update("contents", FieldValue.arrayUnion(contentsList.get(4)));
+                                                                                db.collection("users").document(user.getUid()).update("contents", FieldValue.arrayUnion(contentsList.get(6)));
+                                                                                posturl = contentsList.get(0);
+                                                                                break;
+                                                                        }
+
+                                                                    }
+
                                                                 }
 
                                                             }
@@ -354,6 +416,18 @@ public class NewPost extends BasicActivity {
                                 }
                                 if (pathList.size() == 0) {
                                     StoreUpload(documentReference, new PostInfo(title, contentsList, user.getUid(), date, PublisherName,profilePhotoUrl,"0","0",liker));
+                                    if (contentsList.size() > 0)
+                                        documentReference2.get().addOnCompleteListener((task2 -> {
+                                            if (task2.isSuccessful()) {
+                                                DocumentSnapshot document2 = task2.getResult();
+                                                if (document2 != null) {
+                                                    if (document2.exists()) {
+                                                        Log.e("asdf" ,"asdf" + contentsList);
+                                                        db.collection("users").document(user.getUid()).update("contents", FieldValue.arrayUnion(contentsList));
+                                                    }
+                                                }
+                                            }
+                                        }));
                                 }
                             }
                         }
@@ -382,7 +456,13 @@ public class NewPost extends BasicActivity {
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
-                        Log.d(TAG, "DB 저장 성공!");
+                        Log.d(TAG, "DB 저장 성공!");Bundle bundle = new Bundle();
+                        bundle.putString("posturl", posturl);
+                        Log.e("asdf","번들값 "+posturl);
+
+                        feed.setArguments(bundle);
+                        Log.e("재확인 ","재확인  "+posturl);
+
                         loaderLayout.setVisibility(View.GONE);
                         showToast(NewPost.this, "게시글을 작성했습니다.");
                         final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -414,6 +494,7 @@ public class NewPost extends BasicActivity {
                     }
                 });
     }
+
 
     private void postInit() {
         if (postInfo != null) {
@@ -452,5 +533,9 @@ public class NewPost extends BasicActivity {
         Intent intent = new Intent(this, c);
         intent.putExtra("media", media);
         startActivityForResult(intent, requestCode);
+    }
+
+    public interface Myposturl {
+        void Myposturl(ArrayList<String> myposturl);
     }
 }

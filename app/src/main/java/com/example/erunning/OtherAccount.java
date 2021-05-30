@@ -36,13 +36,76 @@ public class OtherAccount extends AppCompatActivity {
     private ArrayList<String> otherfollowinglist = new ArrayList<>();
     private ArrayList<String> followinglist = new ArrayList<>();
 
+    private ArrayList<AccountpostItem> AccountpostItem = new ArrayList<>();
 
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
+
+
+        @Override
+        protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        Button btn_post = findViewById(R.id.btn_post);
+        Button btn_save = findViewById(R.id.btn_save);
+
+
+
+
         setContentView(R.layout.activity_other_account);
 
+
+//        RecyclerView recyclerView = findViewById(R.id.post_recycle_view1);
+//        GridLayoutManager layoutManager1 = new GridLayoutManager(this,9); //post
+//        layoutManager1.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
+//            @Override
+//            public int getSpanSize(int position) {
+//                int gridPostition = 0;
+//                switch (gridPostition) {
+//                    case 0:
+//                    case 1:
+//                    case 2:
+//                        return 3;
+//                    case 3:
+//                    case 4:
+//                    case 5:
+//                        return 3;
+//                }
+//                return 0;
+//            }
+//        });
+//
+//        AccountRecyclerViewAdapterPost adapter = new AccountRecyclerViewAdapterPost(this, AccountpostItem);
+//        recyclerView.setLayoutManager(layoutManager1);
+//        Log.e("asdfsdf","asdfadaf"+AccountpostItem);
+//        recyclerView.setAdapter(adapter);
+
+//        btn_post.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//
+////                postinitDataset();
+//
+////                // post리사이클러뷰 셋
+////                recyclerView.setLayoutManager(layoutManager1);
+////                Log.e("asdfsdf2","asdfadaf");
+////                recyclerView.setAdapter(adapter);
+////                Log.e("as222dfsdf","asdfadaf");
+//
+//            }
+//        });
+//
+//        btn_save.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+////                saveinitDataset();
+//
+////                //save 리사이클러뷰 셋
+////                recyclerView.setLayoutManager(layoutManager1);
+////                recyclerView.setAdapter(adapter);
+////
+////                Log.e("asdf","asdf"+"asdfasdfasdfadfadf");
+//            }
+//        });
         TextView username = findViewById(R.id.tv_other_userName);
         TextView userbio = findViewById(R.id.tv_other_userInfo);
         ImageView userprofile = findViewById(R.id.iv_otherprofileimage);

@@ -5,13 +5,19 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.paging.PagedList;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
+import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.firebase.ui.firestore.paging.FirestorePagingOptions;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -26,11 +32,18 @@ public class UserSearch extends BasicActivity implements FirestoreAdapter.OnList
     private RecyclerView recyclerView;
     private FirestoreAdapter adapter;
     private FirebaseFirestore firebaseFirestore;
-    private ArrayList<String> itemlist = new ArrayList<>();
+
+    private FirestoreRecyclerAdapter mAdapter;
+    private RecyclerView mFirestoreList;
+
+    private String cha;
+
+    private ArrayList<String> mItemlist= new ArrayList<String>();
+
     private CircleImageView nullProfile;
 
     EditText search_bar;
-    EditText preText;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -41,16 +54,45 @@ public class UserSearch extends BasicActivity implements FirestoreAdapter.OnList
 
 
         recyclerView = findViewById(R.id.recycle_view_users); // 아이디 연결
+        mFirestoreList = findViewById(R.id.recycle_view_users);
 
 
         //Query
         Query query = firebaseFirestore.collection("users")
                 .orderBy("name", Query.Direction.ASCENDING);// 데이터 정렬 orderBy
 
+
         PagedList.Config config = new PagedList.Config.Builder()
                 .setInitialLoadSizeHint(10)
                 .setPageSize(3)
                 .build();
+
+        //추가
+        FirestoreRecyclerOptions<UserInfo> options1 = new FirestoreRecyclerOptions.Builder<UserInfo>()
+                .setQuery(query,UserInfo.class)
+                .build();
+
+        mAdapter = new FirestoreRecyclerAdapter<UserInfo, UserInfoViewHolder1>(options1) {
+            @NonNull
+            @Override
+            public UserInfoViewHolder1 onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+                View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.user_item, parent, false);
+                return null;
+            }
+
+            @Override
+            protected void onBindViewHolder(@NonNull UserInfoViewHolder1 userInfoViewHolder1, int i, @NonNull UserInfo userInfo) {
+                userInfoViewHolder1.username.setText(userInfo.getName());
+                userInfoViewHolder1.bio.setText(userInfo.getBio()+ "");
+            }
+        };
+
+        mFirestoreList.setHasFixedSize(true);
+        mFirestoreList.setLayoutManager(new LinearLayoutManager(this));
+        mFirestoreList.setAdapter(mAdapter);
+
+
+        //추가 끝
 
         //RecyclerOptions
         FirestorePagingOptions<UserInfo> options = new FirestorePagingOptions.Builder<UserInfo>()
@@ -63,6 +105,7 @@ public class UserSearch extends BasicActivity implements FirestoreAdapter.OnList
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
+
         Log.e("dd","로그확인 : " + options + " "+ query+" "+adapter+" "+recyclerView);
 
         search_bar = findViewById(R.id.search_bar);
@@ -79,27 +122,58 @@ public class UserSearch extends BasicActivity implements FirestoreAdapter.OnList
 
             @Override
             public void afterTextChanged(Editable s) {
-                if (s.toString().isEmpty()){
-                    Query query = firebaseFirestore.collection("users")
-                            .orderBy("name", Query.Direction.ASCENDING);// 데이터 정렬 orderBy
-                    FirestorePagingOptions<UserInfo> options = new FirestorePagingOptions.Builder<UserInfo>()
-                            .setQuery(query, config, UserInfo.class)
-                            .build();
-                }
-                Query query = firebaseFirestore.collection("users")
-                        .whereEqualTo("name", s.toString())
-                        .orderBy("name", Query.Direction.ASCENDING);// 데이터 정렬 orderBy
+                Log.e("fasdf","sadsf"+ s.toString());
+                Query query = firebaseFirestore.collection( "users")
+                        .whereEqualTo("name",s.toString())
+                        .orderBy("name", Query.Direction.ASCENDING);
 
-                FirestorePagingOptions<UserInfo> options = new FirestorePagingOptions.Builder<UserInfo>()
-                        .setQuery(query, config, UserInfo.class)
-                        .build();
+                FirestoreRecyclerOptions<UserInfo> options = new FirestoreRecyclerOptions.Builder<UserInfo>()
+                .setQuery(query,UserInfo.class)
+                .build();
 
-                adapter.notifyDataSetChanged(); //리사이클러 뷰 갱신
+
+
             }
         });
 
     }
 
+
+    //추가
+
+    private class UserInfoViewHolder1 extends RecyclerView.ViewHolder {
+
+        private TextView username;
+        private TextView bio;
+        private CircleImageView image_profile;
+
+        public UserInfoViewHolder1(@NonNull View itemView) {
+            super(itemView);
+            username = itemView.findViewById(R.id.username);
+            bio = itemView.findViewById(R.id.bio);
+            image_profile = itemView.findViewById(R.id.image_profile);
+
+        }
+    }
+
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        mAdapter.stopListening();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mAdapter.startListening();
+    }
+
+    private void createnamelist() {
+        mItemlist = new ArrayList<>();
+        firebaseFirestore.collection("users");
+
+    }
 
     View.OnClickListener onClickListener = (v) -> {
         switch (v.getId()){
@@ -146,4 +220,6 @@ public class UserSearch extends BasicActivity implements FirestoreAdapter.OnList
         startActivity(intent);
         Log.e("ITEM_CLICK", "Clicked an item" + position + " and the ID :" + snapshot.getId() + " and count : " + snapshot.getData().get("count"));
     }
+
+
 }
