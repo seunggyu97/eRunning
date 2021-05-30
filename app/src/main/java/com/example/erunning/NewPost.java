@@ -166,9 +166,10 @@ public class NewPost extends BasicActivity {
                     myStartActivity(Gallery.class, "video", 0);
                 }
                 break;
-            /*case R.id.btn_route:
-                finish();
-                break;*/ // 경로 추가 버튼
+            case R.id.btn_addroute:
+                Intent intentAddroute = new Intent(this, RouteList.class);
+                startActivityForResult(intentAddroute, MainActivity.REQUEST_POST);
+                break; // 경로 추가 버튼
             case R.id.buttonsBackgroundLayout:
                 if (buttonsBackgroundLayout.getVisibility() == View.VISIBLE) {
                     buttonsBackgroundLayout.setVisibility(View.GONE);
