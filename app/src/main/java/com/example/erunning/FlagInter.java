@@ -424,7 +424,6 @@ public class FlagInter extends BasicActivity{
         commentList = new ArrayList<>();
         commentInfo = (CommentInfo) getIntent().getSerializableExtra("commentInfo");
         commentAdapter = new CommentAdapter(this, commentList);
-        commentAdapter.setOnPostListener(onPostListener);
 
         RecyclerView recyclerView = findViewById(R.id.rv_comment);
 
@@ -548,28 +547,7 @@ public class FlagInter extends BasicActivity{
         commentUpdate();
 
     }
-    OnPostListener onPostListener = new OnPostListener() {
-        @Override
-        public void onDelete(int position) {
-            final String id = commentList.get(position).getId();
-            final String Publisher = commentList.get(position).getPublisher();
-            final String UserId = firebaseUser.getUid();
-            Log.e("댓글삭제", "삭제삭제삭제삭제삭제삭제삭제삭제" + id);
-            Log.e("Publisher : ",Publisher);
-            Log.e("UserId : ",UserId);
-            Log.e("flagdata.getId : ",flagdata.getId());
-            Log.e(".getPublisher : ",flagdata.getPublisher());
-            if(Publisher.equals(UserId)){
-                storeUploader(id);
-            }
-            else{
-                showToast(FlagInter.this,"댓글을 삭제할 권한이 없습니다.");
-            }
-        }
-        public void onEdit(int position){
-            //
-        }
-    };
+
     private void commentUpdate() {
         if (firebaseUser != null) {
             FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();

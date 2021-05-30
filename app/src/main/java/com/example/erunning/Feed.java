@@ -75,7 +75,7 @@ public class Feed extends Fragment {
 
         btn_user_search = view.findViewById(R.id.btn_user_search);
         btn_add = view.findViewById(R.id.btn_add);
-        loaderLayout = view.findViewById(R.id.loaderLayout);
+        loaderLayout = view.findViewById(R.id.loaderlayout);
         refreshLayout = view.findViewById(R.id.srl_feed);
 
 
@@ -255,6 +255,9 @@ public class Feed extends Fragment {
             else{
                 showToast(getActivity(),"게시글을 수정할 권한이 없습니다.");
             }
+        }
+        @Override
+        public void onExit(int position) {
         }
     };
 

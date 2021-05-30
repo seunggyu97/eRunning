@@ -13,5 +13,6 @@ public class BasicActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
     }
 }

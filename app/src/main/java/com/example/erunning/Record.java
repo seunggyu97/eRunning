@@ -1,5 +1,6 @@
 package com.example.erunning;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
@@ -13,10 +14,14 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.IBinder;
 import android.os.Looper;
+import android.os.Parcelable;
 import android.os.SystemClock;
+import android.util.ArrayMap;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -57,11 +62,15 @@ import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.io.IOException;
+import java.io.Serializable;
+import java.lang.reflect.Array;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import static com.example.erunning.Utillity.showToast;
 
@@ -130,6 +139,25 @@ public class Record extends Fragment implements OnMapReadyCallback, SensorEventL
    MainActivity mainActivity;
    private RecordResult recordResult; // 운동 경로 결과 객체
 
+   private long lastTime;
+   private float speed;
+   private float lastX;
+   private float lastY;
+   private float lastZ;
+   private float x, y, z;
+
+   private static final int SHAKE_THRESHOLD = 800;
+   private static final int DATA_X = SensorManager.DATA_X;
+   private static final int DATA_Y = SensorManager.DATA_Y;
+   private static final int DATA_Z = SensorManager.DATA_Z;
+
+   ShowFeature showFeature = ShowFeature.getInstance();
+   Map<String, Object> ftimg = new HashMap<>();
+
+   ArrayList<String> ftImgPath = new ArrayList<>();
+   ArrayList<String> ftImgMarkerId = new ArrayList<>();
+   ArrayList<Boolean> markerImgExist = new ArrayList<>();
+
    public static Record newinstance(){
       Record record = new Record();
       return record;
@@ -158,6 +186,14 @@ public class Record extends Fragment implements OnMapReadyCallback, SensorEventL
    public void onCreate(@Nullable Bundle savedInstanceState) {
       super.onCreate(savedInstanceState);
       // 초기화해야 하는 리소스들을 여기서 초기화 해준다.
+      // 활동 퍼미션 체크 (만보기)
+      /*if(ContextCompat.checkSelfPermission(getActivity(),
+              Manifest.permission.ACTIVITY_RECOGNITION) == PackageManager.PERMISSION_DENIED){
+
+         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            requestPermissions(new String[]{Manifest.permission.ACTIVITY_RECOGNITION}, 0);
+         }
+      }*/
    }
 
    @Nullable
@@ -189,10 +225,7 @@ public class Record extends Fragment implements OnMapReadyCallback, SensorEventL
 
       //textStep.setText("0"); // 걸음 수 초기화 및 출력
       sm = (SensorManager)getActivity().getSystemService(Context.SENSOR_SERVICE);  // 센서 매니저 생성
-      sensor_step_detector = sm.getDefaultSensor(Sensor.TYPE_STEP_DETECTOR);  // 스템 감지 센서 등록
-      if(sensor_step_detector == null){
-         //Toast. makeText( mContext, "No Step Detect Sensor", Toast.LENGTH_SHORT ).show();
-      }
+      sensor_step_detector = sm.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);  // 스템 감지 센서 등록
 
       handler = new Handler(); //스톱워치 관련
 
@@ -215,6 +248,9 @@ public class Record extends Fragment implements OnMapReadyCallback, SensorEventL
             args.putParcelableArrayList("latlnglist", latlngList); // RecordResult.java로 데이터 전달
             args.putParcelableArrayList("ftmarkeroptions", ftmarkerOptions);
             args.putParcelableArrayList("polyoptions", polyOptions);
+            args.putStringArrayList("ftimgmarkerid", ftImgMarkerId);
+            args.putStringArrayList("ftimgpath", ftImgPath);
+            args.putSerializable("markerimgexist", markerImgExist);
 
             args.putString("rstime", String.valueOf(textTime.getText()));
             args.putString("rsdistance", String.valueOf(textDistance.getText()));
@@ -232,6 +268,11 @@ public class Record extends Fragment implements OnMapReadyCallback, SensorEventL
 
          }
       });
+
+      // 디바이스에 걸음 센서의 존재 여부 체크
+      if (sensor_step_detector == null) {
+         Toast.makeText(mContext.getApplicationContext(), "No Step Sensor", Toast.LENGTH_SHORT).show();
+      }
 
       return view;
    }
@@ -424,13 +465,30 @@ public class Record extends Fragment implements OnMapReadyCallback, SensorEventL
 
             inputFeature.setDialogResult(new InputFeature.OnMyDialogResult() {
                @Override
-               public void finish(String result) {
+               public void finish(String result1, String result2) {
                   // result에 dialog에서 보낸값이 저장되어 돌아옵니다. 값을 가지고 원하는 동작을 하면됩니다.
-                  featuretext = result;
+                  featuretext = result1;
+                  String profilePath = result2;
+
                   markerOptions.snippet(featuretext);
                   pinMarker = mMap.addMarker(markerOptions); //핀 마커 추가
+
+                  ftimg.put(pinMarker.getId(), profilePath);
+
+                  if(profilePath == null) {
+                     markerImgExist.add(Boolean.FALSE);
+                  }
+                  else
+                  {
+                     markerImgExist.add(Boolean.TRUE);
+                     ftImgMarkerId.add(pinMarker.getId());
+                     ftImgPath.add(profilePath);
+                     ftimg.put(pinMarker.getId(), profilePath);
+                  }
+
                   //Toast.makeText(getActivity(),"전달됨",Toast.LENGTH_SHORT).show();
                   ftmarkerOptions.add(markerOptions); //리스트에 특징 마커 추가
+
                }
             });
 
@@ -548,22 +606,23 @@ public class Record extends Fragment implements OnMapReadyCallback, SensorEventL
    @SuppressLint("MissingPermission")
    @Override
    public void onResume() { // 유저에게 Fragment가 보여지고, 유저와 상호작용이 가능하게 되는 부분
+      sm.registerListener(this, sensor_step_detector, SensorManager.SENSOR_DELAY_GAME);
       super.onResume();
       mapView.onResume();
+
       if (mLocationPermissionGranted) {
          Log.d(TAG, "onResume : requestLocationUpdates");
          mFusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, null);
          if (mMap!=null)
             mMap.setMyLocationEnabled(true);
       }
-      sm.registerListener(this, sensor_step_detector, SensorManager.SENSOR_DELAY_NORMAL);
    }
 
    @Override
    public void onPause() {
+      sm.unregisterListener(this);
       super.onPause();
       mapView.onPause();
-      sm.unregisterListener(this);
    }
 
    @Override
@@ -593,11 +652,47 @@ public class Record extends Fragment implements OnMapReadyCallback, SensorEventL
    @Override
    public void onSensorChanged(SensorEvent event) {
       // 센서 유형이 스텝감지 센서인 경우 걸음수 +1
-      // Toast. makeText( mContext, "만보기 센서", Toast.LENGTH_SHORT ).show();
-      switch (event.sensor.getType()){
-         case Sensor.TYPE_STEP_DETECTOR:
+
+      /*float xValue = event.values[0];
+      float yValue = event.values[1];
+      float zValue = event.values[2];
+
+      if((xValue>40.0f)|(yValue>40.0f)|(zValue>40.0f)) {
+         Log.d(TAG, "x:" + xValue + ";y:" + yValue + ";z:" + zValue);
+
+         Toast. makeText( mContext.getApplicationContext(), "걸음 감지", Toast.LENGTH_SHORT ).show();
+         textStep.setText("" + (++steps));
+      }*/
+
+      // 걸음 센서 이벤트 발생시
+      /*if(event.sensor.getType() == Sensor.TYPE_STEP_DETECTOR){
+
+         if(event.values[0]==1.0f){
+            // 센서 이벤트가 발생할때 마다 걸음수 증가
             textStep.setText("" + (++steps));
-            break;
+         }
+
+      }*/
+
+      if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+         long currentTime = System.currentTimeMillis();
+         long gabOfTime = (currentTime - lastTime);
+         if (gabOfTime > 120) {
+            lastTime = currentTime;
+            x = event.values[SensorManager.DATA_X];
+            y = event.values[SensorManager.DATA_Y];
+            z = event.values[SensorManager.DATA_Z];
+
+            speed = Math.abs(x + y + z - lastX - lastY - lastZ) / gabOfTime * 10000;
+
+            if (speed > SHAKE_THRESHOLD) {
+               textStep.setText("" + (++steps));
+            }
+
+            lastX = event.values[DATA_X];
+            lastY = event.values[DATA_Y];
+            lastZ = event.values[DATA_Z];
+         }
       }
    }
 
@@ -644,12 +739,14 @@ public class Record extends Fragment implements OnMapReadyCallback, SensorEventL
       public void onInfoWindowClick(Marker marker) {
          // String markerId = marker.getId();
          Bundle args = new Bundle();
-         args.putString("showfeaturetext", marker.getSnippet()); // 다이얼로그로 데이터 전달
-         ShowFeature showFeature = ShowFeature.getInstance();
+         args.putString("showfeaturetext", marker.getSnippet()); // 다이얼로그로 특징 글 데이터 전달
+         args.putString("markerid", marker.getId()); // 해당 마커 아이디 전달
+         args.putString(marker.getId(), (String) ftimg.get(marker.getId()));
          showFeature.setArguments(args);
          showFeature.show(getFragmentManager(),"showFeature"); // 다이얼로그 호출
       }
    };
+
 
 }
 

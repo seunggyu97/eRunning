@@ -21,6 +21,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -92,6 +93,7 @@ public class FlagNewmap extends BasicActivity
     private String flag_description;
     TextInputEditText et_description;
     Button btn_setmap;
+    ImageView btn_cancle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -122,7 +124,14 @@ public class FlagNewmap extends BasicActivity
                 }
             }
         });
+        btn_cancle = findViewById(R.id.btn_mapback);
 
+        btn_cancle.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON,
                 WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
