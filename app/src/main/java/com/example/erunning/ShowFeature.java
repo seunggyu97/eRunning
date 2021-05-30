@@ -1,16 +1,22 @@
 package com.example.erunning;
 
+import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class ShowFeature extends BottomSheetDialogFragment implements View.OnClickListener {
 
@@ -31,8 +37,20 @@ public class ShowFeature extends BottomSheetDialogFragment implements View.OnCli
         // Record.java에서 특징 글 가져오기
         Bundle mArgs = getArguments();
         String showfeaturetext = mArgs.getString("showfeaturetext");
+        String markerid = mArgs.getString("markerid");
 
-        textFeature.setText(showfeaturetext);
+        //Map<String, Object> ftimg = new HashMap<>();
+        String showfeatureimg = mArgs.getString(markerid);
+
+        if(showfeaturetext != null) {
+            textFeature.setText(showfeaturetext);
+        }
+        if(showfeatureimg != null) {
+            imageFeature.setImageURI(Uri.parse(showfeatureimg));
+        }
+        else{
+            Log.e("로그", "이미지 없음");
+        }
 
         return view;
     }

@@ -6,7 +6,9 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.hardware.SensorManager;
 import android.location.Location;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,20 +29,37 @@ import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserProfileChangeRequest;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.SetOptions;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class RecordResult extends Fragment implements OnMapReadyCallback {
+public class RecordResult extends Fragment implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
 
     public static RecordResult getInstance() { return new RecordResult(); }
 
@@ -73,6 +92,7 @@ public class RecordResult extends Fragment implements OnMapReadyCallback {
     public String rsdistance = "0"; //운동 거리
     public String rsstep = "0"; //걸음수
     public String rscalories = "0"; //소모 칼로리
+    public int userstep = 0; // 사용자 누적 걸음수
     float[] results = new float[1];
     int Seconds, Minutes, Hours, MilliSeconds ;
 
@@ -86,6 +106,16 @@ public class RecordResult extends Fragment implements OnMapReadyCallback {
 
     MainActivity mainActivity;
     private Record record; // 운동 경로 기록 객체
+    ShowFeature showFeature = ShowFeature.getInstance();
+
+    String uid = null;
+
+    public Map<String, Object> ftimg = new HashMap<>();
+
+    public ArrayList<String> ftImgMarkerId = new ArrayList<>();
+    public ArrayList<String> ftImgUrl = new ArrayList<>();
+    public ArrayList<String> ftImgPath = new ArrayList<>();
+    public ArrayList<Boolean> markerImgExist = new ArrayList<>();
 
     public RecordResult()
     {
@@ -109,6 +139,44 @@ public class RecordResult extends Fragment implements OnMapReadyCallback {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         // 초기화해야 하는 리소스들을 여기서 초기화 해준다.
+
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            // Check if user's email is verified
+            //boolean emailVerified = user.isEmailVerified();
+
+            // The user's ID, unique to the Firebase project. Do NOT use this value to
+            // authenticate with your backend server, if you have one. Use
+            // FirebaseUser.getIdToken() instead.
+            uid = user.getUid();
+        }
+
+        DocumentReference docRef = db.collection("users").document(uid);
+
+        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document.exists()) {
+                        Log.d(TAG, "DocumentSnapshot data: " + document.getData());
+                        /*Map<String, Object> temp = new HashMap<>();
+                        temp.put("user_step", document.get("user_step"));*/
+                        userstep = Integer.parseInt(String.valueOf(document.get("user_step")));
+                        userstep = userstep + Integer.parseInt(rsstep);
+                        //Toast.makeText(mContext.getApplicationContext(), String.valueOf(userstep), Toast.LENGTH_SHORT).show();
+                    } else {
+                        Log.d(TAG, "No such document");
+                    }
+                } else {
+                    Log.d(TAG, "get failed with ", task.getException());
+                }
+            }
+        });
+
+
     }
 
     @Nullable
@@ -144,6 +212,10 @@ public class RecordResult extends Fragment implements OnMapReadyCallback {
         latlngList = mArgs.getParcelableArrayList("latlnglist"); //전체 경로 위도, 경도값 리스트
         ftmarkerOptions = mArgs.getParcelableArrayList("ftmarkeroptions"); //전체 특징 마커옵션 리스트
         polyOptions = mArgs.getParcelableArrayList("polyoptions"); // 폴리라인 옵션 리스트
+        //ftimg = mArgs.getParcelable("ftimg");
+        //ftImgMarkerId = mArgs.getStringArrayList("ftimgmarkerid");
+        ftImgPath = mArgs.getStringArrayList("ftimgpath");
+        markerImgExist = (ArrayList<Boolean>) mArgs.getSerializable("markerimgexist");
 
         rstime = mArgs.getString("rstime");
         rsdistance = mArgs.getString("rsdistance");
@@ -155,6 +227,7 @@ public class RecordResult extends Fragment implements OnMapReadyCallback {
         rstextCalories.setText(String.valueOf(rscalories));
         rstextStep.setText(String.valueOf(rsstep));
 
+
         btnCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -164,33 +237,48 @@ public class RecordResult extends Fragment implements OnMapReadyCallback {
             }
         });
 
+        //String finalUid = uid;
         btnShare.setOnClickListener(new View.OnClickListener() {
+
             @Override
             public void onClick(View view) {
 
+                String documentid;
                 /* Map<String, Object> polyoptionlist = new HashMap<>();
                 polyoptionlist.put("polyoptions", polyOptions); */
 
                 // 추가하고 싶은 데이터를 Map 형식으로 만들어줍니다.
-                Map<String, Object> record = new HashMap<>();
-                record.put("latlnglist", latlngList); // 위도 경도 값 리스트
+                Map<String, Object> recorddata = new HashMap<>();
+                recorddata.put("latlnglist", latlngList); // 위도 경도 값 리스트
                 //record.put("polyoptionlist", polyoptionlist); // 폴리라인 옵션 리스트
-                record.put("markeroptionlist", ftmarkerOptions); //전체 특징 마커옵션 리스트
-                record.put("time", rstime);
-                record.put("distance", rsdistance);
-                record.put("step", rsstep);
-                record.put("calories", rscalories);
+                recorddata.put("markeroptionlist", ftmarkerOptions); //전체 특징 마커옵션 리스트
+                recorddata.put("time", rstime);
+                recorddata.put("distance", rsdistance);
+                recorddata.put("step", rsstep);
+                recorddata.put("calories", rscalories);
+                recorddata.put("uid", uid); // 사용자 식별자
+                recorddata.put("ftimgurl", ftImgUrl);
+                //recorddata.put("ftimgmarkerid", ftImgMarkerId);
+                recorddata.put("markerimgexist", markerImgExist);
+                //recorddata.put("ftimgmap", ftimg);
 
+                DocumentReference recordRef = db.collection("records").document();
+
+                recordRef.set(recorddata);
+
+                documentid = recordRef.getId();
 
 
                 // collection() 안에 문자열은 본인이 원하는 대로 정해주시면 됩니다.
-                db.collection("records")
-                        .add(record)
+                /*db.collection("records")
+                        .add(recorddata)
                         .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                             @Override
                             public void onSuccess(DocumentReference documentReference) {
                                 //데이터가 성공적으로 추가되었을 때
                                 Log.d(TAG, "DocumentSnapshot added with ID: " + documentReference.getId());
+                                Log.d(TAG, "DocumentSnapshot added with ID: " + documentReference.getPath());
+                                documentid[0] = documentReference.getId();
                             }
                         })
                         .addOnFailureListener(new OnFailureListener() {
@@ -199,7 +287,101 @@ public class RecordResult extends Fragment implements OnMapReadyCallback {
                                 //에러가 발생했을 때
                                 Log.w(TAG, "Error ", e);
                             }
-                        });
+                        });*/
+
+                // 이미지 storage 저장
+                FirebaseStorage storage = FirebaseStorage.getInstance();
+                StorageReference storageRef = storage.getReference();
+
+                for(int i = 0; i < ftImgMarkerId.size(); i++) {
+
+                    final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                    final StorageReference mountainImagesRef = storageRef.child("records/" + documentid + "/" + ftImgMarkerId.get(i) + ".jpg");
+                    if (ftImgPath.get(i) == null) {
+
+                    } else {
+                        try {
+                            InputStream stream = new FileInputStream(new File(ftImgPath.get(i)));
+
+                            UploadTask uploadTask = mountainImagesRef.putStream(stream);
+
+                            int finalI = i;
+                            uploadTask.continueWithTask((task) -> {
+                                if (!task.isSuccessful()) {
+                                    throw task.getException();
+                                }
+                                return mountainImagesRef.getDownloadUrl();
+                            }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Uri> task) {
+                                    if (task.isSuccessful()) {
+                                        Uri downloadUri = task.getResult();
+
+                                        ftImgUrl.add(downloadUri.toString());
+                                        //ftimg.put(ftImgMarkerId.get(finalI), ftImgPath.get(finalI));
+
+                                        /*if(ftImgUrl!=null)
+                                        {
+                                            Log.e("로그", ftImgUrl.get(finalI));
+                                        }
+                                        else{
+                                            Log.e("로그", finalI+"존재 안함");
+                                        }*/
+
+                                        FirebaseFirestore db = FirebaseFirestore.getInstance();
+                                        db.collection("records").document(documentid)
+                                                .update(
+                                                        "ftimgurl", ftImgUrl
+                                                );
+
+                                    } else {
+                                        Log.e("로그", "실패");
+                                    }
+                                }
+                            });
+                        } catch (FileNotFoundException e) {
+                            Log.e("로그", "에러" + e.toString());
+                        }
+                    }
+                }
+
+                if(documentid == null) {
+                    Toast.makeText(mContext.getApplicationContext(), "문서 아이디 없음", Toast.LENGTH_SHORT).show();
+                }
+                else{
+                    Toast.makeText(mContext.getApplicationContext(), documentid, Toast.LENGTH_SHORT).show();
+                }
+
+                /*FirebaseFirestore db = FirebaseFirestore.getInstance();
+                db.collection("records").document(documentid)
+                        .update(
+                                "ftimgurl", ftImgUrl
+                        );*/
+
+
+                Map<String, Object> data = new HashMap<>();
+                data.put("user_step", userstep);
+
+                db.collection("users").document(uid)
+                        .set(data, SetOptions.merge());
+
+                //DocumentReference docRef2 = db.collection("users").document(finalUid);
+
+                //db.collection("users").document(finalUid).update(data);
+                /*docRef2
+                        .update("user_step", userstep)
+                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                                Log.d(TAG, "DocumentSnapshot successfully updated!");
+                            }
+                        })
+                        .addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Log.w(TAG, "Error updating document", e);
+                            }
+                        });*/
 
                 // 게시물 작성 페이지로 이동
                 Intent intent = new Intent(getActivity(), NewPost.class);
@@ -208,8 +390,12 @@ public class RecordResult extends Fragment implements OnMapReadyCallback {
             }
         });
 
+
+
         return view;
     }
+
+
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
@@ -219,6 +405,7 @@ public class RecordResult extends Fragment implements OnMapReadyCallback {
 
         //액티비티가 처음 생성될 때 실행되는 함수
         MapsInitializer.initialize(mContext);
+
 
     }
 
@@ -247,9 +434,20 @@ public class RecordResult extends Fragment implements OnMapReadyCallback {
             Toast. makeText( mContext, "저장된 경로가 없습니다.", Toast.LENGTH_SHORT ).show();
         }
 
-        for( MarkerOptions ftmarkerOption : ftmarkerOptions){
-            mMap.addMarker(ftmarkerOption);
+        int j = 0;
+        for( int i = 0; i < ftmarkerOptions.size(); i++){
+            Marker pinMarker = mMap.addMarker(ftmarkerOptions.get(i));
+            if(markerImgExist.get(i)==Boolean.TRUE) {
+                ftImgMarkerId.add(pinMarker.getId());
+                ftimg.put(ftImgMarkerId.get(j), ftImgPath.get(j));
+                j++;
+                //Log.e("로그", ftImgMarkerId.get(i));
+            }
         }
+
+
+        mMap.setOnMarkerClickListener(this);
+        mMap.setOnInfoWindowClickListener(infoWindowClickListener);
 
     }
 
@@ -298,4 +496,22 @@ public class RecordResult extends Fragment implements OnMapReadyCallback {
         //mapView.onDestroy();
     }
 
+    @Override
+    public boolean onMarkerClick(Marker marker) {
+        return false;
+    }
+
+    //정보창 클릭 리스너
+    GoogleMap.OnInfoWindowClickListener infoWindowClickListener = new GoogleMap.OnInfoWindowClickListener() {
+        @Override
+        public void onInfoWindowClick(Marker marker) {
+            // String markerId = marker.getId();
+            Bundle args = new Bundle();
+            args.putString("showfeaturetext", marker.getSnippet()); // 다이얼로그로 특징 글 데이터 전달
+            args.putString("markerid", marker.getId()); // 해당 마커 아이디 전달
+            args.putString(marker.getId(), (String) ftimg.get(marker.getId()));
+            showFeature.setArguments(args);
+            showFeature.show(getFragmentManager(),"showFeature"); // 다이얼로그 호출
+        }
+    };
 }

@@ -15,9 +15,10 @@ public class UserInfo {
     private int following;
     private ArrayList<String> followerlist;
     private ArrayList<String> followinglist;
+    private int user_step;
 
 
-    public UserInfo(String name, int birthyear, int birthmonth, int birthday,ArrayList<String> followerlist, ArrayList<String> followinglist){
+    public UserInfo(String name, int birthyear, int birthmonth, int birthday,ArrayList<String> followerlist, ArrayList<String> followinglist, int user_step){
         this.name = name;
         this.birthyear = birthyear;
         this.birthmonth = birthmonth;
@@ -29,6 +30,7 @@ public class UserInfo {
         this.following = 0;
         this.followerlist = followerlist;
         this.followinglist = followinglist;
+        this.user_step = 0;
     }
 
     public UserInfo() { }
@@ -114,5 +116,12 @@ public class UserInfo {
 
     public ArrayList<String> getFollowinglist(){ return this.followinglist; }
     public void setFollowinglist(ArrayList<String> followerlist){ this.followinglist = followinglist; }
+
+    public int getUser_step() {
+        return this.user_step;
+    }
+    public void setUser_step(int user_step) {
+        this.user_step = user_step;
+    }
 
 }

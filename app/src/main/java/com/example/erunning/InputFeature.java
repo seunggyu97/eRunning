@@ -1,5 +1,12 @@
 package com.example.erunning;
 
+import android.Manifest;
+import android.app.Activity;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -7,12 +14,21 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
+
+import java.util.ArrayList;
+
+import static com.example.erunning.Utillity.showToast;
 
 
 public class InputFeature extends BottomSheetDialogFragment implements View.OnClickListener{
@@ -27,6 +43,12 @@ public class InputFeature extends BottomSheetDialogFragment implements View.OnCl
     private Button btnFeature; // 등록 버튼
 
     private Fragment fragment;
+
+    private FragmentActivity mContext;
+
+    private ArrayList<String> pathList = new ArrayList<>();
+    private ImageView selectedImageView;
+    String profilePath;
 
     @Nullable
     @Override
@@ -61,6 +83,35 @@ public class InputFeature extends BottomSheetDialogFragment implements View.OnCl
     }
 
     @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode) {
+            case 0: {
+                if (resultCode == Activity.RESULT_OK) {
+                    profilePath = data.getStringExtra("profilePath");
+                    Bitmap bmp = BitmapFactory.decodeFile(profilePath);
+                    //pathList.add(profilePath);
+                    //Toast.makeText(getContext(), profilePath, Toast.LENGTH_SHORT).show();
+
+                    ContentsItemView contentsItemView = new ContentsItemView(getContext());
+
+                    contentsItemView.setImage(profilePath);
+                    imageGallery.setImageURI(Uri.parse(profilePath));
+                    //imageGallery.setImageResource(profilePath);
+                    contentsItemView.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            selectedImageView = (ImageView) v;
+                        }
+                    });
+                    contentsItemView.setOnFocusChangeListener(onFocusChangeListener);
+                }
+                break;
+            }
+        }
+    }
+
+    @Override
     public void onClick(View view) {
 
         if((view.getId() != R.id.editFeature) && (view.getId() != R.id.imageGallery)
@@ -69,14 +120,19 @@ public class InputFeature extends BottomSheetDialogFragment implements View.OnCl
         }
 
         switch (view.getId()){
-            case R.id.editFeature:
-                Toast.makeText(getContext(),"edit",Toast.LENGTH_SHORT).show();
-                break;
-            case R.id.imageGallery:
-                Toast.makeText(getContext(),"image",Toast.LENGTH_SHORT).show();
-                break;
+
             case R.id.btnPicture:
-                Toast.makeText(getContext(),"picture",Toast.LENGTH_SHORT).show();
+                if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
+
+                    if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE)) {
+
+                    } else {
+                        showToast(getActivity(), "권한을 허용해 주세요.");
+                    }
+                } else {
+                    myStartActivity(Gallery.class, "image", 0);
+                }
                 break;
             case R.id.btnFeature:
                 //Toast.makeText(getContext(),"feature",Toast.LENGTH_SHORT).show();
@@ -84,7 +140,7 @@ public class InputFeature extends BottomSheetDialogFragment implements View.OnCl
                 if (fragment != null) {
 
                     if( mDialogResult != null ){
-                        mDialogResult.finish(editFeature.getText().toString());
+                        mDialogResult.finish(editFeature.getText().toString(), profilePath);
                     }
 
                     BottomSheetDialogFragment dialogFragment = (BottomSheetDialogFragment) fragment;
@@ -100,7 +156,22 @@ public class InputFeature extends BottomSheetDialogFragment implements View.OnCl
     }
 
     public interface OnMyDialogResult{
-        void finish(String result);
+        void finish(String result1, String result2);
+    }
+
+    View.OnFocusChangeListener onFocusChangeListener = new View.OnFocusChangeListener() {
+        @Override
+        public void onFocusChange(View v, boolean hasFocus) {
+            if (hasFocus) {
+
+            }
+        }
+    };
+
+    private void myStartActivity(Class c, String media, int requestCode) {
+        Intent intent = new Intent(getContext(), c);
+        intent.putExtra("media", media);
+        startActivityForResult(intent, requestCode);
     }
 
 }
