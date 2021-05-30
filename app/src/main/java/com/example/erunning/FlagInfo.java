@@ -21,8 +21,16 @@ public class FlagInfo implements Serializable {
     private String startminute;
     private String description;
     private String address;
+    private String maxpeople;
+    private String currentmember;
+    private String sportCode;
+    private String sportText;
+    private String latitude;
+    private String longitude;
 
-    public FlagInfo(String title, String publisher, Date createdAt, String id,String publisherName, String photoUrl, String flag, ArrayList<String> flager, String starthour, String startminute, String description, String address){
+    public FlagInfo(String title, String publisher, Date createdAt,String id,String publisherName, String photoUrl, String flag, ArrayList<String> flager,
+                    String starthour, String startminute, String description, String address, String maxpeople, String currentmember, String sportCode,
+                    String sportText, String latitude, String longitude,String comment){
         this.title = title;
         this.flager = flager;
         this.publisher = publisher;
@@ -35,10 +43,18 @@ public class FlagInfo implements Serializable {
         this.startminute = startminute;
         this.description = description;
         this.address = address;
-        //this.comment = comment;
+        this.maxpeople = maxpeople;
+        this.currentmember = currentmember;
+        this.sportCode = sportCode;
+        this.sportText = sportText;
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.comment = comment;
     }
 
-    public FlagInfo(String title, String publisher, Date createdAt, String publisherName, String photoUrl, String flag, ArrayList<String> flager, String starthour, String startminute, String description, String address){
+    public FlagInfo(String title, String publisher, Date createdAt, String publisherName, String photoUrl, String flag, ArrayList<String> flager,
+                    String starthour, String startminute, String description, String address, String maxpeople, String currentmember, String sportCode,
+                    String sportText, String latitude, String longitude, String comment){
         this.title = title;
         this.flager = flager;
         this.publisher = publisher;
@@ -50,7 +66,13 @@ public class FlagInfo implements Serializable {
         this.startminute = startminute;
         this.description = description;
         this.address = address;
-        //this.comment = comment;
+        this.maxpeople = maxpeople;
+        this.currentmember = currentmember;
+        this.sportCode = sportCode;
+        this.sportText = sportText;
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.comment = comment;
     }
 
 
@@ -67,6 +89,12 @@ public class FlagInfo implements Serializable {
         docData.put("startminute",startminute);
         docData.put("description",description);
         docData.put("address",address);
+        docData.put("maxpeople",maxpeople);
+        docData.put("currentmember",currentmember);
+        docData.put("sportCode",sportCode);
+        docData.put("sportText",sportText);
+        docData.put("latitude",latitude);
+        docData.put("longitude",longitude);
         return  docData;
     }
 
@@ -114,5 +142,23 @@ public class FlagInfo implements Serializable {
 
     public String getAddress(){ return this.address; }
     public void setAddress(String address){ this.address = address; }
+
+    public String getMaxpeople(){ return this.maxpeople; }
+    public void setMaxpeople(String maxpeople){ this.maxpeople = maxpeople; }
+
+    public String getCurrentmember(){ return this.currentmember; }
+    public void setCurrentmember(String currentmember){ this.currentmember = currentmember; }
+
+    public String getSportCode(){ return this.sportCode; }
+    public void setSportCode(String sportCode){ this.sportCode = sportCode; }
+
+    public String getSportText(){ return this.sportText; }
+    public void setSportText(String sportText){ this.sportText = sportText; }
+
+    public String getLatitude(){ return this.latitude; }
+    public void setLatitude(String latitude){ this.latitude = latitude; }
+
+    public String getLongitude(){ return this.longitude; }
+    public void setLongitude(String longitude){ this.longitude = longitude; }
 
 }

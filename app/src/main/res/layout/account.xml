@@ -179,7 +179,7 @@
             android:id="@+id/linearLayout">
 
             <Button
-                android:id="@+id/btn_post"
+                android:id="@+id/flag_etc"
                 style="?android:attr/buttonBarButtonStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"

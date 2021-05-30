@@ -314,7 +314,7 @@ public class Account extends Fragment {
         btn_profile_edit = view.findViewById(R.id.user_profile_edit_btn);
         iv_profileImage = view.findViewById(R.id.iv_profileimage);
 
-        Button btn_post = (Button)view.findViewById(R.id.btn_post);
+        Button btn_post = (Button)view.findViewById(R.id.flag_etc);
         Button btn_save = (Button)view.findViewById(R.id.btn_save);
 
         btn_post.setOnClickListener(new View.OnClickListener() {

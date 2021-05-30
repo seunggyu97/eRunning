@@ -1,6 +1,7 @@
 package com.example.erunning;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
@@ -19,6 +20,7 @@ import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
@@ -49,18 +51,22 @@ import static com.example.erunning.Utillity.isStorageUrl;
 class FlagAdapter extends RecyclerView.Adapter<FlagAdapter.FlagViewHolder> {
     ArrayList<FlagInfo> mDataset;
     Activity activity;
+    private FlagDialog flagDialog;
 
     private TextView tv_notice;
     private TextView tv_title;
     private TextView tv_time;
     private TextView tv_location;
     private TextView tv_sport;
-
+    private TextView tv_info;
     private ImageView postmenu;
 
     private View LL_PostEdit;
     private View LL_PostDelete;
     private OnPostListener onPostListener;
+
+    private int isSelected;
+
     public static class FlagViewHolder extends RecyclerView.ViewHolder {
         CardView cardView;
 
@@ -86,22 +92,25 @@ class FlagAdapter extends RecyclerView.Adapter<FlagAdapter.FlagViewHolder> {
         return position;
     }
 
+
     @NonNull
     @Override
     public FlagAdapter.FlagViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         CardView cardView = (CardView) LayoutInflater.from(parent.getContext()).inflate(R.layout.item_flag, parent, false);
 
+
+
+
         final FlagViewHolder flagViewHolder = new FlagViewHolder(cardView);
         cardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(activity, Post.class);
+                Intent intent = new Intent(activity, FlagDialog.class);
                 intent.putExtra("flagInfo", mDataset.get(flagViewHolder.getAdapterPosition()));
-
                 activity.startActivity(intent);
+
             }
         });
-
         postmenu = cardView.findViewById(R.id.btn_postmenu);
         postmenu.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -167,7 +176,7 @@ class FlagAdapter extends RecyclerView.Adapter<FlagAdapter.FlagViewHolder> {
         tv_time = holder.cardView.findViewById(R.id.tv_time);
         tv_location = holder.cardView.findViewById(R.id.tv_location);
         tv_sport = holder.cardView.findViewById(R.id.tv_sport);
-
+        tv_info = holder.cardView.findViewById(R.id.tv_info);
         FlagInfo flagdata = mDataset.get(position);
         FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
 
@@ -181,56 +190,60 @@ class FlagAdapter extends RecyclerView.Adapter<FlagAdapter.FlagViewHolder> {
         tv_title.setText(flagdata.getTitle());
         tv_location.setText(flagdata.getDescription());
         tv_time.setText(timesethour + timesetminute);
+        switch (flagdata.getSportCode()){
+            case "0":
+                tv_sport.setText("선택 안함");
+                break;
+            case "1":
+                tv_sport.setText("런닝");
+                break;
+            case "2":
+                tv_sport.setText("싸이클");
+                break;
+            case "3":
+                tv_sport.setText("실내운동");
+                break;
+            case "4":
+                tv_sport.setText("축구");
+                break;
+            case "5":
+                tv_sport.setText("야구");
+                break;
+            case "6":
+                tv_sport.setText("농구");
+                break;
+            case "7":
+                tv_sport.setText("탁구");
+                break;
+            case "8":
+                tv_sport.setText("테니스");
+                break;
+            case "9":
+                tv_sport.setText(flagdata.getSportText());
+                break;
 
 
-/*        btn_like.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v){
-                Like(position);
-            }
-        });*/
-
-
-
-        /*DocumentReference documentReference1 = FirebaseFirestore.getInstance().collection("posts").document(mDataset.get(position).getId());
-        documentReference1.get().addOnCompleteListener((task -> {
-            if (task.isSuccessful()) {
-                DocumentSnapshot document = task.getResult();
-                if (document != null) {
-                    if (document.exists()) {
-                        String getLike = document.getData().get("like").toString();
-                        if(getLike.equals("0")){
-
-                            btn_like.setImageResource(R.drawable.ic_like_gray);
-                            tv_like_upside.setVisibility(View.GONE);
-                            tv_like.setVisibility(View.VISIBLE);
-                            tv_like.setText("좋아요");
-                            tv_like.setTextColor(Color.parseColor("#000000"));
-                            Log.e("tv_like,btn","setVisibility(View.GONE),setImageResource(R.drawable.ic_like_gray);");
-                        }else{
-                            String SetLike = "좋아요 "+ getLike+"개";
-                            btn_like.setImageResource(R.drawable.ic_like_red);
-                            tv_like_upside.setVisibility(View.VISIBLE);
-                            tv_like_upside.setText(SetLike);;
-                            tv_like.setText(getLike);
-                            tv_like.setTextColor(Color.parseColor("#ff3300"));
-                            Log.e("tv_like,btn","setVisibility(View.VISIBLE),setImageResource(R.drawable.ic_like_red);");
-                        }
-
-                    }
-                }
-            }
-        }));*/
-
-
+        }
         Log.e("로그: ", "데이터: " + mDataset.get(position).getTitle());
     }
     private void setImageChange(FlagInfo flagdata){
-
-        tv_notice.setText(flagdata.getFlag() + "/5");
+        String fCurrentmember = flagdata.getCurrentmember();
+        String fMaxpeople = flagdata.getMaxpeople();
+        tv_notice.setText(fCurrentmember + "/" + fMaxpeople);
+        if(fCurrentmember.equals(fMaxpeople)){
+            tv_notice.setTextColor(Color.RED);
+        }
+        if(flagdata.getFlager() != null){
+            if(flagdata.getFlager().contains(FirebaseAuth.getInstance().getCurrentUser().getUid())){
+                tv_info.setVisibility(View.VISIBLE);
+            }
+            else{
+                tv_info.setVisibility(View.GONE);
+            }
+        }
 
     }
-    private void Like(int position){
+    private void participate(int position){
         final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
         DocumentReference documentReference = firebaseFirestore.collection("flags").document(mDataset.get(position).getId());
@@ -244,40 +257,32 @@ class FlagAdapter extends RecyclerView.Adapter<FlagAdapter.FlagViewHolder> {
                         ArrayList<String> flagerList = (ArrayList<String>)document.getData().get("flager");
                         if(flagerList != null) {
                             if (flagerList.contains(userId)) {// 참여중인 경우
-                                int fLike = Integer.parseInt(document.getData().get("flag").toString());
-                                fLike--;
-                                flagerList.remove(userId);
-                                flagdata.setFlager(flagerList);
-                                flagdata.setFlag(Integer.toString(fLike));
-                                setImageChange(flagdata);
-                                notifyDataSetChanged();
-                                documentReference.update("flag", Integer.toString(fLike)); // 파베 저장
-                                documentReference.update("flager", FieldValue.arrayRemove(userId));//참여 리스트에서 자신 삭제
-
+                                Intent intent = new Intent(activity, Flag.class);
+                                intent.putExtra("flagInfo", mDataset.get(isSelected));
+                                activity.startActivity(intent);
                             } else {// 좋아요가 눌러지지 않은 상태일 경우
-                                int fLike = Integer.parseInt(document.getData().get("flag").toString());
-                                fLike++;
-                                flagdata.setFlag(Integer.toString(fLike));
+                                int currentmember = Integer.parseInt(document.getData().get("currentmember").toString());
+                                currentmember++;
+                                flagdata.setCurrentmember(Integer.toString(currentmember));
                                 flagerList.add(userId);
                                 flagdata.setFlager(flagerList);
                                 setImageChange(flagdata);
                                 notifyDataSetChanged();
-                                mDataset.get(position).setFlag(Integer.toString(fLike));
-                                documentReference.update("flag", Integer.toString(fLike)); // 파베 저장
+                                mDataset.get(position).setCurrentmember(Integer.toString(currentmember));
+                                documentReference.update("flag", Integer.toString(currentmember)); // 파베 저장
                                 documentReference.update("flager", FieldValue.arrayUnion(userId));// 참여 리스트에 자신 추가
                             }
                         }
                         else{
-                            ArrayList<String> likerListNull = new ArrayList<String>();
-                            int fLike = Integer.parseInt(document.getData().get("flag").toString());
-                            fLike++;
-                            flagdata.setFlag(Integer.toString(fLike));
-                            likerListNull.add(userId);
-                            flagdata.setFlager(likerListNull);
+                            int currentmember = Integer.parseInt(document.getData().get("currentmember").toString());
+                            currentmember++;
+                            flagdata.setCurrentmember(Integer.toString(currentmember));
+                            flagerList.add(userId);
+                            flagdata.setFlager(flagerList);
                             setImageChange(flagdata);
                             notifyDataSetChanged();
-                            mDataset.get(position).setFlag(Integer.toString(fLike));
-                            documentReference.update("flag", Integer.toString(fLike)); // 파베 저장
+                            mDataset.get(position).setCurrentmember(Integer.toString(currentmember));
+                            documentReference.update("flag", Integer.toString(currentmember)); // 파베 저장
                             documentReference.update("flager", FieldValue.arrayUnion(userId));// 참여 리스트에 자신 추가
                         }
                     }

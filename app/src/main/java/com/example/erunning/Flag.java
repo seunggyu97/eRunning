@@ -62,7 +62,6 @@ public class Flag extends Fragment {
       Flag flag = new Flag();
       return flag;
    }
-
    @Nullable
    @Override
    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -70,7 +69,7 @@ public class Flag extends Fragment {
 
       btn_showmap = view.findViewById(R.id.btn_user_search);
       btn_add = view.findViewById(R.id.btn_add);
-      loaderLayout = view.findViewById(R.id.loaderLayout);
+      loaderLayout = view.findViewById(R.id.flagloader);
       refreshLayout = view.findViewById(R.id.srl_feed);
 
       refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -140,7 +139,6 @@ public class Flag extends Fragment {
 
       flagList = new ArrayList<>();
       flagAdapter = new FlagAdapter(getActivity(), flagList);
-      flagAdapter.setOnPostListener(onPostListener);
 
       RecyclerView recyclerView = view.findViewById(R.id.recyclerView);
 
@@ -158,34 +156,39 @@ public class Flag extends Fragment {
 
    }
 
-   OnPostListener onPostListener = new OnPostListener() {
-      @Override
-      public void onDelete(int position) {
-         final String id = flagList.get(position).getId();
-         final String Publisher = flagList.get(position).getPublisher();
-         final String UserId = firebaseUser.getUid();
-         ArrayList<String> contentList = flagList.get(position).getContents();
-         if(Publisher.equals(UserId)){
-            storeUploader(id);
-         }
-         else{
-            showToast(getActivity(),"게시글을 삭제할 권한이 없습니다.");
-         }
-
-      }
-
-      @Override
-      public void onEdit(int position) {
-         final String Publisher = flagList.get(position).getPublisher();
-         final String UserId = firebaseUser.getUid();
-         if(Publisher.equals(UserId)){
-            myStartActivity(NewFlag.class, flagList.get(position));
-         }
-         else{
-            showToast(getActivity(),"게시글을 수정할 권한이 없습니다.");
-         }
-      }
-   };
+//   OnPostListener onPostListener = new OnPostListener() {
+//      @Override
+//      public void onDelete(int position) {
+//      }
+//
+//      @Override
+//      public void onEdit(int position) {
+//      }
+//
+//      @Override
+//      public void onExit(int position) {
+//         firebaseFirestore = FirebaseFirestore.getInstance();
+//         DocumentReference documentReference = firebaseFirestore.collection("flags").document(flag);
+//         documentReference.get().addOnCompleteListener((task) -> {
+//            if (task.isSuccessful()) {
+//               loaderLayout.setVisibility(View.GONE);
+//               DocumentSnapshot document = task.getResult();
+//               if (document != null) {
+//                  if (document.exists()) {
+//                     Log.d(TAG, "DocumentSnapshot data : " + document.getData());
+//                  } else {
+//                     Log.d(TAG, "No Such Document");
+//                     startActivity(new Intent(getActivity(), MainActivity.class));
+//                     getActivity().finish();
+//                  }
+//               }
+//            } else {
+//               loaderLayout.setVisibility(View.GONE);
+//               Log.d(TAG, "get failed with ", task.getException());
+//            }
+//         });
+//      }
+//   };
 
    private void postUpdate() {
       if (firebaseUser != null) {
@@ -208,29 +211,40 @@ public class Flag extends Fragment {
                                         document.getData().get("publisherName").toString(),
                                         document.getData().get("photoUrl").toString(),
                                         document.getData().get("flag").toString(),
-                                        //document.getData().get("comment").toString(),
                                         (ArrayList<String>) document.getData().get("flager"),
                                         document.getData().get("starthour").toString(),
                                         document.getData().get("startminute").toString(),
                                         document.getData().get("description").toString(),
-                                        document.getData().get("address").toString()));
+                                        document.getData().get("address").toString(),
+                                        document.getData().get("maxpeople").toString(),
+                                        document.getData().get("currentmember").toString(),
+                                        document.getData().get("sportCode").toString(),
+                                        document.getData().get("sportText").toString(),
+                                        document.getData().get("latitude").toString(),
+                                        document.getData().get("longitude").toString(),
+                                        document.getData().get("comment").toString()));
                              }//String title, String publisher, Date createdAt, String id,String publisherName, String photoUrl, String flag, ArrayList<String> flager, int starthour, int startminute
                              else {
                                 flagList.add(new FlagInfo(
                                         document.getData().get("title").toString(),
                                         document.getData().get("publisher").toString(),
                                         new Date(document.getDate("createdAt").getTime()),
-                                        document.getId(),
-
                                         document.getData().get("publisherName").toString(),
+                                        document.getId(),
                                         "0",
                                         document.getData().get("flag").toString(),
-                                        //document.getData().get("comment").toString(),
                                         (ArrayList<String>) document.getData().get("flager"),
                                         document.getData().get("starthour").toString(),
                                         document.getData().get("startminute").toString(),
                                         document.getData().get("description").toString(),
-                                        document.getData().get("address").toString()));
+                                        document.getData().get("address").toString(),
+                                        document.getData().get("maxpeople").toString(),
+                                        document.getData().get("currentmember").toString(),
+                                        document.getData().get("sportCode").toString(),
+                                        document.getData().get("sportText").toString(),
+                                        document.getData().get("latitude").toString(),
+                                        document.getData().get("longitude").toString(),
+                                        document.getData().get("comment").toString()));
                              }//String title, String publisher, Date createdAt, String publisherName, String photoUrl, String flag, ArrayList<String> flager, int starthour, int startminute
                           }
                           flagAdapter.notifyDataSetChanged();
@@ -241,14 +255,14 @@ public class Flag extends Fragment {
                  });
       }
    }
-/*
-   @Override
-   public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-      super.onActivityResult(requestCode, resultCode, data);
+   /*
+      @Override
+      public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+         super.onActivityResult(requestCode, resultCode, data);
 
 
-   }
-*/
+      }
+   */
    private void storeUploader(String id) {
       firebaseFirestore.collection("flags").document(id)
               .delete()

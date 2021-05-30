@@ -564,7 +564,8 @@ public class Post extends BasicActivity{
             }
         }
         public void onEdit(int position){
-            //
+        }
+        public void onExit(int position){
         }
     };
     private void commentUpdate() {

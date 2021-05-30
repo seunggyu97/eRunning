@@ -336,6 +336,7 @@ public class NewPost extends BasicActivity {
                                                                 if (pathList.size() == successCount) {
                                                                     //완료
                                                                     PostInfo postInfo = new PostInfo(title, contentsList, user.getUid(), date, PublisherName,profilePhotoUrl,"0","0",liker);
+
                                                                     Log.e("title : ", title + "  //contentsList : " + contentsList + "  //user.getUid() : " + user.getUid() + "  //Date : " + new Date() + "PublisherName : " + PublisherName + "profilePhotoUrl : " + profilePhotoUrl);
                                                                     StoreUpload(documentReference, postInfo);
                                                                 }
