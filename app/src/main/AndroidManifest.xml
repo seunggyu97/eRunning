@@ -26,33 +26,55 @@
         android:theme="@style/Theme.eRunning">
 
         <!-- android:theme="@style/Theme.Design.NoActionBar"> //상단바 없애기 -->
-        <activity android:name=".Loading">
+        <activity android:name=".Loading"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
+
             </intent-filter>
         </activity>
-        <activity android:name=".Login" />
-        <activity android:name=".SignUp" />
-        <activity android:name=".MainActivity" />
-        <activity android:name=".PasswordReset" />
-        <activity android:name=".AuthCheck" />
-        <activity android:name=".CameraActivity" />
-        <activity android:name=".EditProfileActivity" />
-        <activity android:name=".Gallery" />
-        <activity android:name=".BasicActivity" />
-        <activity android:name=".NewPost" />
-        <activity android:name=".UserSearch" />
+        <activity android:name=".Login"
+            android:screenOrientation="portrait"
+            />
+        <activity android:name=".SignUp"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".MainActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".PasswordReset"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".AuthCheck"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".CameraActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".EditProfileActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".Gallery"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".BasicActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".NewPost"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".UserSearch"
+            android:screenOrientation="portrait"/>
         <activity android:name=".NewFlag"
-            android:windowSoftInputMode="adjustNothing" />
-        <activity android:name=".FlagInter" />
-        <activity android:name=".OtherAccount"></activity>
-        <activity android:name=".Post" />
-        <activity android:name=".FlagNewmap" />
-        <activity android:name=".FlagDialog" />
-        <activity android:name=".FlagInfoDialog" />
-        <activity android:name=".FlagPost" />
+            android:windowSoftInputMode="adjustNothing"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".FlagInter"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".OtherAccount"
+            android:screenOrientation="portrait"></activity>
+        <activity android:name=".Post"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".FlagNewmap"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".FlagDialog"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".FlagInfoDialog"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".FlagPost"
+            android:screenOrientation="portrait"/>
 
         <meta-data
             android:name="com.google.android.maps.v2.API_KEY"
