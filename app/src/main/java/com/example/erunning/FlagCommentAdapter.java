@@ -160,22 +160,7 @@ class FlagCommentAdapter extends RecyclerView.Adapter<FlagCommentAdapter.FlagCom
         Log.e("1차 댓글 프사","설정");
         TextView createdAtTextView = cardView.findViewById(R.id.createdAtTextView);
 
-        DocumentReference documentReference2 = FirebaseFirestore.getInstance().collection("flags").document(mDataset.get(position).getId());
-        documentReference2.get().addOnCompleteListener((task -> {
-            if(task.isSuccessful()){
-                DocumentSnapshot document = task.getResult();
-                if(document != null){
-                    if(document.exists()){
-                        if(document.getData().get("publisher").toString().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())){
-                            iv_leader.setVisibility(View.VISIBLE);
-                        }else{
-                            iv_leader.setVisibility(View.GONE);
-                        }
 
-                    }
-                }
-            }
-        }));
 
         DocumentReference documentReference = FirebaseFirestore.getInstance().collection("users").document(mDataset.get(position).getPublisher());
         documentReference.get().addOnCompleteListener((task -> {
@@ -196,6 +181,22 @@ class FlagCommentAdapter extends RecyclerView.Adapter<FlagCommentAdapter.FlagCom
 
                                     Glide.with(activity).load(uri).circleCrop().into(iv_profileImage);
                                     Log.e("2차 댓글 프사","설정");
+                                    DocumentReference documentReference2 = FirebaseFirestore.getInstance().collection("flags").document(mDataset.get(position).getId());
+                                    documentReference2.get().addOnCompleteListener((task -> {
+                                        if(task.isSuccessful()){
+                                            DocumentSnapshot document = task.getResult();
+                                            if(document != null){
+                                                if(document.exists()){
+                                                    if(document.getData().get("publisher").toString().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())){
+                                                        iv_leader.setVisibility(View.VISIBLE);
+                                                    }else{
+                                                        iv_leader.setVisibility(View.GONE);
+                                                    }
+
+                                                }
+                                            }
+                                        }
+                                    }));
                                 }
                             }).addOnFailureListener(new OnFailureListener() {
                                 @Override

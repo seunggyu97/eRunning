@@ -72,7 +72,7 @@ public class NewPost extends BasicActivity {
         findViewById(R.id.btn_addpost).setOnClickListener(onClickListener);
         findViewById(R.id.btn_writingback).setOnClickListener(onClickListener);
         findViewById(R.id.btn_addphoto).setOnClickListener(onClickListener);
-        findViewById(R.id.btn_addvideo).setOnClickListener(onClickListener);
+        //findViewById(R.id.btn_addvideo).setOnClickListener(onClickListener);
         findViewById(R.id.delete).setOnClickListener(onClickListener);
         //findViewById(R.id.btn_addroute).setOnClickListener(onClickListener);
         findViewById(R.id.et_writing).setOnFocusChangeListener(onFocusChangeListener);
@@ -153,7 +153,7 @@ public class NewPost extends BasicActivity {
                     myStartActivity(Gallery.class, "image", 0);
                 }
                 break;
-            case R.id.btn_addvideo:
+            /*case R.id.btn_addvideo:
                 if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
                     ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
 
@@ -165,7 +165,7 @@ public class NewPost extends BasicActivity {
                 } else {
                     myStartActivity(Gallery.class, "video", 0);
                 }
-                break;
+                break;*/
             /*case R.id.btn_route:
                 finish();
                 break;*/ // 경로 추가 버튼
@@ -216,9 +216,6 @@ public class NewPost extends BasicActivity {
 
             loaderLayout.setVisibility(View.VISIBLE);
 
-            FirebaseFirestore db = FirebaseFirestore.getInstance();
-
-            ArrayList<String> mypostURL = new ArrayList<>();
             final ArrayList<String> contentsList = new ArrayList<>();
             final ArrayList<String> liker = new ArrayList<>();
             user = FirebaseAuth.getInstance().getCurrentUser();
@@ -280,17 +277,6 @@ public class NewPost extends BasicActivity {
                                                                     PostInfo postInfo = new PostInfo(title, contentsList, user.getUid(), date, PublisherName,profilePhotoUrl,"0","0", liker);
                                                                     Log.e("title : ", title + "  //contentsList : " + contentsList + "  //user.getUid() : " + user.getUid() + "  //Date : " + new Date() + "PublisherName : " + PublisherName + "profilePhotoUrl : " + profilePhotoUrl);
                                                                     StoreUpload(documentReference, postInfo);
-                                                                    documentReference2.get().addOnCompleteListener((task -> {
-                                                                        if (task.isSuccessful()) {
-                                                                            DocumentSnapshot document = task.getResult();
-                                                                            if (document != null) {
-                                                                                if (document.exists()) {
-                                                                                    if (contentsList.size() > 0)
-                                                                                        db.collection("users").document(user.getUid()).update("contents", FieldValue.arrayUnion(contentsList));
-                                                                                }
-                                                                            }
-                                                                        }
-                                                                    }));
                                                                 }
 
                                                             }
@@ -307,17 +293,6 @@ public class NewPost extends BasicActivity {
                                 }
                                 if (pathList.size() == 0) {
                                     StoreUpload(documentReference, new PostInfo(title, contentsList, user.getUid(), date, PublisherName,profilePhotoUrl,"0","0",liker));
-                                    documentReference2.get().addOnCompleteListener((task5 -> {
-                                        if (task5.isSuccessful()) {
-                                            DocumentSnapshot document5 = task5.getResult();
-                                            if (document5 != null) {
-                                                if (document5.exists()) {
-                                                    if (contentsList.size() > 0)
-                                                        db.collection("users").document(user.getUid()).update("contents", FieldValue.arrayUnion(contentsList));
-                                                }
-                                            }
-                                        }
-                                    }));
                                 }
 
                             }else{
@@ -363,43 +338,9 @@ public class NewPost extends BasicActivity {
                                                                 successCount++;
                                                                 if (pathList.size() == successCount) {
                                                                     //완료
-                                                                    PostInfo postInfo = new PostInfo(title, contentsList, user.getUid(),
-                                                                            date, PublisherName,profilePhotoUrl,"0","0",liker);
+                                                                    PostInfo postInfo = new PostInfo(title, contentsList, user.getUid(), date, PublisherName,profilePhotoUrl,"0","0",liker);
                                                                     Log.e("title : ", title + "  //contentsList : " + contentsList + "  //user.getUid() : " + user.getUid() + "  //Date : " + new Date() + "PublisherName : " + PublisherName + "profilePhotoUrl : " + profilePhotoUrl);
                                                                     StoreUpload(documentReference, postInfo);
-                                                                    if (contentsList.size() > 0){
-
-                                                                        switch (contentsList.size()-1) {
-                                                                            case 0:
-                                                                            case 1:
-                                                                                db.collection("users").document(user.getUid()).update("contents", FieldValue.arrayUnion(contentsList.get(0)));
-                                                                                posturl = contentsList.get(0);
-                                                                                break;
-                                                                            case 2:
-                                                                            case 3:
-                                                                                db.collection("users").document(user.getUid()).update("contents", FieldValue.arrayUnion(contentsList.get(0)));
-                                                                                db.collection("users").document(user.getUid()).update("contents", FieldValue.arrayUnion(contentsList.get(2)));
-                                                                                posturl = contentsList.get(0);
-                                                                                break;
-                                                                            case 4:
-                                                                            case 5:
-                                                                                db.collection("users").document(user.getUid()).update("contents", FieldValue.arrayUnion(contentsList.get(0)));
-                                                                                db.collection("users").document(user.getUid()).update("contents", FieldValue.arrayUnion(contentsList.get(2)));
-                                                                                db.collection("users").document(user.getUid()).update("contents", FieldValue.arrayUnion(contentsList.get(4)));
-                                                                                posturl = contentsList.get(0);
-                                                                                break;
-                                                                            case 6:
-                                                                            case 7:
-                                                                                db.collection("users").document(user.getUid()).update("contents", FieldValue.arrayUnion(contentsList.get(0)));
-                                                                                db.collection("users").document(user.getUid()).update("contents", FieldValue.arrayUnion(contentsList.get(2)));
-                                                                                db.collection("users").document(user.getUid()).update("contents", FieldValue.arrayUnion(contentsList.get(4)));
-                                                                                db.collection("users").document(user.getUid()).update("contents", FieldValue.arrayUnion(contentsList.get(6)));
-                                                                                posturl = contentsList.get(0);
-                                                                                break;
-                                                                        }
-
-                                                                    }
-
                                                                 }
 
                                                             }
@@ -416,18 +357,6 @@ public class NewPost extends BasicActivity {
                                 }
                                 if (pathList.size() == 0) {
                                     StoreUpload(documentReference, new PostInfo(title, contentsList, user.getUid(), date, PublisherName,profilePhotoUrl,"0","0",liker));
-                                    if (contentsList.size() > 0)
-                                        documentReference2.get().addOnCompleteListener((task2 -> {
-                                            if (task2.isSuccessful()) {
-                                                DocumentSnapshot document2 = task2.getResult();
-                                                if (document2 != null) {
-                                                    if (document2.exists()) {
-                                                        Log.e("asdf" ,"asdf" + contentsList);
-                                                        db.collection("users").document(user.getUid()).update("contents", FieldValue.arrayUnion(contentsList));
-                                                    }
-                                                }
-                                            }
-                                        }));
                                 }
                             }
                         }

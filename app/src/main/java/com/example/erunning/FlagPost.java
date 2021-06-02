@@ -63,6 +63,7 @@ public class FlagPost extends BasicActivity {
     private ImageView btn_back;
     private TextView tv_comment;
     private TextView tv_title;
+    private ImageView btn_refresh;
     private EditText et_writecomment;
     private CommentInfo commentInfo;
     private Utillity util;
@@ -89,6 +90,7 @@ public class FlagPost extends BasicActivity {
         loaderLayout = findViewById(R.id.loaderLayout);
         et_writecomment = findViewById(R.id.et_writecomment);
         tv_title = findViewById(R.id.tv_title_flag);
+        btn_refresh = findViewById(R.id.btn_refresh);
         //imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE); // 키보드
 
         FlagInfo flagInfo = (FlagInfo) getIntent().getSerializableExtra("flagInfo");
@@ -108,7 +110,12 @@ public class FlagPost extends BasicActivity {
             }
         });
         TextView createdAtTextView = findViewById(R.id.createdAtTextView);
-
+        btn_refresh.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                onResume();
+            }
+        });
         btn_back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -267,10 +274,6 @@ public class FlagPost extends BasicActivity {
                         int fComment = Integer.parseInt(flagdata.getComment());
                         fComment--;
                         flagdata.setComment(Integer.toString(fComment));
-                        Log.e("id ::::::",":::::::::::::::::"+id);//o
-                        Log.e("fComment ::::::",":::::::::::::::::"+fComment);
-                        Log.e("flagdata.getComment::",":::::::::::::::::"+flagdata.getComment());
-                        Log.e("flagdata.getId()::::",":::::::::::::::::"+flagdata.getId());//o
                         if(FirebaseFirestore.getInstance().collection("flags") != null){
                             FirebaseFirestore.getInstance().collection("flags").document(flagdata.getId()).update("comment", Integer.toString(fComment)); // 파베 저장
                             commentUpdate();

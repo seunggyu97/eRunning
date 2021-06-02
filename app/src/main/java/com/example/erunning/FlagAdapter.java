@@ -60,9 +60,7 @@ class FlagAdapter extends RecyclerView.Adapter<FlagAdapter.FlagViewHolder> {
     private TextView tv_sport;
     private TextView tv_info;
     private ImageView postmenu;
-
-    private View LL_PostEdit;
-    private View LL_PostDelete;
+    private View LLFlagExit;
     private OnPostListener onPostListener;
 
     private int isSelected;
@@ -123,32 +121,18 @@ class FlagAdapter extends RecyclerView.Adapter<FlagAdapter.FlagViewHolder> {
                         );
                         View bottomSheetView = LayoutInflater.from(activity.getApplicationContext())
                                 .inflate(
-                                        R.layout.post_bottom_sheet,
+                                        R.layout.flag_bottom_sheet,
                                         (LinearLayout) cardView.findViewById(R.id.PostbottomSheetContainer)
                                 );
-                        LL_PostEdit = bottomSheetView.findViewById(R.id.LL_PostEdit);
-                        LL_PostDelete = bottomSheetView.findViewById(R.id.LL_PostDelete);
-
-                        LL_PostEdit.setOnClickListener(new View.OnClickListener() {
+                        LLFlagExit = bottomSheetView.findViewById(R.id.LL_FlagExit);
+                        LLFlagExit.setOnClickListener(new View.OnClickListener(){
                             @Override
                             public void onClick(View v) {
                                 switch (v.getId()) {
-                                    case R.id.LL_PostEdit:
+                                    case R.id.LL_FlagExit:
                                         bottomSheetDialog.dismiss();
-                                        onPostListener.onEdit(flagViewHolder.getAdapterPosition());
-                                        Log.e("게시물 수정 ", "클릭" + v);
-                                        break;
-                                }
-                            }
-                        });
-                        LL_PostDelete.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                switch (v.getId()) {
-                                    case R.id.LL_PostDelete:
-                                        bottomSheetDialog.dismiss();
-                                        onPostListener.onDelete(flagViewHolder.getAdapterPosition());
-                                        Log.e("게시물 삭제", "클릭" + v);
+                                        onPostListener.onExit(flagViewHolder.getAdapterPosition());
+                                        Log.e("방 나가기", "클릭" + v);
                                         break;
                                 }
                             }
@@ -233,8 +217,20 @@ class FlagAdapter extends RecyclerView.Adapter<FlagAdapter.FlagViewHolder> {
         if(fCurrentmember.equals(fMaxpeople)){
             tv_notice.setTextColor(Color.RED);
         }
+        else{
+            tv_notice.setTextColor(Color.BLACK);
+        }
         if(flagdata.getFlager() != null){
             if(flagdata.getFlager().contains(FirebaseAuth.getInstance().getCurrentUser().getUid())){
+                tv_info.setVisibility(View.VISIBLE);
+            }else if(flagdata.getPublisher().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())){
+                tv_info.setVisibility(View.VISIBLE);
+            }
+            else{
+                tv_info.setVisibility(View.GONE);
+            }
+        }else{
+            if(flagdata.getPublisher().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())){
                 tv_info.setVisibility(View.VISIBLE);
             }
             else{
