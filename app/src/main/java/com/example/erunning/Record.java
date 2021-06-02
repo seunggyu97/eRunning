@@ -677,7 +677,7 @@ public class Record extends Fragment implements OnMapReadyCallback, SensorEventL
       if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
          long currentTime = System.currentTimeMillis();
          long gabOfTime = (currentTime - lastTime);
-         if (gabOfTime > 120) {
+         if (gabOfTime > 130) {
             lastTime = currentTime;
             x = event.values[SensorManager.DATA_X];
             y = event.values[SensorManager.DATA_Y];
