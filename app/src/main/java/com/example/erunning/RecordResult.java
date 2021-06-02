@@ -3,7 +3,9 @@ package com.example.erunning;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.Matrix;
 import android.hardware.SensorManager;
 import android.location.Location;
 import android.net.Uri;
@@ -50,9 +52,11 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -116,6 +120,8 @@ public class RecordResult extends Fragment implements OnMapReadyCallback, Google
     public ArrayList<String> ftImgUrl = new ArrayList<>();
     public ArrayList<String> ftImgPath = new ArrayList<>();
     public ArrayList<Boolean> markerImgExist = new ArrayList<>();
+
+    public String mapPicUrl = new String();
 
     public RecordResult()
     {
@@ -261,6 +267,7 @@ public class RecordResult extends Fragment implements OnMapReadyCallback, Google
                 //recorddata.put("ftimgmarkerid", ftImgMarkerId);
                 recorddata.put("markerimgexist", markerImgExist);
                 //recorddata.put("ftimgmap", ftimg);
+                //recorddata.put("mapPicUrl", mapPicUrl);
 
                 DocumentReference recordRef = db.collection("records").document();
 
@@ -296,7 +303,7 @@ public class RecordResult extends Fragment implements OnMapReadyCallback, Google
                 for(int i = 0; i < ftImgMarkerId.size(); i++) {
 
                     final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                    final StorageReference mountainImagesRef = storageRef.child("records/" + documentid + "/" + ftImgMarkerId.get(i) + ".jpg");
+                    final StorageReference mountainImagesRef = storageRef.child("records/" + documentid + "/marker_img/" + ftImgMarkerId.get(i) + ".jpg");
                     if (ftImgPath.get(i) == null) {
 
                     } else {
@@ -351,6 +358,57 @@ public class RecordResult extends Fragment implements OnMapReadyCallback, Google
                 else{
                     Toast.makeText(mContext.getApplicationContext(), documentid, Toast.LENGTH_SHORT).show();
                 }
+
+                GoogleMap.SnapshotReadyCallback callback = new GoogleMap.SnapshotReadyCallback() {
+                    @Override
+                    public void onSnapshotReady(Bitmap snapshot) {
+
+                        // Create a reference to "mountains.jpg"
+                        StorageReference mountainsRef = storageRef.child("records/" + documentid + "/map_picture.jpg");
+
+                        Matrix m = new Matrix();
+                        Bitmap bitmap = Bitmap.createBitmap(snapshot, 0, 0, snapshot.getWidth(), snapshot.getHeight(), m, false);
+                        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+                        byte[] data = baos.toByteArray();
+
+                        UploadTask uploadTask = mountainsRef.putBytes(data);
+                        uploadTask.continueWithTask((task) -> {
+                            if (!task.isSuccessful()) {
+                                throw task.getException();
+                            }
+                            return mountainsRef.getDownloadUrl();
+                        }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Uri> task) {
+                                if (task.isSuccessful()) {
+                                    Uri downloadUri = task.getResult();
+
+                                    mapPicUrl = downloadUri.toString();
+                                    //ftimg.put(ftImgMarkerId.get(finalI), ftImgPath.get(finalI));
+
+                                        /*if(ftImgUrl!=null)
+                                        {
+                                            Log.e("로그", ftImgUrl.get(finalI));
+                                        }
+                                        else{
+                                            Log.e("로그", finalI+"존재 안함");
+                                        }*/
+
+                                    FirebaseFirestore db = FirebaseFirestore.getInstance();
+                                    db.collection("records").document(documentid)
+                                            .update(
+                                                    "mapPicurl", mapPicUrl
+                                            );
+
+                                } else {
+                                    Log.e("로그", "실패");
+                                }
+                            }
+                        });
+                    }
+                };
+                mMap.snapshot(callback);
 
                 /*FirebaseFirestore db = FirebaseFirestore.getInstance();
                 db.collection("records").document(documentid)
