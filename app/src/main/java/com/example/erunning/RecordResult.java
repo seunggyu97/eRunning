@@ -145,44 +145,6 @@ public class RecordResult extends Fragment implements OnMapReadyCallback, Google
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         // 초기화해야 하는 리소스들을 여기서 초기화 해준다.
-
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if (user != null) {
-            // Check if user's email is verified
-            //boolean emailVerified = user.isEmailVerified();
-
-            // The user's ID, unique to the Firebase project. Do NOT use this value to
-            // authenticate with your backend server, if you have one. Use
-            // FirebaseUser.getIdToken() instead.
-            uid = user.getUid();
-        }
-
-        DocumentReference docRef = db.collection("users").document(uid);
-
-        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-
-                if (task.isSuccessful()) {
-                    DocumentSnapshot document = task.getResult();
-                    if (document.exists()) {
-                        Log.d(TAG, "DocumentSnapshot data: " + document.getData());
-                        /*Map<String, Object> temp = new HashMap<>();
-                        temp.put("user_step", document.get("user_step"));*/
-                        userstep = Integer.parseInt(String.valueOf(document.get("user_step")));
-                        userstep = userstep + Integer.parseInt(rsstep);
-                        //Toast.makeText(mContext.getApplicationContext(), String.valueOf(userstep), Toast.LENGTH_SHORT).show();
-                    } else {
-                        Log.d(TAG, "No such document");
-                    }
-                } else {
-                    Log.d(TAG, "get failed with ", task.getException());
-                }
-            }
-        });
-
-
     }
 
     @Nullable
@@ -233,6 +195,49 @@ public class RecordResult extends Fragment implements OnMapReadyCallback, Google
         rstextCalories.setText(String.valueOf(rscalories));
         rstextStep.setText(String.valueOf(rsstep));
 
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            // Check if user's email is verified
+            //boolean emailVerified = user.isEmailVerified();
+
+            // The user's ID, unique to the Firebase project. Do NOT use this value to
+            // authenticate with your backend server, if you have one. Use
+            // FirebaseUser.getIdToken() instead.
+            uid = user.getUid();
+        }
+
+        DocumentReference docRef = db.collection("users").document(uid);
+
+        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document.exists()) {
+                        Log.d(TAG, "DocumentSnapshot data: " + document.getData());
+                        /*Map<String, Object> temp = new HashMap<>();
+                        temp.put("user_step", document.get("user_step"));*/
+                        if(document.get("user_step")!=null) {
+                            userstep = Integer.parseInt(String.valueOf(document.get("user_step")));
+                        }
+                        userstep = userstep + Integer.parseInt(rsstep);
+
+                        Map<String, Object> stepdata = new HashMap<>();
+                        stepdata.put("user_step", userstep);
+
+                        db.collection("users").document(uid)
+                                .set(stepdata, SetOptions.merge());
+                        //Toast.makeText(mContext.getApplicationContext(), String.valueOf(userstep), Toast.LENGTH_SHORT).show();
+                    } else {
+                        Log.d(TAG, "No such document");
+                    }
+                } else {
+                    Log.d(TAG, "get failed with ", task.getException());
+                }
+            }
+        });
 
         btnCancel.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -355,9 +360,6 @@ public class RecordResult extends Fragment implements OnMapReadyCallback, Google
                 if(documentid == null) {
                     Toast.makeText(mContext.getApplicationContext(), "문서 아이디 없음", Toast.LENGTH_SHORT).show();
                 }
-                else{
-                    Toast.makeText(mContext.getApplicationContext(), documentid, Toast.LENGTH_SHORT).show();
-                }
 
                 GoogleMap.SnapshotReadyCallback callback = new GoogleMap.SnapshotReadyCallback() {
                     @Override
@@ -415,13 +417,6 @@ public class RecordResult extends Fragment implements OnMapReadyCallback, Google
                         .update(
                                 "ftimgurl", ftImgUrl
                         );*/
-
-
-                Map<String, Object> data = new HashMap<>();
-                data.put("user_step", userstep);
-
-                db.collection("users").document(uid)
-                        .set(data, SetOptions.merge());
 
                 //DocumentReference docRef2 = db.collection("users").document(finalUid);
 
@@ -489,7 +484,7 @@ public class RecordResult extends Fragment implements OnMapReadyCallback, Google
         }
         else{
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mDefaultLocation, 15));
-            Toast. makeText( mContext, "저장된 경로가 없습니다.", Toast.LENGTH_SHORT ).show();
+            Toast. makeText( mContext, "기록된 경로가 없습니다.", Toast.LENGTH_SHORT ).show();
         }
 
         int j = 0;
