@@ -67,6 +67,8 @@
             android:screenOrientation="portrait"></activity>
         <activity android:name=".Post"
             android:screenOrientation="portrait"/>
+        <activity android:name=".NewRecordPost"
+            android:screenOrientation="portrait"/>
         <activity android:name=".FlagNewmap"
             android:screenOrientation="portrait"/>
         <activity android:name=".FlagDialog"

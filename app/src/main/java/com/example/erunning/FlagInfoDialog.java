@@ -71,7 +71,7 @@ public class FlagInfoDialog extends BasicActivity implements OnMapReadyCallback{
         tv_description.setText(flagInfo.getDescription());
         tv_address.setText(flagInfo.getAddress());
         tv_starttime.setText(flagInfo.getStarthour() + "시 " + flagInfo.getStartminute() + "분");
-
+        tv_notice.setText("("+flagInfo.getCurrentmember()+ "/" + flagInfo.getMaxpeople() + " 참여중)");
 
         btn_infocancel.setOnClickListener(new View.OnClickListener() {
             @Override
