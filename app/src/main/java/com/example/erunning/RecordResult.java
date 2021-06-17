@@ -436,9 +436,10 @@ public class RecordResult extends Fragment implements OnMapReadyCallback, Google
                             }
                         });*/
 
+                Toast.makeText(mContext.getApplicationContext(), "해당 화면 캡쳐를 통하여\n직접 피드에서 게시글을 작성해주세요", Toast.LENGTH_LONG).show();
                 // 게시물 작성 페이지로 이동
-                Intent intent = new Intent(getActivity(), NewPost.class);
-                startActivityForResult(intent, MainActivity.REQUEST_POST);
+                //Intent intent = new Intent(getActivity(), NewPost.class);
+                //startActivityForResult(intent, MainActivity.REQUEST_POST);
 
             }
         });
